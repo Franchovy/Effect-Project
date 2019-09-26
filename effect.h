@@ -10,6 +10,7 @@ public:
     Effect();
 
     virtual void applyEffect(char* in, char* out, int readLength){}
+
 };
 
 #endif // EFFECT_H

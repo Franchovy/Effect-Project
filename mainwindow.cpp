@@ -12,16 +12,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
 
-    effectChain = new QList<Effect*>();
-    Effect* firstEffect = new Effect();
-    effectChain->append(firstEffect);
-    effectChain->append(firstEffect); //not very gud
+    audio = new Audio(); //init
 
     reloadEffectChainUI();
 
-    audio = new Audio(); //init
-
-    connect(ui->test, SIGNAL(pressed()), audio, SLOT(runAudio()));
+    connect(ui->newEffectButton, &QPushButton::pressed, [this](){
+        Effect* e = new Effect();
+        audio->getEffectBuffer()->addEffect(e);
+        reloadEffectChainUI();
+                });
+    connect(ui->runButton, &QPushButton::pressed, audio, &Audio::runAudio);
 }
 
 
@@ -33,8 +33,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::reloadEffectChainUI()
 {
+    QList<Effect*>* effectsChain = audio->getEffectChain();
+
     QGroupBox* frame;
-    for (int i = 0; i < effectChain->length(); i++){
+    for (int i = 0; i < effectsChain->length(); i++){
 
         frame = new QGroupBox();
 

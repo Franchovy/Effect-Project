@@ -16,6 +16,10 @@ public:
     Audio();
     Q_OBJECT
 
+public:
+    QList<Effect*>* getEffectChain(){return buffer->getEffectChain();}
+    EffectBuffer* getEffectBuffer() {return buffer;}
+
 private:
     EffectBuffer* buffer;
     QAudioInput* inputAudio;

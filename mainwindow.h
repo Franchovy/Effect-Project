@@ -24,8 +24,5 @@ private:
 
     Audio* audio;
 
-    QList<Effect*>* effectChain;
-
-
 };
 #endif // MAINWINDOW_H

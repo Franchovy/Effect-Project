@@ -45,17 +45,7 @@ void EffectBuffer::applyEffect(char* in, char* out, int readLength){
     }
 }
 
-/*
-void EffectBuffer::applyEffects(qint64 bytes){
-    int applied = validElementEnd - bytes;
-    //CHANGEME loopback compatibility
-    //loop through bytes
-    while (applied <= bytes){
-        //loop through effects
-        buffer2[applied] = buffer2.at(applied); //???? same buffer in/out??
-        qDebug() << buffer2[applied];
-
-        applied++;
-    }
+void EffectBuffer::addEffect(Effect *e)
+{
+    effectChain.append(e);
 }
-*/
