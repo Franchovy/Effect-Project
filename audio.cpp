@@ -39,9 +39,9 @@ Audio::Audio()
     qDebug() << "Selected output: " << outputDevice.deviceName();
 
     QAudioFormat format;
-    format.setSampleRate(44000);
+    format.setSampleRate(96000);
     format.setChannelCount(2);
-    format.setSampleSize(16);
+    format.setSampleSize(24);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleSize(QAudioFormat::UnSignedInt);

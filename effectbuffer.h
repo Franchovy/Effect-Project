@@ -7,6 +7,10 @@
 #include <QtMath>
 #include <QAudioBuffer>
 
+
+#include <effectsLib/echoeffect1.h>
+
+
 class EffectBuffer : public QIODevice
 {
 public:
@@ -23,23 +27,11 @@ private:
     qint64 bufferUsed;
     qint64 bufferCurrent;
 
+    QList<Effect*> effectChain;
 
-    qint64 validElementStart;
-    qint64 validElementEnd;
+    EchoEffect1 echoeffect;
 
-    QByteArray effectBuffer;
-    int effectBufferpt;
-
-    void initEffect(QByteArray effectBuffer, qint64 length);
     void applyEffect(char* in, char* out, int readLength);
-
-/*
-public slots:
-    void applyEffects(qint64 bytes);
-//    void readyRead();
-*/
-signals:
-    void bytesWritten(qint64 bytes);
 
 };
 

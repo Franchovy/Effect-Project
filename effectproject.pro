@@ -19,6 +19,7 @@ SOURCES += \
     audio.cpp \
     effect.cpp \
     effectbuffer.cpp \
+    effectsLib/echoeffect1.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -26,6 +27,7 @@ HEADERS += \
     audio.h \
     effect.h \
     effectbuffer.h \
+    effectsLib/echoeffect1.h \
     mainwindow.h
 
 FORMS += \

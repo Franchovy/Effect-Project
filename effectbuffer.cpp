@@ -1,21 +1,17 @@
 #include "effectbuffer.h"
 
 
-
 //TODO sort out conversions!!!
 //TODO sort out multiple instances. Including switching streams etc.
 EffectBuffer::EffectBuffer()
 {
     buffer = QByteArray();
 
-    initEffect(effectBuffer, 1000000);
+    effectChain = QList<Effect*>();
 
-    validElementStart = 0;
-    validElementEnd = 0;
-
-    //connect(this, &EffectBuffer::bytesWritten, this, &EffectBuffer::applyEffects);
+    EchoEffect1* echoeffect = new EchoEffect1();
+    effectChain.append(echoeffect);
 }
-
 
 qint64 EffectBuffer::readData(char* data, qint64 maxlen){
     int readLength = qMin(static_cast<int>(maxlen), buffer.length());
@@ -29,7 +25,6 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
 
     return readLength;
 }
-
 qint64 EffectBuffer::writeData(const char* data, qint64 maxlen){
     if(maxlen > (buffer.capacity() + buffer.size())){
         //  Increase buffer capacity to new maximum.
@@ -42,30 +37,11 @@ qint64 EffectBuffer::writeData(const char* data, qint64 maxlen){
     return maxlen;
 }
 
-void EffectBuffer::initEffect(QByteArray effectBuffer, qint64 length)
-{
-    effectBuffer = QByteArray(static_cast<int>(length), 0x01);
-    effectBufferpt = 0;
-}
-
 void EffectBuffer::applyEffect(char* in, char* out, int readLength){
     //Apply effects here:
 
-    if (effectBuffer.length() < 1000000) {
-        effectBuffer.resize(1000000);
-        effectBuffer.fill(0);
-    }
-
-    for (int i = 0; i < readLength; i++){
-        //out[i] = in->at(i);
-
-        effectBuffer[effectBufferpt] = in[i];
-
-        effectBufferpt++;
-        if (effectBufferpt >= effectBuffer.length()) {
-            effectBufferpt = 0;
-        }
-        out[i] = in[i] + effectBuffer.at(effectBufferpt);
+    for (Effect* e : effectChain){
+        e->applyEffect(in, out, readLength);
     }
 }
 
