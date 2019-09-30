@@ -3,7 +3,7 @@
 
 #include <effect.h>
 
-
+#include "Params/sliderparam.h"
 
 class EchoEffect1 : public Effect
 {
@@ -13,6 +13,8 @@ public:
     void applyEffect(char *in, char *out, int readLength);
 
 private:
+    SliderParam lenParam;
+
     QByteArray effectBuffer;
     int effectBufferpt;
     int len;

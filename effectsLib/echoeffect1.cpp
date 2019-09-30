@@ -2,8 +2,11 @@
 
 #include <QtDebug>
 
-EchoEffect1::EchoEffect1()
+EchoEffect1::EchoEffect1() : lenParam(1000, 10000, 50000)
 {
+    effectName = "Echo Effect 1";
+    parameters.append(lenParam);
+
     len = 50000;
     effectBuffer = QByteArray(len, 0);
 

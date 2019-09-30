@@ -3,14 +3,20 @@
 
 #include <QWidget>
 
-//UI Element of Effect. Not much to be done here, kid.
+#include "Params/parameter.h"
+
 class Effect
 {
 public:
     Effect();
 
     virtual void applyEffect(char* in, char* out, int readLength){}
+    QString effectName = "default effect";
 
+    QList<Parameter>* getParamList() {return &parameters;}
+
+protected:
+    QList<Parameter> parameters;
 };
 
 #endif // EFFECT_H
