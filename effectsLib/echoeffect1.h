@@ -7,17 +7,24 @@
 
 class EchoEffect1 : public Effect
 {
+    Q_OBJECT
 public:
-    EchoEffect1();
+    explicit EchoEffect1(QObject *parent = nullptr);
 
     void applyEffect(char *in, char *out, int readLength);
 
 private:
-    SliderParam lenParam;
+    SliderParam* lenParam;
 
     QByteArray effectBuffer;
     int effectBufferpt;
     int len;
+
+    void resizeBuffer(int newSize);
+
+public slots:
+    void changeLen(int value);
+
 };
 
 #endif // ECHOEFFECT1_H

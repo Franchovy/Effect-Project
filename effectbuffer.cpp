@@ -14,32 +14,32 @@ EffectBuffer::EffectBuffer()
 }
 
 qint64 EffectBuffer::readData(char* data, qint64 maxlen){
+    Q_ASSERT(static_cast<int>(maxlen) == maxlen); //check that conversion isn't fucking things up
     int readLength = qMin(static_cast<int>(maxlen), buffer.length());
-    //qDebug() << "Maxlen: " << maxlen << ", readLength: " << readLength;
-    //  can chopped data be const? linear time -> constant time (?)
 
     applyEffect(buffer.data(), data, readLength);
 
-    //memcpy(data, buffer.data(), static_cast<size_t>(readLength));
     buffer.remove(0, readLength);
 
     return readLength;
 }
+
 qint64 EffectBuffer::writeData(const char* data, qint64 maxlen){
     if(maxlen > (buffer.capacity() + buffer.size())){
         //  Increase buffer capacity to new maximum.
         qint64 newCap = buffer.size() + maxlen;
         //qDebug() << "Extending size to: " << newCap;
-        buffer.reserve(newCap);
+        Q_ASSERT(static_cast<int>(newCap) == newCap);
+        buffer.reserve(static_cast<int>(newCap)); //check that conversion isn't fucking things up
+
     }
 
+    Q_ASSERT(static_cast<int>(maxlen) == maxlen); //check that conversion isn't fucking things up
     buffer.append(data, static_cast<int>(maxlen));
     return maxlen;
 }
 
 void EffectBuffer::applyEffect(char* in, char* out, int readLength){
-    //Apply effects here:
-
     for (Effect* e : effectChain){
         e->applyEffect(in, out, readLength);
     }

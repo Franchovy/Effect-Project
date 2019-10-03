@@ -1,6 +1,6 @@
 #include "parameter.h"
 
-Parameter::Parameter()
+Parameter::Parameter(QObject *parent) : QObject(parent)
 {
 
 }

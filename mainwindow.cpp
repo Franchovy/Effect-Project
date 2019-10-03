@@ -48,8 +48,8 @@ void MainWindow::reloadEffectChainUI()
 
         ui->effectGrid->addWidget(frame, i/8, i%8);
 
-        for (Parameter p : *(e->getParamList())){
-            QWidget* w = p.getWidget();
+        for (Parameter* p : *(e->getParamList())){
+            QWidget* w = p->getWidget();
             layout->addWidget(w);
         }
         i++;

@@ -7,14 +7,18 @@
 
 class SliderParam : public Parameter
 {
+    Q_OBJECT
 public:
-    SliderParam(int min, int max, int val);
+    explicit SliderParam(int min, int max, int val, QObject* parent = nullptr);
 
     QSlider* getWidget();
 
 private:
     int min, max, val;
     QSlider* widget;
+
+signals:
+    void valueChanged(int newValue);
 
 };
 

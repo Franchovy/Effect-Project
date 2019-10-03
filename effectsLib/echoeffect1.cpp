@@ -2,21 +2,18 @@
 
 #include <QtDebug>
 
-EchoEffect1::EchoEffect1() : lenParam(1000, 10000, 50000)
+EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
 {
     effectName = "Echo Effect 1";
+    len = 1000;
+    lenParam = new SliderParam(1000, 100000, len);
+    QObject::connect(lenParam, &SliderParam::valueChanged, this, &EchoEffect1::changeLen);
     parameters.append(lenParam);
 
-    len = 50000;
     effectBuffer = QByteArray(len, 0);
-
     effectBufferpt = 1;
 
-    if (effectBuffer.length() < len) {
-        qDebug() << "Resizing buffer";
-        effectBuffer.resize(len);
-        effectBuffer.fill(0);
-    }
+    resizeBuffer(len);
 }
 
 void EchoEffect1::applyEffect(char *in, char *out, int readLength){
@@ -29,4 +26,16 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
             effectBufferpt = 1;
         }
     }
+}
+
+void EchoEffect1::resizeBuffer(int newSize){
+    len = newSize;
+    //qDebug() << "Resizing buffer";
+    effectBuffer.resize(newSize);
+    effectBuffer.fill(0);
+}
+
+void EchoEffect1::changeLen(int value)
+{
+    resizeBuffer(value);
 }
