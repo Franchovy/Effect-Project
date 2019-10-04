@@ -7,11 +7,13 @@ class Parameter : public QObject
 {
     Q_OBJECT
 public:
-    explicit Parameter(QObject* parent = nullptr);
+    explicit Parameter(QString name, QObject* parent = nullptr);
 
-    virtual QWidget* getWidget() {return widget;}
+    virtual QWidget* getWidget();
 
+    QString getName(){return name;}
 private:
+    QString name;
     QWidget* widget;
 };
 

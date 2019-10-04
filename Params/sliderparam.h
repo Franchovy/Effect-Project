@@ -9,7 +9,7 @@ class SliderParam : public Parameter
 {
     Q_OBJECT
 public:
-    explicit SliderParam(int min, int max, int val, QObject* parent = nullptr);
+    explicit SliderParam(int min, int max, int val, QString name, QObject* parent = nullptr);
 
     QSlider* getWidget();
 

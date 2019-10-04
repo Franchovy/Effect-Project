@@ -50,6 +50,7 @@ void MainWindow::reloadEffectChainUI()
 
         for (Parameter* p : *(e->getParamList())){
             QWidget* w = p->getWidget();
+
             layout->addWidget(w);
         }
         i++;

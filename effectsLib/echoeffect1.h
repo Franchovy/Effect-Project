@@ -15,10 +15,13 @@ public:
 
 private:
     SliderParam* lenParam;
+    int len;
+
+    SliderParam* delayParam;
+    int delayVal;
 
     QByteArray effectBuffer;
     int effectBufferpt;
-    int len;
 
     void resizeBuffer(int newSize);
 
