@@ -22,6 +22,7 @@ SOURCES += \
     effect.cpp \
     effectbuffer.cpp \
     effectsLib/echoeffect1.cpp \
+    effectsLib/fuzzeffect.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -32,6 +33,7 @@ HEADERS += \
     effect.h \
     effectbuffer.h \
     effectsLib/echoeffect1.h \
+    effectsLib/fuzzeffect.h \
     mainwindow.h
 
 FORMS += \

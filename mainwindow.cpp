@@ -3,6 +3,7 @@
 
 #include <QFrame>
 #include <QGroupBox>
+#include "effectsLib/fuzzeffect.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     reloadEffectChainUI();
 
     connect(ui->newEffectButton, &QPushButton::pressed, [this](){ //Wow! Check out this totally PRO lambda-expression!
-        Effect* e = new EchoEffect1();
+        Effect* e = new FuzzEffect();
         audio->getEffectBuffer()->addEffect(e);
         reloadEffectChainUI();
                 });
