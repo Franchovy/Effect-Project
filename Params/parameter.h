@@ -3,11 +3,12 @@
 
 #include <QWidget>
 
+
 class Parameter : public QObject
 {
     Q_OBJECT
 public:
-    explicit Parameter(QString name, QObject* parent = nullptr);
+    explicit Parameter(QObject* parent);
 
     virtual QWidget* getWidget();
 

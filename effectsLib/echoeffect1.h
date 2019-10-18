@@ -14,20 +14,17 @@ public:
     void applyEffect(char *in, char *out, int readLength);
 
 private:
-    SliderParam* lenParam;
+    SliderParam* lenParam = nullptr;
     int len;
 
-    SliderParam* delayParam;
+    SliderParam* delayParam = nullptr;
     int delayVal;
+    double delayOpVal;
 
     QByteArray effectBuffer;
     int effectBufferpt;
 
     void resizeBuffer(int newSize);
-
-public slots:
-    void changeLen(int value);
-
 };
 
 #endif // ECHOEFFECT1_H

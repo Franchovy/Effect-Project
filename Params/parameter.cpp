@@ -1,8 +1,8 @@
 #include "parameter.h"
 
-Parameter::Parameter(QString name, QObject *parent) : QObject(parent)
+Parameter::Parameter(QObject *parent) : QObject(parent)
 {
-    this->name = name;
+    //WARNING: QObject should always be of type Effect. How to enforce this?
 }
 
 QWidget *Parameter::getWidget() {

@@ -22,6 +22,7 @@ SOURCES += \
     effect.cpp \
     effectbuffer.cpp \
     effectsLib/echoeffect1.cpp \
+    effectsLib/flangereffect.cpp \
     effectsLib/fuzzeffect.cpp \
     main.cpp \
     mainwindow.cpp
@@ -33,8 +34,12 @@ HEADERS += \
     effect.h \
     effectbuffer.h \
     effectsLib/echoeffect1.h \
+    effectsLib/flangereffect.h \
     effectsLib/fuzzeffect.h \
     mainwindow.h
+
+INCLUDEPATH += \
+    fft-real/
 
 FORMS += \
     mainwindow.ui

@@ -9,8 +9,8 @@ EffectBuffer::EffectBuffer()
 
     effectChain = QList<Effect*>();
 
-    EchoEffect1* echoeffect = new EchoEffect1();
-    effectChain.append(echoeffect);
+    //EchoEffect1* echoeffect = new EchoEffect1();
+    //effectChain.append(echoeffect);
 }
 
 qint64 EffectBuffer::readData(char* data, qint64 maxlen){

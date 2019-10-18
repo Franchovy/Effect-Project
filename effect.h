@@ -5,6 +5,8 @@
 #include <QWidget>
 
 #include "Params/parameter.h"
+#include "Params/sliderparam.h"
+
 
 class Effect : public QObject
 {
@@ -20,6 +22,9 @@ public:
 
 protected:
     QList<Parameter*> parameters;
+    void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
+    SliderParam* addSliderParameter(QString name, int min, int max, int val);
+
 };
 
 #endif // EFFECT_H

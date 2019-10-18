@@ -1,8 +1,9 @@
 #include "sliderparam.h"
 
 #include <QToolTip>
+#include <effect.h>
 
-SliderParam::SliderParam(int min, int max, int val, QString name, QObject *parent) : Parameter(name, parent)
+SliderParam::SliderParam(int min, int max, int val, QObject *parent) : Parameter(parent)
 {   
     this->min = min;
     this->max = max;
@@ -12,7 +13,7 @@ SliderParam::SliderParam(int min, int max, int val, QString name, QObject *paren
     widget->setMinimum(min);
     widget->setMaximum(max);
     widget->setValue(val);
-    widget->setToolTip(name);
+    widget->setToolTip(this->objectName());
 
     QObject::connect(widget, &QSlider::sliderMoved, [this](int val){
         widget->setToolTip(getName().append(" = ").append(QString::number(val)));

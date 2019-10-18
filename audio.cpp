@@ -12,17 +12,17 @@ Audio::Audio()
     int inSelect = 0;
     int outSelect = 0;
 
-    qDebug() << "Input Devices list: ";
+    //qDebug() << "Input Devices list: ";
     for (int i = 0; i < inDevices.length(); i++){
-        qDebug() << inDevices.at(i).deviceName();
+        //qDebug() << inDevices.at(i).deviceName();
         // test with pulse
         if (inDevices.at(i).deviceName() == "alsa_input.usb-0d8c_C-Media_USB_Headphone_Set-00.analog-mono") inSelect = i;
         //alsa_input.usb-0d8c_C-Media_USB_Headphone_Set-00.analog-mono
         //"alsa_input.pci-0000_00_1f.3.analog-stereo"
     }
-    qDebug() << "Output Devices list: ";
+    //qDebug() << "Output Devices list: ";
     for (int i = 0; i < outDevices.length(); i++){
-        qDebug() << outDevices.at(i).deviceName();
+        //qDebug() << outDevices.at(i).deviceName();
         // test with pulse
         if (outDevices.at(i).deviceName() == "alsa_output.pci-0000_00_1f.3.analog-stereo") outSelect = i;
     }
@@ -46,7 +46,7 @@ Audio::Audio()
     format.setSampleSize(24);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleSize(QAudioFormat::UnSignedInt);
+    format.setSampleSize(QAudioFormat::SignedInt);
 
     format = inputDevice.nearestFormat(format);
     format = outputDevice.nearestFormat(format);

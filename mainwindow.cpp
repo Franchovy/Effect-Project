@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     reloadEffectChainUI();
 
     connect(ui->newEffectButton, &QPushButton::pressed, [this](){ //Wow! Check out this totally PRO lambda-expression!
-        Effect* e = new FuzzEffect();
+        Effect* e = new EchoEffect1();
         audio->getEffectBuffer()->addEffect(e);
         reloadEffectChainUI();
                 });
