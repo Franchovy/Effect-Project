@@ -41,7 +41,9 @@ qint64 EffectBuffer::writeData(const char* data, qint64 maxlen){
 
 void EffectBuffer::applyEffect(char* in, char* out, int readLength){
     for (Effect* e : effectChain){
+        qDebug() << "Applying: " << e->effectName;
         e->applyEffect(in, out, readLength);
+        memcpy(in,out,readLength);
     }
 }
 

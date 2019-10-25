@@ -9,6 +9,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -24,5 +25,12 @@ private:
 
     Audio* audio;
 
+    void populateSelectEffects();
+    QList<QString> effectList;
+    int newEffectType;
+
+    void createEffect();
+private slots:
+    void effectsSelectIndexChanged(int index);
 };
 #endif // MAINWINDOW_H

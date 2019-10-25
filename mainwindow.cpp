@@ -1,26 +1,30 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
 #include "effectsLib/fuzzeffect.h"
+#include "effectsLib/paneffect.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
 
+    // UI SETUP
     ui->setupUi(this);
+
+    populateSelectEffects();
+    ui->effectsSelect->setEditText("Select Effect");
+    connect(ui->effectsSelect, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::effectsSelectIndexChanged);
 
     audio = new Audio(); //init
 
     reloadEffectChainUI();
 
-    connect(ui->newEffectButton, &QPushButton::pressed, [this](){ //Wow! Check out this totally PRO lambda-expression!
-        Effect* e = new EchoEffect1();
-        audio->getEffectBuffer()->addEffect(e);
-        reloadEffectChainUI();
-                });
+    connect(ui->newEffectButton, &QPushButton::pressed, this, &MainWindow::createEffect);
+
     connect(ui->runButton, &QPushButton::pressed, audio, &Audio::runAudio);
 }
 
@@ -58,3 +62,33 @@ void MainWindow::reloadEffectChainUI()
     }
 }
 
+void MainWindow::populateSelectEffects(){
+    effectList.append("Echo");
+    effectList.append("Pan");
+    effectList.append("Fuzz");
+    ui->effectsSelect->insertItems(0, effectList);
+    //ui->effectsSelect->setItemText(0, "Select Effect");
+}
+
+void MainWindow::effectsSelectIndexChanged(int index){
+    newEffectType = index;
+}
+
+void MainWindow::createEffect(){
+    Effect* e;
+    switch(newEffectType){
+    case 0:
+        e = new EchoEffect1();
+        break;
+    case 1:
+        e = new PanEffect();
+        break;
+    case 2:
+        e = new FuzzEffect();
+        break;
+    default:
+        e = new Effect(); // useless default effect
+    }
+    audio->getEffectBuffer()->addEffect(e);
+    reloadEffectChainUI();
+}

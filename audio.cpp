@@ -51,6 +51,8 @@ Audio::Audio()
     format = inputDevice.nearestFormat(format);
     format = outputDevice.nearestFormat(format);
 
+    qDebug() << format.bytesForDuration(1000000) << " bytes per second.";
+
     inputAudio = new QAudioInput(inputDevice, format, this);
     outputAudio = new QAudioOutput(outputDevice, format, this);
     //inputAudio = new QAudioInput(format);   <--  this works.

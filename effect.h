@@ -7,6 +7,18 @@
 #include "Params/parameter.h"
 #include "Params/sliderparam.h"
 
+// DEFINE EFFECTS HERE
+//TODO find out how to join everything up under struct/typedef
+//so it's all defined in one place.
+
+// Link to classes in creation switch-statement.
+enum EffectTypes
+{
+    echo1 = 0,
+    fuzz,
+    pan,
+    end
+};
 
 class Effect : public QObject
 {

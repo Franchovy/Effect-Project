@@ -24,6 +24,7 @@ SOURCES += \
     effectsLib/echoeffect1.cpp \
     effectsLib/flangereffect.cpp \
     effectsLib/fuzzeffect.cpp \
+    effectsLib/paneffect.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -36,6 +37,7 @@ HEADERS += \
     effectsLib/echoeffect1.h \
     effectsLib/flangereffect.h \
     effectsLib/fuzzeffect.h \
+    effectsLib/paneffect.h \
     mainwindow.h
 
 INCLUDEPATH += \
