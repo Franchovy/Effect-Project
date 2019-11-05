@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "effect.h"
 #include "audio.h"
+#include "settingsdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,12 +26,15 @@ private:
 
     Audio* audio;
 
+    SettingsDialog *m_settingsDialog;
+
     void populateSelectEffects();
     QList<QString> effectList;
-    int newEffectType;
+    int newEffectType = 0;
 
     void createEffect();
 private slots:
     void effectsSelectIndexChanged(int index);
+    void showSettingsDialog();
 };
 #endif // MAINWINDOW_H

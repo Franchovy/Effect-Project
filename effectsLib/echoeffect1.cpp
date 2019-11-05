@@ -26,7 +26,7 @@ EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
 void EchoEffect1::applyEffect(char *in, char *out, int readLength){
     for (int i = 0; i < readLength; i += 1){
 
-        effectBuffer[effectBufferpt-1] = in[i] + (effectBuffer[effectBufferpt] / static_cast<float>(delayVal));// / delayVal);//* delayOpVal);
+        effectBuffer[effectBufferpt-1] = (0x00ff & in[i]) + (0x00ff & static_cast<char>(effectBuffer[effectBufferpt] / static_cast<float>(delayVal)));
         out[i] = effectBuffer[effectBufferpt];//effectBuffer[effectBufferpt];
 
         effectBufferpt += 1;

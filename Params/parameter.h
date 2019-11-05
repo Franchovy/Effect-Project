@@ -3,17 +3,20 @@
 
 #include <QWidget>
 
+QT_BEGIN_NAMESPACE
+class Effect;
+QT_END_NAMESPACE
 
 class Parameter : public QObject
 {
     Q_OBJECT
 public:
-    explicit Parameter(QObject* parent);
+    explicit Parameter(Effect* parent);
 
-    virtual QWidget* getWidget();
+    QWidget* getWidget();
 
     QString getName(){return name;}
-private:
+protected:
     QString name;
     QWidget* widget;
 };

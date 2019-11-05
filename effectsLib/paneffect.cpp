@@ -6,9 +6,12 @@ PanEffect::PanEffect()
 {
     effectName = "Pan Effect";
 
-    speedParam = addSliderParameter("Speed", 1, 10, 3);
+    speedParam = addSliderParameter("Speed", 1, 1000, 10);
     QObject::connect(speedParam, &SliderParam::valueChanged, [this](int value){
-        speed = value;
+        panspeedtest = value * 100;
+        if (pancount <= panspeedtest) pancount = 1;
+        panVal = static_cast<double>(pancount) / (panspeedtest / 2);
+
     });
 }
 
@@ -52,6 +55,7 @@ void PanEffect::applyEffect(char *in, char *out, int readLength)
         pancount ++;
         stereocount += 2;
         if (stereocount == 4) stereocount = 0;
+
 
         panVal = static_cast<double>(pancount) / (panspeedtest / 2);
         //qDebug() << panVal;

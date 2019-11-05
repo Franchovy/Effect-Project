@@ -26,7 +26,9 @@ SOURCES += \
     effectsLib/fuzzeffect.cpp \
     effectsLib/paneffect.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    port.cpp \
+    settingsdialog.cpp
 
 HEADERS += \
     Params/parameter.h \
@@ -38,7 +40,9 @@ HEADERS += \
     effectsLib/flangereffect.h \
     effectsLib/fuzzeffect.h \
     effectsLib/paneffect.h \
-    mainwindow.h
+    mainwindow.h \
+    port.h \
+    settingsdialog.h
 
 INCLUDEPATH += \
     fft-real/

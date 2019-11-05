@@ -10,22 +10,23 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , audio(new Audio())
+    , m_settingsDialog(new SettingsDialog(
+                           audio->availableAudioInputDevices(),
+                           audio->availableAudioOutputDevices(),
+                           this))
 {
-
     // UI SETUP
     ui->setupUi(this);
 
     populateSelectEffects();
     ui->effectsSelect->setEditText("Select Effect");
     connect(ui->effectsSelect, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::effectsSelectIndexChanged);
-
-    audio = new Audio(); //init
-
     reloadEffectChainUI();
 
     connect(ui->newEffectButton, &QPushButton::pressed, this, &MainWindow::createEffect);
-
     connect(ui->runButton, &QPushButton::pressed, audio, &Audio::runAudio);
+    connect(ui->settings, &QPushButton::clicked, this, &MainWindow::showSettingsDialog);
 }
 
 
@@ -34,31 +35,30 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::showSettingsDialog()
+{
+    m_settingsDialog->exec();
+    if (m_settingsDialog->result() == QDialog::Accepted) {
+        audio->setInputDevice(m_settingsDialog->inputDevice());
+        audio->setOutputDevice(m_settingsDialog->outputDevice());
+    }
+}
 
 void MainWindow::reloadEffectChainUI()
 {
-    QList<Effect*>* effectsChain = audio->getEffectChain();
+    for (Effect* e : *audio->getEffectChain()){
+        if (!e->isUIGenerated()){
+            ui->effectGrid->addWidget(e->generateUI());
+            connect(e,&Effect::destroyed,[=](){
+                //Remove remaining stuff (UI, all ptrs)
+                audio->removeEffect(e);
+                ui->effectGrid->removeWidget(e->getUI());
+                e->getUI()->deleteLater(); //Should not have to do this?
+                ui->effectGrid->update();
 
-    QGroupBox* frame;
-    //for (int i = 0; i < effectsChain->length(); i++){
-    int i = 0;
-    for (Effect* e : *effectsChain){
-        frame = new QGroupBox();
-        frame->setTitle(effectsChain->at(i)->effectName);
-
-        QVBoxLayout* layout = new QVBoxLayout();
-        layout->setGeometry(QRect(15+(i%8)*120, 15+(i/8)*120, 100, 100));
-
-        frame->setLayout(layout);
-
-        ui->effectGrid->addWidget(frame, i/8, i%8);
-
-        for (Parameter* p : *(e->getParamList())){
-            QWidget* w = p->getWidget();
-
-            layout->addWidget(w);
+                reloadEffectChainUI();
+            });
         }
-        i++;
     }
 }
 

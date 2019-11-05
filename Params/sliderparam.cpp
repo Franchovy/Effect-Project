@@ -1,33 +1,32 @@
 #include "sliderparam.h"
 
 #include <QToolTip>
+#include <QSlider>
 #include <effect.h>
+#include <QGroupBox>
+#include <QDebug>
 
-SliderParam::SliderParam(int min, int max, int val, QObject *parent) : Parameter(parent)
+SliderParam::SliderParam(int min, int max, int val, Effect *parent) : Parameter(parent)
 {   
     this->min = min;
     this->max = max;
     this->val = val;
 
-    widget = new QSlider();
-    widget->setMinimum(min);
-    widget->setMaximum(max);
-    widget->setValue(val);
-    widget->setToolTip(this->objectName());
+    sliderWidget = new QSlider(parent->getUI());
+    sliderWidget->setMinimum(min);
+    sliderWidget->setMaximum(max);
+    sliderWidget->setValue(val);
+    sliderWidget->setToolTip(this->objectName());
+    widget = sliderWidget;
 
-    QObject::connect(widget, &QSlider::sliderMoved, [this](int val){
-        widget->setToolTip(getName().append(" = ").append(QString::number(val)));
-        QToolTip::showText( widget->mapToGlobal( QPoint( 0, 0 ) ),  widget->toolTip());
+    QObject::connect(sliderWidget, &QSlider::sliderMoved, [this](int val){
+        sliderWidget->setToolTip(getName().append(" = ").append(QString::number(val)));
+        QToolTip::showText(sliderWidget->mapToGlobal( QPoint( 0, 0 ) ),  sliderWidget->toolTip());
     });
 
-    QObject::connect(widget, &QSlider::sliderReleased, [this](){
-        widget->setToolTip(getName());
-        emit this->valueChanged(widget->value());
+    QObject::connect(sliderWidget, &QSlider::sliderReleased, [this](){
+        sliderWidget->setToolTip(getName());
+        emit this->valueChanged(sliderWidget->value());
     });
-}
-
-QSlider* SliderParam::getWidget()
-{
-    return widget;
 }
 
