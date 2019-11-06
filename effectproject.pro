@@ -27,7 +27,9 @@ SOURCES += \
     effectsLib/paneffect.cpp \
     main.cpp \
     mainwindow.cpp \
-    port.cpp \
+    ports/inport.cpp \
+    ports/outport.cpp \
+    ports/port.cpp \
     settingsdialog.cpp
 
 HEADERS += \
@@ -41,7 +43,9 @@ HEADERS += \
     effectsLib/fuzzeffect.h \
     effectsLib/paneffect.h \
     mainwindow.h \
-    port.h \
+    ports/inport.h \
+    ports/outport.h \
+    ports/port.h \
     settingsdialog.h
 
 INCLUDEPATH += \
