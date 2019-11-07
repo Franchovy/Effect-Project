@@ -2,8 +2,14 @@
 
 #include <QDebug>
 #include <QGroupBox>
+#include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QPushButton>
+#include <QComboBox>
+#include "ports/inport.h"
+#include "ports/outport.h"
+
 
 Effect::Effect(QObject* parent) : QObject(parent)
 {
@@ -37,9 +43,26 @@ QGroupBox* Effect::generateUI()
         deleteLater();
     });
 
-    // Input/output port comboBoxes
 
-    bUIGenerated = true;
+    // Input/output port comboBoxes
+    QVBoxLayout* portSelectLayout = new QVBoxLayout();
+    layout->addLayout(portSelectLayout);
+
+
+    portSelectLayout->addWidget(new QLabel("InPort"));
+    InPort *inP;
+    foreach (inP, inPortList) {
+        portSelectLayout->addWidget(new QLabel(inP->getName()));
+        portSelectLayout->addWidget(inP->getConnectionSelect());
+    }
+
+    portSelectLayout->addWidget(new QLabel("OutPort"));
+    OutPort *outP;
+    foreach (outP, outPortList) {
+        portSelectLayout->addWidget(new QLabel(outP->getName()));
+        portSelectLayout->addWidget(outP->getConnectionSelect());
+    }
+
     return frame;
 }
 

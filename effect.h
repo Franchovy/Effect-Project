@@ -8,6 +8,9 @@
 #include "Params/sliderparam.h"
 
 QT_BEGIN_NAMESPACE
+class InPort;
+class OutPort;
+class QComboBox;
 class QGroupBox;
 class QPushButton;
 QT_END_NAMESPACE
@@ -31,7 +34,6 @@ class Effect : public QObject
 public:
     explicit Effect(QObject *parent = nullptr);
 
-
     virtual void applyEffect(char* in, char* out, int readLength);
     QString effectName = "default effect";
 
@@ -46,6 +48,9 @@ protected:
     QList<Parameter*> parameters;
     void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
     SliderParam* addSliderParameter(QString name, int min, int max, int val);
+
+    QList<InPort*> inPortList;
+    QList<OutPort*> outPortList;
 
 private:
     QGroupBox* frame = nullptr;

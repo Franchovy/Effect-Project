@@ -16,6 +16,7 @@ public:
     InPort(QString name, Effect* parent);
     static QList<InPort*>* getInPortList(){return inportList;}
 
+
 private:
     static QList<InPort*>* inportList;
     // Port interface

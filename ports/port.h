@@ -16,6 +16,8 @@ public:
 
     Port* getConnectedPort() {return connectedPort;}
 
+    QComboBox* getConnectionSelect(){return connectionSelect;}
+
     QString getName(){return portName;}
 protected:
     Port* connectedPort = nullptr;
