@@ -3,7 +3,11 @@
 
 #include <effect.h>
 
-#include "Params/sliderparam.h"
+QT_BEGIN_NAMESPACE
+class SliderParam;
+class InPort;
+class OutPort;
+QT_END_NAMESPACE
 
 class EchoEffect1 : public Effect
 {
@@ -11,7 +15,9 @@ class EchoEffect1 : public Effect
 public:
     explicit EchoEffect1(QObject *parent = nullptr);
 
-    void applyEffect(char *in, char *out, int readLength);
+    void applyEffect(char *in, char *out, int readLength) override;
+
+    char * getData() override;
 
 private:
     SliderParam* lenParam = nullptr;
@@ -20,6 +26,9 @@ private:
     SliderParam* delayParam = nullptr;
     int delayVal;
     double delayOpVal;
+
+    InPort *inPort;
+    OutPort *outPort;
 
     QByteArray effectBuffer;
     int effectBufferpt;

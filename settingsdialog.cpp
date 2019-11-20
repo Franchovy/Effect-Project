@@ -1,18 +1,23 @@
 #include "settingsdialog.h"
 
+#include <QDebug>
 #include <QComboBox>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include "audio.h"
 
 SettingsDialog::SettingsDialog(
-        const QList<QAudioDeviceInfo> &availableInputDevices,
-        const QList<QAudioDeviceInfo> &availableOutputDevices,
+        Audio &audio,
         QWidget *parent) : QDialog(parent)
       , m_inputDeviceComboBox(new QComboBox(this))
       , m_outputDeviceComboBox(new QComboBox(this))
 {
+    this->audio = &audio;
+    const QList<QAudioDeviceInfo> &availableInputDevices = audio.availableAudioInputDevices();
+    const QList<QAudioDeviceInfo> &availableOutputDevices = audio.availableAudioOutputDevices();
+
     QVBoxLayout *dialogLayout = new QVBoxLayout(this);
     dialogLayout->setSpacing(2);
 
@@ -68,15 +73,17 @@ SettingsDialog::SettingsDialog(
 
 SettingsDialog::~SettingsDialog()
 {
-
 }
 
 void SettingsDialog::inputDeviceChanged(int index)
 {
     m_inputDevice = m_inputDeviceComboBox->itemData(index).value<QAudioDeviceInfo>();
+    audio->setInputDevice(m_inputDevice);
 }
 
 void SettingsDialog::outputDeviceChanged(int index)
 {
+    qDebug() << "Set output device - settings dialog";
     m_outputDevice = m_outputDeviceComboBox->itemData(index).value<QAudioDeviceInfo>();
+    audio->setOutputDevice(m_outputDevice);
 }

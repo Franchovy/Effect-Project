@@ -6,6 +6,7 @@
 
 QT_BEGIN_NAMESPACE
 class InPort;
+class Effect;
 class QComboBox;
 QT_END_NAMESPACE
 
@@ -14,14 +15,17 @@ class OutPort : public Port
     Q_OBJECT
 public:
     OutPort(QString name, Effect* parent);
+    ~OutPort() override;
     static QList<OutPort*>* getOutPortList(){return outportList;}
+
+    char* getData() override;
 
 private:
     static QList<OutPort*>* outportList;
+    Effect* parent;
 
-    // Port interface
-protected:
-    char *getData() override;
+public slots:
+    void updateConnectionSelect();
 };
 
 

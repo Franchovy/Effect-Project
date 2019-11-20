@@ -24,6 +24,8 @@ SOURCES += \
     effectsLib/echoeffect1.cpp \
     effectsLib/flangereffect.cpp \
     effectsLib/fuzzeffect.cpp \
+    effectsLib/inputeffect.cpp \
+    effectsLib/outputeffect.cpp \
     effectsLib/paneffect.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -41,6 +43,8 @@ HEADERS += \
     effectsLib/echoeffect1.h \
     effectsLib/flangereffect.h \
     effectsLib/fuzzeffect.h \
+    effectsLib/inputeffect.h \
+    effectsLib/outputeffect.h \
     effectsLib/paneffect.h \
     mainwindow.h \
     ports/inport.h \

@@ -9,6 +9,23 @@ Port::Port(QString name, Effect *parent) : QObject(parent)
     portName = name;
 }
 
+bool Port::isConnectedPortSet()
+{
+    if (connectedPort != nullptr){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void Port::setConnectedPort(Port *port)
+{
+    if (!isConnectedPortSet()){
+        connectedPort = port;
+        port->setConnectedPort(this);
+    }
+}
+
 char *Port::getData()
 {
     return nullptr;

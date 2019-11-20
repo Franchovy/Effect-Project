@@ -14,14 +14,17 @@ class InPort : public Port
     Q_OBJECT
 public:
     InPort(QString name, Effect* parent);
+    ~InPort() override;
     static QList<InPort*>* getInPortList(){return inportList;}
 
+    char *getData() override;
 
 private:
     static QList<InPort*>* inportList;
-    // Port interface
-protected:
-    char *getData() override;
+
+
+public slots:
+    void updateConnectionSelect();
 };
 
 

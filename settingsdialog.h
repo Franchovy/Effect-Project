@@ -5,6 +5,7 @@
 #include <QAudioDeviceInfo>
 
 QT_BEGIN_NAMESPACE
+class Audio;
 class QComboBox;
 class QDialogButtonBox;
 class QPushButton;
@@ -14,8 +15,7 @@ QT_END_NAMESPACE
 class SettingsDialog : public QDialog
 {
 public:
-    SettingsDialog(const QList<QAudioDeviceInfo> &availableInputDevices,
-                   const QList<QAudioDeviceInfo> &availableOutputDevices,
+    SettingsDialog(Audio &audio,
                    QWidget *parent = nullptr);
     ~SettingsDialog();
 
@@ -27,6 +27,8 @@ private slots:
     void outputDeviceChanged(int index);
 
 private:
+    Audio *audio;
+
     QAudioDeviceInfo m_inputDevice;
     QAudioDeviceInfo m_outputDevice;
 

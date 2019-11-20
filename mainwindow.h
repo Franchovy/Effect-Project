@@ -2,9 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "effect.h"
-#include "audio.h"
-#include "settingsdialog.h"
+
+QT_BEGIN_NAMESPACE
+class Effect;
+class Audio;
+class SettingsDialog;
+QT_END_NAMESPACE
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

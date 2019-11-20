@@ -3,18 +3,22 @@
 
 #include <QObject>
 #include <QIODevice>
-#include <QDebug>
-#include <QtMath>
-#include <QAudioBuffer>
 
-
-#include <effectsLib/echoeffect1.h>
-
+QT_BEGIN_NAMESPACE
+class Effect;
+class InPort;
+class InputEffect;
+class OutPort;
+class OutputEffect;
+class QtMath;
+class QDebug;
+class QAudioBuffer;
+QT_END_NAMESPACE
 
 class EffectBuffer : public QIODevice
 {
 public:
-    EffectBuffer();
+    EffectBuffer(InputEffect *inputEffect, OutputEffect *outputEffect);
     Q_OBJECT
 
     qint64 readData(char* data, qint64 maxlen) override;
@@ -30,9 +34,12 @@ private:
     qint64 bufferUsed;
     qint64 bufferCurrent;
 
+    //Old implementation
     QList<Effect*> effectChain;
 
-    EchoEffect1 echoeffect;
+    //New implementation
+    InputEffect* inputEffect;
+    OutputEffect* outputEffect;
 
     void applyEffect(char* in, char* out, int readLength);
 

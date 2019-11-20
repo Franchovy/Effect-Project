@@ -1,24 +1,43 @@
 #include "effectbuffer.h"
 
+#include "ports/inport.h"
+#include "ports/outport.h"
+#include "effectsLib/inputeffect.h"
+#include "effectsLib/outputeffect.h"
+#include "effect.h"
+#include <QDebug>
+#include <QtMath>
+#include <QAudioBuffer>
 
 //TODO sort out conversions!!!
 //TODO sort out multiple instances. Including switching streams etc.
-EffectBuffer::EffectBuffer()
+EffectBuffer::EffectBuffer(InputEffect *inputEffect, OutputEffect *outputEffect)
 {
+    this->inputEffect = inputEffect;
+    this->outputEffect = outputEffect;
+
     buffer = QByteArray();
 
     effectChain = QList<Effect*>();
 
-    //EchoEffect1* echoeffect = new EchoEffect1();
-    //effectChain.append(echoeffect);
+    //Use default input and output for now
+
+
 }
 
+//EffectBuffer (QIODevice) is being asked to read data from whatever. Aka - write to param:data //CHECK
 qint64 EffectBuffer::readData(char* data, qint64 maxlen){
     Q_ASSERT(static_cast<int>(maxlen) == maxlen); //check that conversion isn't fucking things up
     int readLength = qMin(static_cast<int>(maxlen), buffer.length());
-
+//#define OLD_IMPLEMENTATION
+#ifdef OLD_IMPLEMENTATION
+    //Old implementation
     applyEffect(buffer.data(), data, readLength);
-
+#else
+    //New implementation
+    inputEffect->giveData(buffer.data());
+    memcpy(data, outputEffect->getData(),readLength);
+#endif
     buffer.remove(0, readLength);
 
     return readLength;
@@ -46,9 +65,9 @@ void EffectBuffer::removeEffect(Effect *e)
 
 void EffectBuffer::applyEffect(char* in, char* out, int readLength){
     for (Effect* e : effectChain){
-        //qDebug() << "Applying: " << e->effectName;
         e->applyEffect(in, out, readLength);
         memcpy(in,out,readLength);
+
     }
 }
 

@@ -1,10 +1,20 @@
 #include "echoeffect1.h"
 
 #include <QtDebug>
+#include "ports/inport.h"
+#include "ports/outport.h"
+#include "Params/sliderparam.h"
+
 
 EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
+  , inPort(new InPort("Echo In", this))
+  , outPort(new OutPort("Echo Out", this))
 {
     effectName = "Echo Effect 1";
+
+    inPortList.append(inPort);
+    outPortList.append(outPort);
+    //refresh available ports
 
     lenParam = addSliderParameter("Buffer Length", 800, 80000, len = 8000);
     QObject::connect(lenParam, &SliderParam::valueChanged, [this](int value){
@@ -22,7 +32,7 @@ EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
 
     resizeBuffer(len);
 }
-
+//In and Out data buffers
 void EchoEffect1::applyEffect(char *in, char *out, int readLength){
     for (int i = 0; i < readLength; i += 1){
 
@@ -35,6 +45,15 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
         }
     }
 }
+
+char *EchoEffect1::getData()
+{
+    char* data = inPort->getData();
+    Effect::applyEffect(data, -1);
+    return data;
+}
+
+
 
 void EchoEffect1::resizeBuffer(int newSize){
     newSize *= 8;

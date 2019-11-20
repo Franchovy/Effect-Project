@@ -14,19 +14,21 @@ class Port : public QObject
 public:
     explicit Port(QString name, Effect *parent = nullptr);
 
-    Port* getConnectedPort() {return connectedPort;}
+    bool isConnectedPortSet();
+    Port* getConnectedPort();
+    void setConnectedPort(Port* port);
 
     QComboBox* getConnectionSelect(){return connectionSelect;}
+    virtual char* getData();
 
     QString getName(){return portName;}
 protected:
     Port* connectedPort = nullptr;
-    virtual char* getData();
     QString portName;
-
 
     //temporary UI
     QComboBox* connectionSelect;
+
 };
 
 #endif // PORT_H

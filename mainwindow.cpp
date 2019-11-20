@@ -4,16 +4,23 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
+#include <QDebug>
+
+#include "effectsLib/echoeffect1.h"
 #include "effectsLib/fuzzeffect.h"
 #include "effectsLib/paneffect.h"
+
+#include "effect.h"
+#include "audio.h"
+#include "settingsdialog.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , audio(new Audio())
     , m_settingsDialog(new SettingsDialog(
-                           audio->availableAudioInputDevices(),
-                           audio->availableAudioOutputDevices(),
+                           *audio,
                            this))
 {
     // UI SETUP
@@ -49,16 +56,17 @@ void MainWindow::reloadEffectChainUI()
     for (Effect* e : *audio->getEffectChain()){
         if (!e->isUIGenerated()){
             ui->effectGrid->addWidget(e->generateUI());
+
             connect(e,&Effect::destroyed,[=](){
                 //Remove remaining stuff (UI, all ptrs)
                 audio->removeEffect(e);
                 ui->effectGrid->removeWidget(e->getUI());
                 e->getUI()->deleteLater(); //Should not have to do this?
                 ui->effectGrid->update();
-
                 reloadEffectChainUI();
             });
         }
+        e->updatePortConnectionSelects();
     }
 }
 
@@ -89,6 +97,7 @@ void MainWindow::createEffect(){
     default:
         e = new Effect(); // useless default effect
     }
-    audio->getEffectBuffer()->addEffect(e);
+
+    audio->addEffect(e);
     reloadEffectChainUI();
 }

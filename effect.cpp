@@ -24,8 +24,20 @@ void Effect::applyEffect(char *in, char *out, int readLength)
     }
 }
 
+//In and Out data buffers are the same
+void Effect::applyEffect(char *data, int readLength){
+    applyEffect(data, data, readLength);
+}
+
+void Effect::setConnectedPort(Port *port1, Port *port2)
+{
+    // Sets connection both ways.
+    port1->setConnectedPort(port2);
+}
+
 QGroupBox* Effect::generateUI()
 {
+    qDebug() << "Generating UI.";
     frame = new QGroupBox();
     frame->setTitle(effectName);
 
@@ -48,7 +60,6 @@ QGroupBox* Effect::generateUI()
     QVBoxLayout* portSelectLayout = new QVBoxLayout();
     layout->addLayout(portSelectLayout);
 
-
     portSelectLayout->addWidget(new QLabel("InPort"));
     InPort *inP;
     foreach (inP, inPortList) {
@@ -63,6 +74,9 @@ QGroupBox* Effect::generateUI()
         portSelectLayout->addWidget(outP->getConnectionSelect());
     }
 
+
+
+    bUIGenerated = true;
     return frame;
 }
 
@@ -88,10 +102,30 @@ void Effect::addParameter(Parameter *param, QString name)
     parameters.append(param);
 }
 
+//Meant to be the same as "addParameter" but got stuck trying to use child class parameters.
+//TODO try again and make sure it wasn't just a #include problem.
 SliderParam* Effect::addSliderParameter(QString name, int min, int max, int val){
     SliderParam *param = new SliderParam(min, max, val, this);
     param->setObjectName(name);
     parameters.append(param);
 
     return param;
+}
+
+char *Effect::getData()
+{
+    return nullptr;
+}
+
+
+void Effect::updatePortConnectionSelects()
+{
+    InPort *inPort;
+    foreach(inPort, inPortList){
+        inPort->updateConnectionSelect();
+    }
+    OutPort *outPort;
+    foreach(outPort, outPortList){
+        outPort->updateConnectionSelect();
+    }
 }
