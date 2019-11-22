@@ -1,6 +1,7 @@
 #include "audio.h"
 
 #include "effect.h"
+#include "effectmap.h"
 #include "effectbuffer.h"
 #include "effectsLib/inputeffect.h"
 #include "effectsLib/outputeffect.h"
@@ -15,13 +16,23 @@
 
 Audio::Audio(QObject* parent) :
     QObject(parent),
-    inEffect(new InputEffect(this)),
-    outEffect(new OutputEffect(this)),
-    buffer(new EffectBuffer(inEffect, outEffect))
+    m_inEffect(new InputEffect(this)),
+    m_outEffect(new OutputEffect(this)),
+    m_effectMap(new EffectMap(this)),
+    m_buffer(new EffectBuffer(m_inEffect, m_outEffect))
 {
+    //Old implementation
     //Set connection
-    inEffect->setConnectedPort(inEffect->inputDevicePort, outEffect->outputDevicePort);
+    //setConnectedPort(m_inEffect->inputDevicePort, m_outEffect->outputDevicePort);
 
+    //New implementation
+    m_effectMap->addEffect(m_inEffect);
+    m_effectMap->addPort(m_inEffect, m_inEffect->inputDevicePort);
+
+    m_effectMap->addEffect(m_outEffect);
+    m_effectMap->addPort(m_outEffect, m_outEffect->outputDevicePort);
+
+    m_effectMap->connectPorts(m_inEffect->inputDevicePort, m_outEffect->outputDevicePort);
 
     inputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice());
     outputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultOutputDevice());
@@ -29,19 +40,25 @@ Audio::Audio(QObject* parent) :
     setupFormat();
 }
 
-QList<Effect *> *Audio::getEffectChain()
+QList<Effect *> *Audio::getEffectMap()
 {
-    return buffer->getEffectChain();
+    return m_buffer->getEffectChain();
 }
 
 void Audio::addEffect(Effect *e)
 {
-    buffer->addEffect(e);
+    m_effectMap->addEffect(e);
+    /*
+    Port* p;
+    foreach(p, e.getPorts()){
+        m_effectMap->addPort(p);
+    }
+    */
 }
 
 void Audio::removeEffect(Effect* e)
 {
-    buffer->removeEffect(e);
+    m_buffer->removeEffect(e);
 }
 
 
@@ -94,12 +111,12 @@ bool Audio::runAudio()
         qDebug() << "Audio Running!";
         running = true;
 
-        buffer->open(QIODevice::ReadWrite);
+        m_buffer->open(QIODevice::ReadWrite);
 
         //outputAudio->start(inputAudio->start());
 
-        inputAudio->start(buffer);
-        outputAudio->start(buffer);
+        inputAudio->start(m_buffer);
+        outputAudio->start(m_buffer);
 
         qDebug() << inputAudio->state();
         qDebug() << outputAudio->state();

@@ -18,7 +18,7 @@ EffectBuffer::EffectBuffer(InputEffect *inputEffect, OutputEffect *outputEffect)
 
     buffer = QByteArray();
 
-    effectChain = QList<Effect*>();
+    //effectChain = QList<Effect*>();
 
     //Use default input and output for now
 
@@ -35,8 +35,8 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
     applyEffect(buffer.data(), data, readLength);
 #else
     //New implementation
-    inputEffect->giveData(buffer.data());
-    memcpy(data, outputEffect->getData(),readLength);
+    inputEffect->giveData(buffer.data()); //Supply data to effect input
+    memcpy(data, outputEffect->getData(),readLength); //Get data from effect output
 #endif
     buffer.remove(0, readLength);
 
@@ -63,6 +63,7 @@ void EffectBuffer::removeEffect(Effect *e)
     effectChain.removeOne(e);
 }
 
+/*
 void EffectBuffer::applyEffect(char* in, char* out, int readLength){
     for (Effect* e : effectChain){
         e->applyEffect(in, out, readLength);
@@ -70,6 +71,7 @@ void EffectBuffer::applyEffect(char* in, char* out, int readLength){
 
     }
 }
+*/
 
 void EffectBuffer::addEffect(Effect *e)
 {

@@ -42,7 +42,6 @@ public:
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &parameters;}
 
-    void setConnectedPort(Port* port1, Port* port2);
 
     QGroupBox* generateUI();
     bool isUIGenerated();
@@ -51,12 +50,15 @@ public:
     virtual char* getData();
 
 protected:
-    QList<Parameter*> parameters;
-    void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
-    SliderParam* addSliderParameter(QString name, int min, int max, int val);
+    //Depricated
+    void setConnectedPort(Port* port1, Port* port2);
 
     QList<InPort*> inPortList;
     QList<OutPort*> outPortList;
+
+    QList<Parameter*> parameters;
+    void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
+    SliderParam* addSliderParameter(QString name, int min, int max, int val);
 
 private:
     QGroupBox* frame = nullptr;

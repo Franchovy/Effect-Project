@@ -60,7 +60,6 @@ QGroupBox* Effect::generateUI()
     QVBoxLayout* portSelectLayout = new QVBoxLayout();
     layout->addLayout(portSelectLayout);
 
-    portSelectLayout->addWidget(new QLabel("InPort"));
     InPort *inP;
     foreach (inP, inPortList) {
         portSelectLayout->addWidget(new QLabel(inP->getName()));
@@ -73,6 +72,7 @@ QGroupBox* Effect::generateUI()
         portSelectLayout->addWidget(new QLabel(outP->getName()));
         portSelectLayout->addWidget(outP->getConnectionSelect());
     }
+
 
 
 

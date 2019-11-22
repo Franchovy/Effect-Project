@@ -33,10 +33,7 @@ InPort::~InPort()
 
 char *InPort::getData()
 {
-    //ERROR //TODO InPort trying to get data from itself?
     if (connectedPort != nullptr){
-        qDebug() << connectedPort->getName();
-        qDebug() << this->getName();
         return connectedPort->getData();
     } else return nullptr;
 }

@@ -14,7 +14,6 @@ EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
 
     inPortList.append(inPort);
     outPortList.append(outPort);
-    //refresh available ports
 
     lenParam = addSliderParameter("Buffer Length", 800, 80000, len = 8000);
     QObject::connect(lenParam, &SliderParam::valueChanged, [this](int value){
@@ -34,6 +33,14 @@ EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
 }
 //In and Out data buffers
 void EchoEffect1::applyEffect(char *in, char *out, int readLength){
+    qDebug() << "Test";
+    if (readLength == -1){
+        //Calculate readLength searching for /0 char
+        readLength = 0;
+        while (in[readLength] != '\0'){
+            readLength++;
+        }
+    }
     for (int i = 0; i < readLength; i += 1){
 
         effectBuffer[effectBufferpt-1] = (0x00ff & in[i]) + (0x00ff & static_cast<char>(effectBuffer[effectBufferpt] / static_cast<float>(delayVal)));
@@ -49,7 +56,7 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
 char *EchoEffect1::getData()
 {
     char* data = inPort->getData();
-    Effect::applyEffect(data, -1);
+    EchoEffect1::applyEffect(data, data, -1);
     return data;
 }
 

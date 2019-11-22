@@ -21,6 +21,7 @@ SOURCES += \
     audio.cpp \
     effect.cpp \
     effectbuffer.cpp \
+    effectmap.cpp \
     effectsLib/echoeffect1.cpp \
     effectsLib/flangereffect.cpp \
     effectsLib/fuzzeffect.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     audio.h \
     effect.h \
     effectbuffer.h \
+    effectmap.h \
     effectsLib/echoeffect1.h \
     effectsLib/flangereffect.h \
     effectsLib/fuzzeffect.h \

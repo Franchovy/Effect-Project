@@ -6,6 +6,7 @@
 QT_BEGIN_NAMESPACE
 class Effect;
 class EffectBuffer;
+class EffectMap;
 class InPort;
 class InputEffect;
 class OutPort;
@@ -23,11 +24,11 @@ public:
     Q_OBJECT
 
 public:
-    QList<Effect*>* getEffectChain();
+    QList<Effect*>* getEffectMap();
     void addEffect(Effect* e);
     void removeEffect(Effect* e);
 
-    EffectBuffer* getEffectBuffer() {return buffer;}
+    EffectBuffer* getEffectBuffer() {return m_buffer;}
 
     QList<QAudioDeviceInfo> availableAudioInputDevices();
     QList<QAudioDeviceInfo> availableAudioOutputDevices();
@@ -37,10 +38,15 @@ public:
 
 private:
     //Input and output effects are created by default.
-    InputEffect* inEffect;
-    OutputEffect* outEffect;
+    InputEffect* m_inEffect;
+    OutputEffect* m_outEffect;
 
-    EffectBuffer* buffer;
+    EffectMap* m_effectMap;
+
+    InPort* inPort;
+    OutPort* outPort;
+
+    EffectBuffer* m_buffer;
     QAudioDeviceInfo* inputDevice;
     QAudioDeviceInfo* outputDevice;
     QAudioInput* inputAudio;
