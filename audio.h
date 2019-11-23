@@ -24,10 +24,11 @@ public:
     Q_OBJECT
 
 public:
-    QList<Effect*>* getEffectMap();
+    QList<Effect*>* getEffectChain();
     void addEffect(Effect* e);
     void removeEffect(Effect* e);
 
+    EffectMap* getEffectMap() {return m_effectMap;}
     EffectBuffer* getEffectBuffer() {return m_buffer;}
 
     QList<QAudioDeviceInfo> availableAudioInputDevices();

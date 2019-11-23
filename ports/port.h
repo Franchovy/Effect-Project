@@ -18,10 +18,14 @@ public:
     Port* getConnectedPort();
     void setConnectedPort(Port* port);
 
+    void setupConnectionSelect(QList<Port*> selectList);
     QComboBox* getConnectionSelect(){return connectionSelect;}
     virtual char* getData();
 
     QString getName(){return portName;}
+
+    const int portType;
+
 protected:
     Port* connectedPort = nullptr;
     QString portName;

@@ -15,8 +15,6 @@ class OutPort : public Port
     Q_OBJECT
 public:
     OutPort(QString name, Effect* parent);
-    ~OutPort() override;
-    static QList<OutPort*>* getOutPortList(){return outportList;}
 
     char* getData() override;
 
@@ -24,7 +22,7 @@ private:
     static QList<OutPort*>* outportList;
     Effect* parent;
 
-public slots:
+//public slots:
     void updateConnectionSelect();
 };
 

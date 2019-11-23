@@ -8,6 +8,8 @@
 #include "Params/sliderparam.h"
 
 QT_BEGIN_NAMESPACE
+class Audio;
+class EffectMap;
 class InPort;
 class OutPort;
 class Port;
@@ -33,7 +35,7 @@ class Effect : public QObject
 {
     Q_OBJECT
 public:
-    explicit Effect(QObject *parent = nullptr);
+    explicit Effect(Audio *parent = nullptr);
 
     virtual void applyEffect(char* in, char* out, int readLength);
     void applyEffect(char *data, int readLength);
@@ -42,6 +44,9 @@ public:
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &parameters;}
 
+    QList<Port*> getPorts();
+
+    EffectMap* getEffectMap(){return effectMap;}
 
     QGroupBox* generateUI();
     bool isUIGenerated();
@@ -52,6 +57,8 @@ public:
 protected:
     //Depricated
     void setConnectedPort(Port* port1, Port* port2);
+
+    static EffectMap* effectMap;
 
     QList<InPort*> inPortList;
     QList<OutPort*> outPortList;
@@ -64,11 +71,11 @@ private:
     QGroupBox* frame = nullptr;
     bool bUIGenerated = false;
 
-
     QPushButton *deleteButton;
 
-public slots:
+//public slots:
     void updatePortConnectionSelects();
 };
+
 
 #endif // EFFECT_H

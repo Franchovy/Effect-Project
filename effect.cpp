@@ -1,19 +1,24 @@
 #include "effect.h"
 
 #include <QDebug>
+#include <QList>
 #include <QGroupBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QComboBox>
+#include "audio.h"
+#include "effectmap.h"
+#include "ports/port.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
+EffectMap* Effect::effectMap = nullptr;
 
-Effect::Effect(QObject* parent) : QObject(parent)
+Effect::Effect(Audio* parent) : QObject(parent)
 {
-
+    effectMap = parent->getEffectMap();
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)
@@ -29,6 +34,19 @@ void Effect::applyEffect(char *data, int readLength){
     applyEffect(data, data, readLength);
 }
 
+QList<Port *> Effect::getPorts()
+{
+    QList<Port *> list = QList<Port *>();
+    Port* p;
+    foreach(p, inPortList){
+        list.append(p);
+    }
+    foreach(p, outPortList){
+        list.append(p);
+    }
+    return list;
+}
+
 void Effect::setConnectedPort(Port *port1, Port *port2)
 {
     // Sets connection both ways.
@@ -37,7 +55,6 @@ void Effect::setConnectedPort(Port *port1, Port *port2)
 
 QGroupBox* Effect::generateUI()
 {
-    qDebug() << "Generating UI.";
     frame = new QGroupBox();
     frame->setTitle(effectName);
 
@@ -72,9 +89,6 @@ QGroupBox* Effect::generateUI()
         portSelectLayout->addWidget(new QLabel(outP->getName()));
         portSelectLayout->addWidget(outP->getConnectionSelect());
     }
-
-
-
 
     bUIGenerated = true;
     return frame;
@@ -117,7 +131,7 @@ char *Effect::getData()
     return nullptr;
 }
 
-
+/*
 void Effect::updatePortConnectionSelects()
 {
     InPort *inPort;
@@ -129,3 +143,4 @@ void Effect::updatePortConnectionSelects()
         outPort->updateConnectionSelect();
     }
 }
+*/

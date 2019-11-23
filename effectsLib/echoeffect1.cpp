@@ -6,7 +6,7 @@
 #include "Params/sliderparam.h"
 
 
-EchoEffect1::EchoEffect1(QObject *parent) : Effect(parent)
+EchoEffect1::EchoEffect1(Audio *parent) : Effect(parent)
   , inPort(new InPort("Echo In", this))
   , outPort(new OutPort("Echo Out", this))
 {

@@ -27,11 +27,7 @@ Audio::Audio(QObject* parent) :
 
     //New implementation
     m_effectMap->addEffect(m_inEffect);
-    m_effectMap->addPort(m_inEffect, m_inEffect->inputDevicePort);
-
     m_effectMap->addEffect(m_outEffect);
-    m_effectMap->addPort(m_outEffect, m_outEffect->outputDevicePort);
-
     m_effectMap->connectPorts(m_inEffect->inputDevicePort, m_outEffect->outputDevicePort);
 
     inputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice());
@@ -40,7 +36,7 @@ Audio::Audio(QObject* parent) :
     setupFormat();
 }
 
-QList<Effect *> *Audio::getEffectMap()
+QList<Effect *> *Audio::getEffectChain()
 {
     return m_buffer->getEffectChain();
 }

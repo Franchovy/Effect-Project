@@ -2,7 +2,7 @@
 
 #include "ports/inport.h"
 
-OutputEffect::OutputEffect(QObject *parent) : Effect(parent)
+OutputEffect::OutputEffect(Audio *parent) : Effect(parent)
 {
     outputDevicePort = new InPort("Output device port", this);
 }

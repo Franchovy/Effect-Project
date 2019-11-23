@@ -3,7 +3,7 @@
 #include "ports/outport.h"
 #include <QDebug>
 
-InputEffect::InputEffect(QObject *parent) : Effect(parent)
+InputEffect::InputEffect(Audio *parent) : Effect(parent)
 {
     inputDevicePort = new OutPort("Input Device port", this);
 }

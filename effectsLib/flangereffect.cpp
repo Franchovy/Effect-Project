@@ -1,6 +1,6 @@
 #include "flangereffect.h"
 
-FlangerEffect::FlangerEffect(QObject* parent)
+FlangerEffect::FlangerEffect(Audio* parent)
 {
     strengthParam = addSliderParameter("Strength", 0, 10, strength = 5);
     connect(strengthParam, &SliderParam::valueChanged, [this](int value){

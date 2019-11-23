@@ -5,6 +5,7 @@
 
 QT_BEGIN_NAMESPACE
 class Effect;
+class EffectsUI;
 class Audio;
 class SettingsDialog;
 QT_END_NAMESPACE
@@ -23,22 +24,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void reloadEffectChainUI();
-
 private:
     Ui::MainWindow *ui;
-
-    Audio* audio;
-
+    Audio* m_audio;
     SettingsDialog *m_settingsDialog;
-
-    void populateSelectEffects();
-    QList<QString> effectList;
-    int newEffectType = 0;
+    EffectsUI* m_effectsUI;
 
     void createEffect();
 private slots:
-    void effectsSelectIndexChanged(int index);
     void showSettingsDialog();
 };
 #endif // MAINWINDOW_H

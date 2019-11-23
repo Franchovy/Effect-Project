@@ -13,7 +13,7 @@ class InputEffect : public Effect
 {
     Q_OBJECT
 public:
-    InputEffect(QObject *parent = nullptr);
+    InputEffect(Audio *parent = nullptr);
 
     OutPort* inputDevicePort;
 

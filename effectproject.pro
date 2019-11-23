@@ -28,6 +28,7 @@ SOURCES += \
     effectsLib/inputeffect.cpp \
     effectsLib/outputeffect.cpp \
     effectsLib/paneffect.cpp \
+    effectsui.cpp \
     main.cpp \
     mainwindow.cpp \
     ports/inport.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     effectsLib/inputeffect.h \
     effectsLib/outputeffect.h \
     effectsLib/paneffect.h \
+    effectsui.h \
     mainwindow.h \
     ports/inport.h \
     ports/outport.h \

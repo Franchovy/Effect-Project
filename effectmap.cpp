@@ -13,15 +13,22 @@ EffectMap::EffectMap(QObject *parent) : QObject(parent),
 
 void EffectMap::addEffect(Effect *e)
 {
-    m_effectMap->insert(e, QList<Port*>());
+    QList<Port*> list = QList<Port*>();
+    Port* p;
+    foreach (p, e->getPorts()){
+        list.append(p);
+    }
+    m_effectMap->insert(e, list);
 }
 
+/*
 void EffectMap::addPort(Effect *e, Port *p)
 {
     QList<Port*> list = m_effectMap->take(e);
     list.append(p);
     m_effectMap->insert(e,list);
 }
+*/
 
 void EffectMap::connectPorts(Port *p1, Port *p2)
 {
@@ -45,10 +52,8 @@ void EffectMap::connectPorts(Port *p1, Port *p2)
     m_connectionsMap->insert(p1, p2);
     m_connectionsMap->insert(p2, p1);
 
-    //(Maybe to remove and reimplement differently)
     //Connect effects
     p1->setConnectedPort(p2);
-
 
 }
 
@@ -61,8 +66,8 @@ QList<Port *> EffectMap::getFreePorts()
 {
     QList<Port*> portlist = QList<Port*>();
     {
-        QList<Port*> i;
-        foreach(i, m_effectMap->values()){
+
+        for(QList<Port*> i : m_effectMap->values()){
             portlist.append(i);
         }
     }
@@ -72,6 +77,17 @@ QList<Port *> EffectMap::getFreePorts()
                     if (m_connectionsMap->contains(i.i->t())){
                         portlist.erase(i);
             }
+        }
+    }
+    return portlist;
+}
+
+QList<Port *> EffectMap::getFreePortsOfType(int type)
+{
+    QList<Port *> portlist = QList<Port*>();
+    for(Port* p : getFreePorts()){
+        if (p->portType == type){
+            portlist.append(p);
         }
     }
     return portlist;

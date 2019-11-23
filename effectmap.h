@@ -20,7 +20,9 @@ public:
     void connectPorts(Port* p1, Port* p2);
 
     QList<Port*> getPorts(Effect* e);
+    QList<Port*> getPortsOfType(int type);
     QList<Port*> getFreePorts();
+    QList<Port*> getFreePortsOfType(int type);
 
 private:
     QHash<Effect*, QList<Port*>>* m_effectMap;
