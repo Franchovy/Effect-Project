@@ -8,17 +8,19 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QComboBox>
+
 #include "audio.h"
 #include "effectmap.h"
 #include "ports/port.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
-EffectMap* Effect::effectMap = nullptr;
 
-Effect::Effect(Audio* parent) : QObject(parent)
+Effect::Effect(EffectMap* parent) : QObject(parent)
 {
-    effectMap = parent->getEffectMap();
+    effectMap = parent;
+
+    effectName = "Default Effect Name";
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)
@@ -77,17 +79,18 @@ QGroupBox* Effect::generateUI()
     QVBoxLayout* portSelectLayout = new QVBoxLayout();
     layout->addLayout(portSelectLayout);
 
-    InPort *inP;
-    foreach (inP, inPortList) {
+    portSelectLayout->addWidget(new QLabel("InPort"));
+    for(InPort* inP : inPortList){
         portSelectLayout->addWidget(new QLabel(inP->getName()));
         portSelectLayout->addWidget(inP->getConnectionSelect());
+        portSelectLayout->addWidget(inP->getDisconnectButton());
     }
 
     portSelectLayout->addWidget(new QLabel("OutPort"));
-    OutPort *outP;
-    foreach (outP, outPortList) {
+    for(OutPort* outP : outPortList){
         portSelectLayout->addWidget(new QLabel(outP->getName()));
         portSelectLayout->addWidget(outP->getConnectionSelect());
+        portSelectLayout->addWidget(outP->getDisconnectButton());
     }
 
     bUIGenerated = true;

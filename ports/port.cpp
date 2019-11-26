@@ -1,13 +1,17 @@
 #include "port.h"
 
 #include "effect.h"
+#include "effectmap.h"
 #include <QComboBox>
+#include <QPushButton>
 
-Port::Port(QString name, Effect *parent) : QObject(parent),
-    portType(0)
+Port::Port(QString name, Effect *parent) : QObject(parent)
 {
+    this->parentEffect = parent;
 
     connectionSelect = new QComboBox();
+    disconnectButton = new QPushButton();
+
     portName = name;
 }
 
@@ -28,27 +32,22 @@ void Port::setConnectedPort(Port *port)
     }
 }
 
-void Port::setupConnectionSelect(QList<Port *> selectList)
+void Port::setupConnectionSelect()
 {
-    //Connect the connectionSelect
-    connect(connectionSelect,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            [=](int i){
-        if (i != -1)
-            connectedPort = selectList.at(i);
-    });
-
-    //Populate connectionSelect
-    //TODO to compartmentalise - and call from multiple sources.
-    for (int i = 0; i < selectList.length(); i++){
-        connectionSelect->addItem(selectList.at(i)->getName());
-    }
+    connect(this, &Port::sendConnectionSelect, parentEffect->getEffectMap(), &EffectMap::updatePortConnectionSelect);
+    connect(disconnectButton, &QPushButton::clicked, this, &Port::disconnectPort);
 }
 
 char *Port::getData()
 {
     return nullptr;
 }
+
+void Port::disconnectPort()
+{
+    connectedPort = nullptr;
+}
+
 
 
 

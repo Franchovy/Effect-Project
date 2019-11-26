@@ -1,5 +1,11 @@
 #include "audio.h"
 
+#include <QDebug>
+#include <QAudioInput>
+#include <QAudioOutput>
+#include <QAudioDeviceInfo>
+#include <QAudio>
+
 #include "effect.h"
 #include "effectmap.h"
 #include "effectbuffer.h"
@@ -7,28 +13,17 @@
 #include "effectsLib/outputeffect.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
-#include <QDebug>
-#include <QAudioInput>
-#include <QAudioOutput>
-#include <QAudioDeviceInfo>
-#include <QAudio>
 
 
 Audio::Audio(QObject* parent) :
     QObject(parent),
-    m_inEffect(new InputEffect(this)),
-    m_outEffect(new OutputEffect(this)),
-    m_effectMap(new EffectMap(this)),
-    m_buffer(new EffectBuffer(m_inEffect, m_outEffect))
+    m_buffer(new EffectBuffer()),
+    m_effectMap(new EffectMap(this))
 {
     //Old implementation
     //Set connection
     //setConnectedPort(m_inEffect->inputDevicePort, m_outEffect->outputDevicePort);
 
-    //New implementation
-    m_effectMap->addEffect(m_inEffect);
-    m_effectMap->addEffect(m_outEffect);
-    m_effectMap->connectPorts(m_inEffect->inputDevicePort, m_outEffect->outputDevicePort);
 
     inputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice());
     outputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultOutputDevice());
@@ -39,6 +34,11 @@ Audio::Audio(QObject* parent) :
 QList<Effect *> *Audio::getEffectChain()
 {
     return m_buffer->getEffectChain();
+}
+
+Effect *Audio::createEffect(int effectType)
+{
+    return m_effectMap->createEffect(effectType);
 }
 
 void Audio::addEffect(Effect *e)

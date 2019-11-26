@@ -9,7 +9,7 @@ class FuzzEffect : public Effect
 {
     Q_OBJECT
 public:
-    FuzzEffect();
+    explicit FuzzEffect(EffectMap* parent = nullptr);
 
 public:
     void applyEffect(char *in, char *out, int readLength);

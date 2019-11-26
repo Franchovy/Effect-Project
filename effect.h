@@ -35,7 +35,9 @@ class Effect : public QObject
 {
     Q_OBJECT
 public:
-    explicit Effect(Audio *parent = nullptr);
+    explicit Effect(EffectMap *parent = nullptr);
+
+    EffectMap* getEffectMap(){return effectMap;}
 
     virtual void applyEffect(char* in, char* out, int readLength);
     void applyEffect(char *data, int readLength);
@@ -45,8 +47,6 @@ public:
     QList<Parameter*>* getParamList() {return &parameters;}
 
     QList<Port*> getPorts();
-
-    EffectMap* getEffectMap(){return effectMap;}
 
     QGroupBox* generateUI();
     bool isUIGenerated();
@@ -58,8 +58,6 @@ protected:
     //Depricated
     void setConnectedPort(Port* port1, Port* port2);
 
-    static EffectMap* effectMap;
-
     QList<InPort*> inPortList;
     QList<OutPort*> outPortList;
 
@@ -70,6 +68,8 @@ protected:
 private:
     QGroupBox* frame = nullptr;
     bool bUIGenerated = false;
+
+    EffectMap* effectMap = nullptr;
 
     QPushButton *deleteButton;
 

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QtMath>
 
-PanEffect::PanEffect()
+PanEffect::PanEffect(EffectMap* parent) : Effect(parent)
 {
     effectName = "Pan Effect";
 

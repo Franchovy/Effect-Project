@@ -9,7 +9,7 @@ class FlangerEffect : public Effect
 {
     Q_OBJECT
 public:
-    explicit FlangerEffect(Audio* parent = nullptr);
+    explicit FlangerEffect(EffectMap* parent = nullptr);
 
     virtual void applyEffect(char* in, char* out, int readLength);
 

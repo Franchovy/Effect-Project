@@ -9,9 +9,7 @@
 
 InPort::InPort(QString name, Effect* parent) : Port(name, parent)
 {
-    const int portType = 1;
-
-    Port::setupConnectionSelect(parent->getEffectMap()->getFreePortsOfType(portType));
+    setupConnectionSelect();
 }
 
 char *InPort::getData()

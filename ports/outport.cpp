@@ -11,12 +11,11 @@
 
 OutPort::OutPort(QString name, Effect* parent) : Port(name, parent)
 {
-    const int portType = 2;
-
-    Port::setupConnectionSelect(parent->getEffectMap()->getFreePortsOfType(portType));
+    parentEffect = parent;
+    setupConnectionSelect();
 }
 
 char *OutPort::getData()
 {
-    return parent->getData();
+    return parentEffect->getData();
 }

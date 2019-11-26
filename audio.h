@@ -25,6 +25,7 @@ public:
 
 public:
     QList<Effect*>* getEffectChain();
+    Effect* createEffect(int effectType);
     void addEffect(Effect* e);
     void removeEffect(Effect* e);
 
@@ -36,18 +37,13 @@ public:
     void setInputDevice(QAudioDeviceInfo device);
     void setOutputDevice(QAudioDeviceInfo device);
 
-
 private:
-    //Input and output effects are created by default.
-    InputEffect* m_inEffect;
-    OutputEffect* m_outEffect;
-
+    EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
 
     InPort* inPort;
     OutPort* outPort;
 
-    EffectBuffer* m_buffer;
     QAudioDeviceInfo* inputDevice;
     QAudioDeviceInfo* outputDevice;
     QAudioInput* inputAudio;

@@ -1,7 +1,9 @@
 #include "flangereffect.h"
 
-FlangerEffect::FlangerEffect(Audio* parent)
+FlangerEffect::FlangerEffect(EffectMap* parent)
 {
+    effectName = "Flanger Effect";
+
     strengthParam = addSliderParameter("Strength", 0, 10, strength = 5);
     connect(strengthParam, &SliderParam::valueChanged, [this](int value){
         strength = value;

@@ -30,7 +30,6 @@ private:
     SettingsDialog *m_settingsDialog;
     EffectsUI* m_effectsUI;
 
-    void createEffect();
 private slots:
     void showSettingsDialog();
 };

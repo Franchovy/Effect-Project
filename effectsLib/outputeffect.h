@@ -13,13 +13,14 @@ class OutputEffect : public Effect
 {
     Q_OBJECT
 public:
-    OutputEffect(Audio *parent = nullptr);
+    OutputEffect(EffectMap* parent = nullptr);
 
-    InPort* outputDevicePort;
 
     char* getData() override;
 
 private:
+    InPort* outputDevicePort;
+
     void applyEffect(char *in, char *out, int readLength) override;
 };
 

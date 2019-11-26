@@ -13,7 +13,7 @@ class EchoEffect1 : public Effect
 {
     Q_OBJECT
 public:
-    explicit EchoEffect1(Audio *parent = nullptr);
+    explicit EchoEffect1(EffectMap* parent = nullptr);
 
     void applyEffect(char *in, char *out, int readLength) override;
 

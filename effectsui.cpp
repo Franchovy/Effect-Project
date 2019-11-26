@@ -7,6 +7,7 @@
 
 #include "effect.h"
 #include "effectmap.h"
+#include "ports/port.h"
 
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/fuzzeffect.h"
@@ -20,6 +21,8 @@ EffectsUI::EffectsUI(QWidget *parent) : QWidget(parent)
 
 void EffectsUI::setupEffectsSelect(QComboBox* effectsSelect)
 {
+    effectTypeList.append("Input");
+    effectTypeList.append("Output");
     effectTypeList.append("Echo");
     effectTypeList.append("Pan");
     effectTypeList.append("Fuzz");
@@ -54,5 +57,7 @@ int EffectsUI::getNewEffectType() const
 {
     return newEffectType;
 }
+
+
 
 

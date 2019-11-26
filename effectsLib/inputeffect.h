@@ -13,13 +13,14 @@ class InputEffect : public Effect
 {
     Q_OBJECT
 public:
-    InputEffect(Audio *parent = nullptr);
+    InputEffect(EffectMap* parent = nullptr);
 
-    OutPort* inputDevicePort;
 
     void giveData(char* data);
 
 private:
+    OutPort* inputDevicePort;
+
     void applyEffect(char *in, char *out, int readLength) override;
     char *getData() override;
 

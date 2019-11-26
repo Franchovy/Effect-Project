@@ -1,7 +1,8 @@
 #include "fuzzeffect.h"
 
-FuzzEffect::FuzzEffect()
+FuzzEffect::FuzzEffect(EffectMap* parent) : Effect(parent)
 {
+    effectName = "Fuzz Effect";
     fuzzVal = 10;
 }
 

@@ -7,6 +7,7 @@
 QT_BEGIN_NAMESPACE
 class Effect;
 class EffectMap;
+class Port;
 class QGridLayout;
 class QComboBox;
 class QPushButton;

@@ -2,9 +2,12 @@
 
 #include "ports/inport.h"
 
-OutputEffect::OutputEffect(Audio *parent) : Effect(parent)
+OutputEffect::OutputEffect(EffectMap* parent) : Effect(parent),
+    outputDevicePort(new InPort("Output device port", this))
 {
-    outputDevicePort = new InPort("Output device port", this);
+    effectName = "Output Device Name";
+
+    inPortList.append(outputDevicePort);
 }
 
 void OutputEffect::applyEffect(char *in, char *out, int readLength)

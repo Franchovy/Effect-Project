@@ -6,6 +6,7 @@
 QT_BEGIN_NAMESPACE
 class Effect;
 class QComboBox;
+class QPushButton;
 QT_END_NAMESPACE
 
 class Port : public QObject
@@ -18,21 +19,29 @@ public:
     Port* getConnectedPort();
     void setConnectedPort(Port* port);
 
-    void setupConnectionSelect(QList<Port*> selectList);
+    void setupConnectionSelect();
     QComboBox* getConnectionSelect(){return connectionSelect;}
+    QPushButton* getDisconnectButton(){return disconnectButton;}
     virtual char* getData();
 
     QString getName(){return portName;}
 
-    const int portType;
+    virtual int getConnectPortType(){return 0;}
+    virtual int getPortType() {return 0;}
 
 protected:
     Port* connectedPort = nullptr;
     QString portName;
 
+    Effect* parentEffect;
+
     //temporary UI
     QComboBox* connectionSelect;
-
+    QPushButton* disconnectButton;
+signals:
+    void sendConnectionSelect(int portType);
+public slots:
+    void disconnectPort();
 };
 
 #endif // PORT_H
