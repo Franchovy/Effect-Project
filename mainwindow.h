@@ -5,9 +5,10 @@
 
 QT_BEGIN_NAMESPACE
 class Effect;
-class EffectsUI;
+class EffectsScene;
 class Audio;
 class SettingsDialog;
+class QGraphicsView;
 QT_END_NAMESPACE
 
 
@@ -28,7 +29,9 @@ private:
     Ui::MainWindow *ui;
     Audio* m_audio;
     SettingsDialog *m_settingsDialog;
-    EffectsUI* m_effectsUI;
+    EffectsScene* m_effectsUI;
+
+    QGraphicsView* m_graphicsView;
 
 private slots:
     void showSettingsDialog();

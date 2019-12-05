@@ -4,6 +4,7 @@
 #include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
+#include <QGraphicsView>
 #include <QDebug>
 
 #include "effectsLib/echoeffect1.h"
@@ -13,7 +14,7 @@
 #include "effect.h"
 #include "audio.h"
 #include "settingsdialog.h"
-#include "effectsui.h"
+#include "effectsscene.h"
 
 
 #define GRAPHICS_UI
@@ -25,13 +26,38 @@ MainWindow::MainWindow(QWidget *parent)
     , m_settingsDialog(new SettingsDialog(
                            *m_audio,
                            this))
-    , m_effectsUI(new EffectsUI(this))
+    , m_effectsUI(new EffectsScene(this))
+    , m_graphicsView(new QGraphicsView(this))
 {
     // UI SETUP
     ui->setupUi(this);
 
+#ifdef GRAPHICS_UI
+    QLayout* masterLayout = ui->effectGrid->layout();
+    ui->effectGrid->deleteLater();
+
+    masterLayout->addWidget(m_graphicsView);
+
+    m_graphicsView->setScene(m_effectsUI);
+
+    //Copied settings
+    m_graphicsView->setCacheMode(QGraphicsView::CacheBackground);
+    m_graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    m_graphicsView->setRenderHint(QPainter::Antialiasing);
+    m_graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    m_graphicsView->scale(qreal(0.8), qreal(0.8));
+    m_graphicsView->setMinimumSize(400, 400);
+    m_graphicsView->setWindowTitle(tr("Effect Workspace"));
+
+    m_graphicsView->show();
+
     m_effectsUI->setupEffectsSelect(ui->effectsSelect);
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
+
+#else
+    m_effectsUI->setupEffectsSelect(ui->effectsSelect);
+    ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
+#endif
 
     connect(ui->newEffectButton, &QPushButton::pressed, [=](){
         int effectType = m_effectsUI->getNewEffectType();

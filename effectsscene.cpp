@@ -1,25 +1,38 @@
-#include "effectsui.h"
+#include "effectsscene.h"
 
 #include <QDebug>
 #include <QGridLayout>
 #include <QComboBox>
 #include <QGroupBox>
+#include <QGraphicsScene>
+#include <QGraphicsItem>
 
 #include "effect.h"
 #include "effectmap.h"
 #include "ports/port.h"
+#include "GUI/effectgui.h"
 
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/fuzzeffect.h"
 #include "effectsLib/paneffect.h"
 
-EffectsUI::EffectsUI(QWidget *parent) : QWidget(parent)
-    , mainLayout(new QGridLayout)
+
+#define GRAPHICS_UI
+
+
+EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
+    , mainLayout(new QGridLayout())
+    , m_effects(QList<EffectGUI*>())
 {
+    //Default settings or whatever
+    setItemIndexMethod(QGraphicsScene::NoIndex);
+    setSceneRect(-200, -200, 400, 400);
+    setBackgroundBrush(QColor(255,255,255));
+
 
 }
 
-void EffectsUI::setupEffectsSelect(QComboBox* effectsSelect)
+void EffectsScene::setupEffectsSelect(QComboBox* effectsSelect)
 {
     effectTypeList.append("Input");
     effectTypeList.append("Output");
@@ -37,15 +50,22 @@ void EffectsUI::setupEffectsSelect(QComboBox* effectsSelect)
     });
 }
 
-void EffectsUI::createEffectUI(Effect* e)
+void EffectsScene::createEffectUI(Effect* e)
 {
     if (!e->isUIGenerated()){
+#ifdef GRAPHICS_UI
+    EffectGUI* e_gui = new EffectGUI(e->effectName);
+    e_gui->setPos(QPoint(0,0));
+    addItem(e_gui);
+
+#else
         QGroupBox* w = e->generateUI();
         mainLayout->addWidget(w);
+#endif
     }
 }
 
-void EffectsUI::deleteEffectUI(Effect *e)
+void EffectsScene::deleteEffectUI(Effect *e)
 {
     mainLayout->removeWidget(e->getUI());
     e->getUI()->deleteLater(); //Should not have to do this?
@@ -53,10 +73,11 @@ void EffectsUI::deleteEffectUI(Effect *e)
 }
 
 
-int EffectsUI::getNewEffectType() const
+int EffectsScene::getNewEffectType() const
 {
     return newEffectType;
 }
+
 
 
 

@@ -2,10 +2,11 @@
 #define EFFECTUI_H
 
 #include <QObject>
-#include <QWidget>
+#include <QGraphicsScene>
 
 QT_BEGIN_NAMESPACE
 class Effect;
+class EffectGUI;
 class EffectMap;
 class Port;
 class QGridLayout;
@@ -14,16 +15,12 @@ class QGraphicsScene;
 class QPushButton;
 QT_END_NAMESPACE
 
-#define GRAPHICS_UI
 
-
-#ifndef GRAPHICS_UI
-
-class EffectsUI : public QWidget
+class EffectsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit EffectsUI(QWidget *parent = nullptr);
+    explicit EffectsScene(QWidget *parent = nullptr);
     QGridLayout* mainLayout;
 
     //dump
@@ -33,12 +30,10 @@ public:
 
     int getNewEffectType() const;
 
-    QGraphicsScene *getScene() const;
-
 private:
     EffectMap* effectMap;
 
-    QGraphicsScene* scene;
+    QList<EffectGUI*> m_effects;
 
     QList<QString> effectTypeList;
     QComboBox* effectsSelect;
@@ -50,6 +45,10 @@ private:
 signals:
 
 public slots:
+
+    // QGraphicsScene interface
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 };
-#endif
+
 #endif // EFFECTUI_H
