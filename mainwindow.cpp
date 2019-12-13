@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     masterLayout->addWidget(m_graphicsView);
 
     m_graphicsView->setScene(m_effectsUI);
+    m_graphicsView->setAttribute(Qt::WA_Hover);
 
     //Copied settings
     m_graphicsView->setCacheMode(QGraphicsView::CacheBackground);

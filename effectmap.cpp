@@ -33,7 +33,6 @@ void EffectMap::addEffect(Effect *e)
     }
     m_effectMap->insert(e, list);
 
-
     for (Port* p: e->getPorts()){
         p->sendConnectionSelect(p->getConnectPortType());
     }

@@ -16,7 +16,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    GUI/effectgui.cpp \
+    GUI/gui_effect.cpp \
+    GUI/gui_line.cpp \
+    GUI/gui_port.cpp \
     Params/parameter.cpp \
     Params/sliderparam.cpp \
     audio.cpp \
@@ -38,7 +40,9 @@ SOURCES += \
     settingsdialog.cpp
 
 HEADERS += \
-    GUI/effectgui.h \
+    GUI/gui_effect.h \
+    GUI/gui_line.h \
+    GUI/gui_port.h \
     Params/parameter.h \
     Params/sliderparam.h \
     audio.h \

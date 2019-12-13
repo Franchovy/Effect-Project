@@ -8,7 +8,6 @@
 #include <QDebug>
 
 
-
 OutPort::OutPort(QString name, Effect* parent) : Port(name, parent)
 {
     parentEffect = parent;
