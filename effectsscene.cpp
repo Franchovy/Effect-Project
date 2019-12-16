@@ -17,13 +17,11 @@
 #include "ports/port.h"
 #include "GUI/gui_effect.h"
 #include "GUI/gui_port.h"
+#include "GUI/gui_line.h"
 
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/fuzzeffect.h"
 #include "effectsLib/paneffect.h"
-
-
-#define GRAPHICS_UI
 
 
 EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
@@ -58,34 +56,23 @@ void EffectsScene::setupEffectsSelect(QComboBox* effectsSelect)
     });
 }
 
-void EffectsScene::createEffectUI(Effect* e)
+GUI_effect* EffectsScene::addEffect(Effect* e)
 {
-    //Create UI for undisplayed Effect e
-    if (!e->isUIGenerated()){
-#ifdef GRAPHICS_UI
     GUI_effect* e_gui = new GUI_effect(e->effectName);
-    e_gui->setPos(QPoint(0,0));
+    qDebug() << "Creating effect: " << e->effectName;
     addItem(e_gui);
     m_effects.append(e_gui);
 
-    e_gui->setAcceptHoverEvents(true);
     //Add Ports to effect
-    qDebug() << "Ports: ";
     for (Port* p : e->getPorts()){
-        qDebug() << p;
         GUI_port* gp = e_gui->addPort(p,p->getPortType());
-        gp->setAcceptHoverEvents(true);
-
     }
-#else
-        QGroupBox* w = e->generateUI();
-        mainLayout->addWidget(w);
-#endif
-    }
+    return e_gui;
 }
 
-void EffectsScene::deleteEffectUI(Effect *e)
+void EffectsScene::deleteEffect(Effect *e)
 {
+    //CHANGEME Delete Effect must be changed
     mainLayout->removeWidget(e->getUI());
     e->getUI()->deleteLater(); //Should not have to do this?
     mainLayout->update();
@@ -100,7 +87,7 @@ int EffectsScene::getNewEffectType() const
 GUI_port* EffectsScene::getContainingPort(QPointF point){
     for (GUI_effect* e : m_effects){
         for (GUI_port* g : e->getPorts()){
-            if (g->contains(point)){
+            if (g->contains(point - e->scenePos())){
                 return g;
             }
         }
@@ -108,32 +95,38 @@ GUI_port* EffectsScene::getContainingPort(QPointF point){
     return nullptr;
 }
 
+void EffectsScene::effect_constructor(Effect *ptr)
+{
+    GUI_effect* e = addEffect(ptr);
+}
+
 void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton){
         draggedItem = itemAt(event->scenePos(), QTransform());
-        qDebug() << draggedItem;
 
         GUI_port* port = getContainingPort(event->scenePos());
         if (port != nullptr){
-            qDebug() << "Pressed port";
             portLineDrag = true;
             port_ptr = port;
-            portLine = new QLineF(port->center(), port->center());
+            //Create line starting at selected Port center
+            portLine = new GUI_line();
+            portLine->setP1(port->center());
+            portLine->setP2(event->scenePos());
+            addItem(portLine);
         } else if (draggedItem != nullptr){
-            dragStartPosition = event->scenePos();
-            dragRelativePosition = draggedItem->scenePos() - event->scenePos();
             dragging = true;
         }
     }
+    update();
 }
-#ifdef mousemove
+
 void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (dragging){
-        draggedItem->setPos(dragRelativePosition + event->scenePos());
+        QPointF d = event->scenePos() - event->lastScenePos();
+        draggedItem->moveBy(d.x(),d.y());
     } else if (portLineDrag){
-        qDebug() << "Drawing Line to: " << event->scenePos();
         portLine->setP2(event->scenePos());
         QGraphicsScene::mouseMoveEvent(event);
     } else {
@@ -141,19 +134,21 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     update();
 }
-#endif
+
 void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (portLineDrag){
         GUI_port* port = getContainingPort(event->scenePos());
         if (port != nullptr){
             //Connected to port!
-            port_ptr = port;
             portLine->setP2(port->center());
+            //Emit connectPort signal
+            connectPorts(port->getPort(), port_ptr->getPort());
         } else {
             //Nothing connected so delete temp data.
+            //CHANGEME no garbage disposal implemented
             port_ptr = nullptr;
-            portLine->~QLineF();
+            portLine->~GUI_line();
             portLine = nullptr;
         }
         portLineDrag = false;
@@ -161,7 +156,6 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
     dragging = false;
     draggedItem = nullptr;
-    //dragstart and dragrelative ignored
 
     update();
 }

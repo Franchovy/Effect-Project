@@ -1,7 +1,6 @@
 #ifndef EFFECTGUI_H
 #define EFFECTGUI_H
 
-//#include <QObject>
 #include <QGraphicsItem>
 
 QT_BEGIN_NAMESPACE
@@ -12,7 +11,6 @@ QT_END_NAMESPACE
 
 class GUI_effect : public QGraphicsItem
 {
-    //Q_OBJECT
 public:
     GUI_effect(QString name = "Default name", QGraphicsItem* parent = nullptr);
 
@@ -25,11 +23,8 @@ private:
     QRectF baseRect;
     QString title;
 
-    QList<GUI_port*> InPorts;
-    QList<GUI_port*> OutPorts;
-
-    QGraphicsScene* parentScene;
-
+    QList<GUI_port*> m_inPorts;
+    QList<GUI_port*> m_outPorts;
 
     // QGraphicsItem interface
 public:

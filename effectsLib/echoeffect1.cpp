@@ -12,8 +12,8 @@ EchoEffect1::EchoEffect1(EffectMap* parent) : Effect(parent)
 {
     effectName = "Echo Effect 1";
 
-    inPortList.append(inPort);
-    outPortList.append(outPort);
+    m_inPortList.append(inPort);
+    m_outPortList.append(outPort);
 
     lenParam = addSliderParameter("Buffer Length", 800, 80000, len = 8000);
     QObject::connect(lenParam, &SliderParam::valueChanged, [this](int value){

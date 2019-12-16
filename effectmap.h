@@ -21,15 +21,13 @@ public:
     void addPort(Effect* e, Port*);
     Effect* createEffect(int effectType);
 
-    void connectPorts(Port* p1, Port* p2);
-
     QList<Port*> getPorts(Effect* e);
     QList<Port*> getPorts();
     QList<Port*> getPortsOfType(int type);
     QList<Port*> getFreePorts();
     QList<Port*> getFreePortsOfType(int type);
 
-    void createDefaultInputOutputEffects(InputEffect* in_e, OutputEffect* out_e);
+    //void createDefaultInputOutputEffects(InputEffect* in_e, OutputEffect* out_e);
 
 private:
     //default input and output effects
@@ -41,8 +39,10 @@ private:
     QHash<Effect*, QList<Port*>>* m_effectMap;
     QHash<Port*, Port*>* m_connectionsMap;
 signals:
-    void refreshPortLists();
+    void constructor(Effect* e_ptr);
+
 public slots:
+    void connectPorts(Port* p1, Port* p2);
     void updatePortConnectionSelect(int type);
 };
 

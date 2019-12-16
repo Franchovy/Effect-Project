@@ -7,7 +7,7 @@ OutputEffect::OutputEffect(EffectMap* parent) : Effect(parent),
 {
     effectName = "Output Device Name";
 
-    inPortList.append(outputDevicePort);
+    m_inPortList.append(outputDevicePort);
 }
 
 void OutputEffect::applyEffect(char *in, char *out, int readLength)

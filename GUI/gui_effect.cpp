@@ -8,11 +8,11 @@
 #include "ports/port.h"
 
 GUI_effect::GUI_effect(QString name, QGraphicsItem* parent) : QGraphicsItem(parent)
+  , m_inPorts(QList<GUI_port*>())
+  , m_outPorts(QList<GUI_port*>())
 {
     baseRect = QRectF(-200,-200,200,200);
     title = name;
-
-
 }
 
 GUI_port* GUI_effect::addPort(Port *port, int portType)
@@ -23,20 +23,20 @@ GUI_port* GUI_effect::addPort(Port *port, int portType)
     //TODO worth adding a check of port type.
 
     QPointF* point = new QPointF();
-    GUI_port* new_port = new GUI_port(*point, this);
+    GUI_port* new_port = new GUI_port(*point, port, this);
 
     //Add port to GUI
     switch (portType){
     case 1:
         //InPort
-        InPorts.append(new_port);
-        dy = 30 + 30 * InPorts.length();
+        m_inPorts.append(new_port);
+        dy = 30 + 30 * m_inPorts.length();
         dx = 30;
         break;
     case 2:
         //OutPort
-        OutPorts.append(new_port);
-        dy = 30 + 30 * OutPorts.length();
+        m_outPorts.append(new_port);
+        dy = 30 + 30 * m_outPorts.length();
         dx = 150;
         break;
     default:
@@ -63,8 +63,8 @@ QList<GUI_port*> GUI_effect::addPort(QList<Port*> portList, int portType)
 QList<GUI_port *> GUI_effect::getPorts()
 {
     QList<GUI_port*> list = QList<GUI_port*>();
-    list.append(InPorts);
-    list.append(OutPorts);
+    list.append(m_inPorts);
+    list.append(m_outPorts);
     return list;
 }
 
@@ -83,19 +83,7 @@ void GUI_effect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     font.setPixelSize(20);
     painter->setFont(font);
     
-    //painter->drawPath()
-
-    /*
-    for (GUI_port* p : InPorts){
-        p->update();
-    }
-    for (GUI_port* p : OutPorts){
-        p->update();
-    }
-    */
-
     painter->drawRect(baseRect);
-    //painter->drawRoundedRect(-10,-10,20,20,5,5);
     painter->drawText(QPoint(baseRect.topLeft().x()+10, baseRect.topLeft().y()+10), title);
 }
 

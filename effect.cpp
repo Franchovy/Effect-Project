@@ -17,9 +17,10 @@
 
 
 Effect::Effect(EffectMap* parent) : QObject(parent)
+  , m_inPortList(QList<InPort*>())
+  , m_outPortList(QList<OutPort*>())
+  , m_parameters(QList<Parameter*>())
 {
-    effectMap = parent;
-
     effectName = "Default Effect Name";
 }
 
@@ -40,20 +41,15 @@ QList<Port *> Effect::getPorts()
 {
     QList<Port *> list = QList<Port *>();
     Port* p;
-    foreach(p, inPortList){
+    foreach(p, m_inPortList){
         list.append(p);
     }
-    foreach(p, outPortList){
+    foreach(p, m_outPortList){
         list.append(p);
     }
     return list;
 }
 
-void Effect::setConnectedPort(Port *port1, Port *port2)
-{
-    // Sets connection both ways.
-    port1->setConnectedPort(port2);
-}
 
 QGroupBox* Effect::generateUI()
 {
@@ -80,14 +76,14 @@ QGroupBox* Effect::generateUI()
     layout->addLayout(portSelectLayout);
 
     portSelectLayout->addWidget(new QLabel("InPort"));
-    for(InPort* inP : inPortList){
+    for(InPort* inP : m_inPortList){
         portSelectLayout->addWidget(new QLabel(inP->getName()));
         portSelectLayout->addWidget(inP->getConnectionSelect());
         portSelectLayout->addWidget(inP->getDisconnectButton());
     }
 
     portSelectLayout->addWidget(new QLabel("OutPort"));
-    for(OutPort* outP : outPortList){
+    for(OutPort* outP : m_outPortList){
         portSelectLayout->addWidget(new QLabel(outP->getName()));
         portSelectLayout->addWidget(outP->getConnectionSelect());
         portSelectLayout->addWidget(outP->getDisconnectButton());
@@ -116,7 +112,7 @@ void Effect::addParameter(Parameter *param, QString name)
     param = new Parameter(this);
 
     param->setObjectName("name");
-    parameters.append(param);
+    m_parameters.append(param);
 }
 
 //Meant to be the same as "addParameter" but got stuck trying to use child class parameters.
@@ -124,7 +120,7 @@ void Effect::addParameter(Parameter *param, QString name)
 SliderParam* Effect::addSliderParameter(QString name, int min, int max, int val){
     SliderParam *param = new SliderParam(min, max, val, this);
     param->setObjectName(name);
-    parameters.append(param);
+    m_parameters.append(param);
 
     return param;
 }
@@ -134,16 +130,3 @@ char *Effect::getData()
     return nullptr;
 }
 
-/*
-void Effect::updatePortConnectionSelects()
-{
-    InPort *inPort;
-    foreach(inPort, inPortList){
-        inPort->updateConnectionSelect();
-    }
-    OutPort *outPort;
-    foreach(outPort, outPortList){
-        outPort->updateConnectionSelect();
-    }
-}
-*/

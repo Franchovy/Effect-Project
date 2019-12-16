@@ -18,10 +18,9 @@ class QGroupBox;
 class QPushButton;
 QT_END_NAMESPACE
 
-// DEFINE EFFECTS HERE
-//TODO find out how to join everything up under struct/typedef
-//so it's all defined in one place.
+//TODO DEFINE EFFECTS HERE
 
+/*
 // Link to classes in creation switch-statement.
 enum EffectTypes
 {
@@ -30,6 +29,7 @@ enum EffectTypes
     pan,
     end
 };
+*/
 
 class Effect : public QObject
 {
@@ -44,7 +44,7 @@ public:
     QString effectName = "default effect";
 
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
-    QList<Parameter*>* getParamList() {return &parameters;}
+    QList<Parameter*>* getParamList() {return &m_parameters;}
 
     QList<Port*> getPorts();
 
@@ -55,13 +55,10 @@ public:
     virtual char* getData();
 
 protected:
-    //Depricated
-    void setConnectedPort(Port* port1, Port* port2);
+    QList<InPort*> m_inPortList;
+    QList<OutPort*> m_outPortList;
+    QList<Parameter*> m_parameters;
 
-    QList<InPort*> inPortList;
-    QList<OutPort*> outPortList;
-
-    QList<Parameter*> parameters;
     void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
     SliderParam* addSliderParameter(QString name, int min, int max, int val);
 
@@ -73,8 +70,6 @@ private:
 
     QPushButton *deleteButton;
 
-//public slots:
-    void updatePortConnectionSelects();
 };
 
 

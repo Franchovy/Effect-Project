@@ -5,6 +5,7 @@
 #include <QIODevice>
 
 QT_BEGIN_NAMESPACE
+class Audio;
 class Effect;
 class InPort;
 class InputEffect;
@@ -20,16 +21,13 @@ class EffectBuffer : public QIODevice
     Q_OBJECT
 
 public:
-    EffectBuffer();
+    EffectBuffer(Audio *parent);
 
     qint64 readData(char* data, qint64 maxlen) override;
     qint64 writeData(const char* data, qint64 maxlen) override;
 
     void addInputEffect(InputEffect* e);
     void addOutputEffect(OutputEffect* e);
-
-public:
-    QList<Effect*>* getEffectChain() {return &effectChain;}
     void removeEffect(Effect* e);
 
 private:
@@ -37,9 +35,6 @@ private:
 
     qint64 bufferUsed;
     qint64 bufferCurrent;
-
-    //Old implementation
-    QList<Effect*> effectChain;
 
     //New implementation
     QList<InputEffect*> inputEffects;

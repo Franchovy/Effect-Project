@@ -3,16 +3,17 @@
 #include "effect.h"
 #include "effectmap.h"
 #include <QComboBox>
+#include <QDebug>
 #include <QPushButton>
 
 Port::Port(QString name, Effect *parent) : QObject(parent)
 {
     this->parentEffect = parent;
+    constructor(this);
+    portName = name;
 
     connectionSelect = new QComboBox();
     disconnectButton = new QPushButton();
-
-    portName = name;
 }
 
 bool Port::isConnectedPortSet()
@@ -34,8 +35,8 @@ void Port::setConnectedPort(Port *port)
 
 void Port::setupConnectionSelect()
 {
-    connect(this, &Port::sendConnectionSelect, parentEffect->getEffectMap(), &EffectMap::updatePortConnectionSelect);
-    connect(disconnectButton, &QPushButton::clicked, this, &Port::disconnectPort);
+    //connect(this, &Port::sendConnectionSelect, parentEffect->getEffectMap(), &EffectMap::updatePortConnectionSelect);
+    //connect(disconnectButton, &QPushButton::clicked, this, &Port::disconnectPort);
 }
 
 char *Port::getData()

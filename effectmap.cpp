@@ -22,11 +22,12 @@ EffectMap::EffectMap(Audio *parent) : QObject(parent),
     m_connectionsMap(new QHash<Port*, Port*>())
 {
     parentAudio = parent;
-    createDefaultInputOutputEffects(inputEffect, outputEffect);
+    //createDefaultInputOutputEffects(inputEffect, outputEffect);
 }
 
 void EffectMap::addEffect(Effect *e)
-{
+{    
+    qDebug() << "Add Effect [EffectMap]";
     QList<Port*> list = QList<Port*>();
     for (Port* p: e->getPorts()){
         list.append(p);
@@ -40,6 +41,7 @@ void EffectMap::addEffect(Effect *e)
 
 Effect* EffectMap::createEffect(int effectType)
 {
+    qDebug() << "Create Effect [EffectMap]";
     Effect* e;
     switch(effectType){
     case 0:
@@ -60,6 +62,8 @@ Effect* EffectMap::createEffect(int effectType)
     default:
         e = new Effect(); // useless default effect
     }
+
+    constructor(e);
     return e;
 }
 
@@ -140,9 +144,11 @@ QList<Port *> EffectMap::getFreePortsOfType(int type)
     }
     return list;
 }
-
+/*
 void EffectMap::createDefaultInputOutputEffects(InputEffect *inputEffect, OutputEffect *outputEffect)
 {
+
+
     //Create and add input/output device
     inputEffect = new InputEffect(this);
     outputEffect = new OutputEffect(this);
@@ -154,6 +160,7 @@ void EffectMap::createDefaultInputOutputEffects(InputEffect *inputEffect, Output
     parentAudio->getEffectBuffer()->addInputEffect(inputEffect);
     parentAudio->getEffectBuffer()->addOutputEffect(outputEffect);
 }
+*/
 
 /**
  * @brief EffectMap::updatePortConnectionSelect Updates connectionSelect lists of ports of given type.

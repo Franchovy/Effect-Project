@@ -17,39 +17,35 @@
 
 Audio::Audio(QObject* parent) :
     QObject(parent),
-    m_buffer(new EffectBuffer()),
+    m_buffer(new EffectBuffer(this)),
     m_effectMap(new EffectMap(this))
 {
     //Old implementation
     //Set connection
     //setConnectedPort(m_inEffect->inputDevicePort, m_outEffect->outputDevicePort);
 
-
     inputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice());
     outputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultOutputDevice());
+
 
     setupFormat();
 }
 
-QList<Effect *> *Audio::getEffectChain()
-{
-    return m_buffer->getEffectChain();
-}
-
 Effect *Audio::createEffect(int effectType)
 {
-    return m_effectMap->createEffect(effectType);
+    Effect* e = m_effectMap->createEffect(effectType);
+
+    if (effectType == 0){
+        m_buffer->addInputEffect(e));
+    } else if (effectType == 1){
+        m_buffer->addOutputEffect(e);
+    }
+    return e;
 }
 
 void Audio::addEffect(Effect *e)
 {
     m_effectMap->addEffect(e);
-    /*
-    Port* p;
-    foreach(p, e.getPorts()){
-        m_effectMap->addPort(p);
-    }
-    */
 }
 
 void Audio::removeEffect(Effect* e)
@@ -87,7 +83,6 @@ void Audio::setupFormat()
 
 void Audio::setInputDevice(QAudioDeviceInfo device)
 {
-
     inputDevice = new QAudioDeviceInfo(device);
     setupFormat();
 }

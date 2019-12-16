@@ -4,29 +4,36 @@
 #include <QGraphicsItem>
 #include <QObject>
 
+QT_BEGIN_NAMESPACE
+class GUI_effect;
+class Port;
+QT_END_NAMESPACE
+
 class GUI_port : public QGraphicsItem
 {
 public:
-    GUI_port(QPointF basePoint, QGraphicsItem *parent);
+    GUI_port(QPointF basePoint, Port* port, GUI_effect *parent);
 
     void setHoverBoxVisible(bool vis = true);
     void setBasePoint(QPointF basePoint);
 
     QPointF center();
 
+// QGraphicsItem interface
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    bool contains(const QPointF &point) const override;
+
+    Port *getPort() const;
+
 private:
+    GUI_effect* parent;
+    Port* port;
+
     QRectF* hoverBox;
     QRectF* portBox;
     bool hoverBoxVisible = false;
 
-    // QGraphicsItem interface
-public:
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
-    bool contains(const QPointF &point) const override;
-
-    // QGraphicsItem interface
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;

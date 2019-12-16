@@ -3,10 +3,15 @@
 #include <QPainter>
 #include <QDebug>
 
-GUI_port::GUI_port(QPointF basePoint, QGraphicsItem *parent) : QGraphicsItem(parent)
+#include "gui_effect.h"
+#include "ports/port.h"
+
+GUI_port::GUI_port(QPointF basePoint, Port* port, GUI_effect *parent) : QGraphicsItem(parent)
   , hoverBox(new QRectF(basePoint - QPointF(30,30), QSize(60,60)))
   , portBox(new QRectF(basePoint - QPointF(10,10), QSize(20,20)))
 {
+    this->parent = parent;
+    this->port = port;
     setAcceptHoverEvents(true);
 }
 
@@ -18,7 +23,6 @@ void GUI_port::setHoverBoxVisible(bool vis)
 
 void GUI_port::setBasePoint(QPointF basePoint)
 {
-    qDebug() << "wasting time :D";
     hoverBox->~QRectF();
     portBox->~QRectF();
     hoverBox = new QRectF(basePoint - QPointF(30,30), QSize(60,60));
@@ -27,7 +31,12 @@ void GUI_port::setBasePoint(QPointF basePoint)
 
 QPointF GUI_port::center()
 {
-    return portBox->center();
+    return portBox->center() + parent->scenePos();
+}
+
+Port *GUI_port::getPort() const
+{
+    return port;
 }
 
 QRectF GUI_port::boundingRect() const
@@ -52,7 +61,14 @@ void GUI_port::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 bool GUI_port::contains(const QPointF &point) const
 {
-    return hoverBox->contains(point);
+
+    qDebug() << "HoverBox TopLeft: " << hoverBox->topLeft();
+    qDebug() << "HoverBox BottomRight" << hoverBox->bottomRight();
+    qDebug() << "Point Contained? : " << point;
+    qDebug() << "Scenepos: " << scenePos();
+    bool b = hoverBox->contains(point);
+    qDebug() << b;
+    return b;
 }
 
 void GUI_port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

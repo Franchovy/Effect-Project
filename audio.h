@@ -24,7 +24,6 @@ public:
     Q_OBJECT
 
 public:
-    QList<Effect*>* getEffectChain();
     Effect* createEffect(int effectType);
     void addEffect(Effect* e);
     void removeEffect(Effect* e);
@@ -40,9 +39,6 @@ public:
 private:
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
-
-    InPort* inPort;
-    OutPort* outPort;
 
     QAudioDeviceInfo* inputDevice;
     QAudioDeviceInfo* outputDevice;

@@ -39,6 +39,7 @@ protected:
     QComboBox* connectionSelect;
     QPushButton* disconnectButton;
 signals:
+    void constructor(Port* this_ptr);
     void sendConnectionSelect(int portType);
 public slots:
     void disconnectPort();

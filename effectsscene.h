@@ -6,8 +6,9 @@
 
 QT_BEGIN_NAMESPACE
 class Effect;
-class GUI_effect;
 class EffectMap;
+class GUI_effect;
+class GUI_line;
 class GUI_port;
 class Port;
 class QGridLayout;
@@ -26,8 +27,8 @@ public:
 
     //dump
     void setupEffectsSelect(QComboBox* effectsSelect);
-    void createEffectUI(Effect* e);
-    void deleteEffectUI(Effect* e);
+    GUI_effect* addEffect(Effect* e);
+    void deleteEffect(Effect* e);
 
     int getNewEffectType() const;
 
@@ -44,25 +45,23 @@ private:
 
     GUI_port* getContainingPort(QPointF point);
     bool portLineDrag = false;
-    QLineF* portLine;
+    GUI_line* portLine;
     GUI_port* port_ptr;
 
     QTransform deviceTransform;
     bool dragging = false;
-    QPointF dragStartPosition;
-    QPointF dragRelativePosition;
     QGraphicsItem* draggedItem = nullptr;
 
 signals:
+    void connectPorts(Port* p1, Port* p2);
 
 public slots:
+    void effect_constructor(Effect* ptr);
+
     // QGraphicsScene interface
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-#define mousemove
-#ifdef mousemove
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-#endif
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
