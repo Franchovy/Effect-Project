@@ -45,11 +45,9 @@ Effect* EffectMap::createEffect(int effectType)
     Effect* e;
     switch(effectType){
     case 0:
-        e = new InputEffect(this);
-        break;
+        return createInputEffect();
     case 1:
-        e = new OutputEffect(this);
-        break;
+        return createOutputEffect();
     case 2:
         e = new EchoEffect1(this);
         break;
@@ -63,6 +61,20 @@ Effect* EffectMap::createEffect(int effectType)
         e = new Effect(); // useless default effect
     }
 
+    constructor(e);
+    return e;
+}
+
+InputEffect *EffectMap::createInputEffect()
+{
+    InputEffect* e = new InputEffect(this);
+    constructor(e);
+    return e;
+}
+
+OutputEffect *EffectMap::createOutputEffect()
+{
+    OutputEffect* e = new OutputEffect(this);
     constructor(e);
     return e;
 }

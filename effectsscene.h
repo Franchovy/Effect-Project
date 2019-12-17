@@ -46,7 +46,10 @@ private:
     GUI_port* getContainingPort(QPointF point);
     bool portLineDrag = false;
     GUI_line* portLine;
+    QPair<GUI_line*,GUI_line*> portLines;
+    QPointF portDragPoint;
     GUI_port* port_ptr;
+
 
     QTransform deviceTransform;
     bool dragging = false;

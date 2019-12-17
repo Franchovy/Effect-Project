@@ -10,6 +10,7 @@ GUI_port::GUI_port(QPointF basePoint, Port* port, GUI_effect *parent) : QGraphic
   , hoverBox(new QRectF(basePoint - QPointF(30,30), QSize(60,60)))
   , portBox(new QRectF(basePoint - QPointF(10,10), QSize(20,20)))
 {
+    setData(0,"port");
     this->parent = parent;
     this->port = port;
     setAcceptHoverEvents(true);

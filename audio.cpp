@@ -33,14 +33,18 @@ Audio::Audio(QObject* parent) :
 
 Effect *Audio::createEffect(int effectType)
 {
-    Effect* e = m_effectMap->createEffect(effectType);
-
     if (effectType == 0){
-        m_buffer->addInputEffect(e));
+        InputEffect* e = m_effectMap->createInputEffect();
+        m_buffer->addInputEffect(e);
+        return e;
     } else if (effectType == 1){
+        OutputEffect* e = m_effectMap->createOutputEffect();
         m_buffer->addOutputEffect(e);
+        return e;
+    } else {
+        Effect* e = m_effectMap->createEffect(effectType);
+        return e;
     }
-    return e;
 }
 
 void Audio::addEffect(Effect *e)

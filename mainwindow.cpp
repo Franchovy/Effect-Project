@@ -14,6 +14,7 @@
 #include "effect.h"
 #include "effectmap.h"
 #include "audio.h"
+#include "ports/port.h"
 #include "settingsdialog.h"
 #include "effectsscene.h"
 
@@ -58,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Connect Audio and UI
     connect(m_audio->getEffectMap(), &EffectMap::constructor, m_effectsUI, &EffectsScene::effect_constructor);
+    connect(m_effectsUI,&EffectsScene::connectPorts, m_audio->getEffectMap(), &EffectMap::connectPorts);
     connect(ui->newEffectButton, &QPushButton::pressed, [=](){
         int effectType = m_effectsUI->getNewEffectType();
 
@@ -87,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create default in and out effects
     Effect* e_in = m_audio->createEffect(0);
     Effect* e_out = m_audio->createEffect(1);
+
     m_effectsUI->connectPorts(e_in->getPorts().first(), e_out->getPorts().first());
 }
 

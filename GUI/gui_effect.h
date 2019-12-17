@@ -26,10 +26,19 @@ private:
     QList<GUI_port*> m_inPorts;
     QList<GUI_port*> m_outPorts;
 
+    bool hover = false;
+    QPen* pen_normal;
+    QPen* pen_highlight;
+
+
     // QGraphicsItem interface
 public:
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+protected:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
 };
 

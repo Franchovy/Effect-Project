@@ -11,8 +11,14 @@ GUI_effect::GUI_effect(QString name, QGraphicsItem* parent) : QGraphicsItem(pare
   , m_inPorts(QList<GUI_port*>())
   , m_outPorts(QList<GUI_port*>())
 {
+    setData(0,"effect");
     baseRect = QRectF(-200,-200,200,200);
     title = name;
+
+    setAcceptHoverEvents(true);
+
+    pen_normal = new QPen(QColor(0,0,0));
+    pen_highlight = new QPen(QColor(100,100,255,150),2);
 }
 
 GUI_port* GUI_effect::addPort(Port *port, int portType)
@@ -83,7 +89,23 @@ void GUI_effect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     font.setPixelSize(20);
     painter->setFont(font);
     
+    if (hover){
+        painter->setPen(*pen_highlight);
+        painter->drawRect(QRectF(baseRect.topLeft()-QPoint(5,5), baseRect.bottomRight()+QPoint(5,5)));
+    }
+
+    painter->setPen(*pen_normal);
     painter->drawRect(baseRect);
-    painter->drawText(QPoint(baseRect.topLeft().x()+10, baseRect.topLeft().y()+10), title);
+    painter->drawText(QPointF(baseRect.topLeft().x()+10, baseRect.topLeft().y()+10), title);
+}
+
+void GUI_effect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    hover = true;
+}
+
+void GUI_effect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    hover = false;
 }
 

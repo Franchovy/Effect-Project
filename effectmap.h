@@ -20,6 +20,8 @@ public:
     void addEffect(Effect* e);
     void addPort(Effect* e, Port*);
     Effect* createEffect(int effectType);
+    InputEffect* createInputEffect();
+    OutputEffect* createOutputEffect();
 
     QList<Port*> getPorts(Effect* e);
     QList<Port*> getPorts();
