@@ -1,4 +1,4 @@
-#include "effectmap.h"
+﻿#include "effectmap.h"
 
 #include <QComboBox>
 #include <QHash>
@@ -22,6 +22,7 @@ EffectMap::EffectMap(Audio *parent) : QObject(parent),
     m_connectionsMap(new QHash<Port*, Port*>())
 {
     parentAudio = parent;
+    effectsScene = parent->getUI();
     //createDefaultInputOutputEffects(inputEffect, outputEffect);
 }
 
@@ -105,6 +106,10 @@ void EffectMap::connectPorts(Port *p1, Port *p2)
 
     //Connect effects
     p1->setConnectedPort(p2);
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Add to graphics
+    effectsScene->connectPorts(p1,p2);
 }
 
 QList<Port *> EffectMap::getPorts(Effect *e)
@@ -155,6 +160,21 @@ QList<Port *> EffectMap::getFreePortsOfType(int type)
         }
     }
     return list;
+}
+
+Effect *EffectMap::getEffectFromPort(Port *port)
+{
+    for (Effect* e : m_effectMap->keys()){
+        if (e->getPorts().contains(port)){
+            return e;
+        }
+    }
+    return nullptr;
+}
+
+EffectsScene *EffectMap::getEffectsScene()
+{
+    return effectsScene;
 }
 /*
 void EffectMap::createDefaultInputOutputEffects(InputEffect *inputEffect, OutputEffect *outputEffect)

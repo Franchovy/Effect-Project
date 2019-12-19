@@ -7,6 +7,7 @@ QT_BEGIN_NAMESPACE
 class Effect;
 class QComboBox;
 class QPushButton;
+class GUI_port;
 QT_END_NAMESPACE
 
 class Port : public QObject
@@ -29,7 +30,12 @@ public:
     virtual int getConnectPortType(){return 0;}
     virtual int getPortType() {return 0;}
 
+    GUI_port* getUI();
+
+    void setUi(GUI_port *value);
+
 protected:
+    GUI_port* ui;
     Port* connectedPort = nullptr;
     QString portName;
 

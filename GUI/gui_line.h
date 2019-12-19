@@ -5,21 +5,30 @@
 
 QT_BEGIN_NAMESPACE
 class QPen;
+class GUI_port;
 QT_END_NAMESPACE
 
 class GUI_line : public QGraphicsItem
 {
 public:
-    GUI_line(QGraphicsItem* parent = nullptr);
+    GUI_line(GUI_port* p1 = nullptr, GUI_port* p2 = nullptr, QGraphicsItem* parent = nullptr);
 
     QPointF getP1() const;
     void setP1(const QPointF &value);
     QPointF getP2() const;
     void setP2(const QPointF &value);
 
+    GUI_port *getPort1() const;
+    void setPort1(GUI_port *value);
+
+    GUI_port *getPort2() const;
+    void setPort2(GUI_port *value);
+
     void hoverLeave();
 
 private:
+    GUI_port* port1;
+    GUI_port* port2;
     QPointF p1;
     QPointF p2;
 
@@ -31,6 +40,8 @@ private:
 public:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;

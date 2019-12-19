@@ -40,6 +40,21 @@ Port *GUI_port::getPort() const
     return port;
 }
 
+void GUI_port::setPort(Port *value)
+{
+    port = value;
+}
+
+GUI_line *GUI_port::getConnection()
+{
+    return connection;
+}
+
+void GUI_port::setConnection(GUI_line *line)
+{
+    connection = line;
+}
+
 QRectF GUI_port::boundingRect() const
 {
     return *hoverBox;

@@ -44,6 +44,16 @@ char *Port::getData()
     return nullptr;
 }
 
+GUI_port *Port::getUI()
+{
+    return ui;
+}
+
+void Port::setUi(GUI_port *value)
+{
+    ui = value;
+}
+
 void Port::disconnectPort()
 {
     connectedPort = nullptr;

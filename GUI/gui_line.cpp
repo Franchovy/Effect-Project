@@ -1,13 +1,19 @@
 #include "gui_line.h"
 
+#include "gui_port.h"
+
 #include <QPainter>
 #include <QPen>
 
-GUI_line::GUI_line(QGraphicsItem* parent) : QGraphicsItem(parent)
+GUI_line::GUI_line(GUI_port* p1, GUI_port* p2, QGraphicsItem* parent) : QGraphicsItem(parent)
 {
     setData(0,"line");
-    p1 = QPointF(0,0);
-    p2 = QPointF(0,0);
+
+    //Assign points
+    this->p1 = p1->center();
+    this->p2 = p2->center();
+    port1 = p1;
+    port2 = p2;
 
     setAcceptHoverEvents(true);
 
@@ -28,6 +34,26 @@ void GUI_line::setP2(const QPointF &value)
 void GUI_line::hoverLeave()
 {
     hover = false;
+}
+
+GUI_port *GUI_line::getPort2() const
+{
+    return port2;
+}
+
+void GUI_line::setPort2(GUI_port *value)
+{
+    port2 = value;
+}
+
+GUI_port *GUI_line::getPort1() const
+{
+    return port1;
+}
+
+void GUI_line::setPort1(GUI_port *value)
+{
+    port1 = value;
 }
 
 QPointF GUI_line::getP1() const

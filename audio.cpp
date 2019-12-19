@@ -97,6 +97,16 @@ void Audio::setOutputDevice(QAudioDeviceInfo device)
     setupFormat();
 }
 
+EffectsScene *Audio::getUI()
+{
+    return UI;
+}
+
+void Audio::setUI(EffectsScene *ui)
+{
+    UI = ui;
+}
+
 bool Audio::runAudio()
 {
     if (!running) {

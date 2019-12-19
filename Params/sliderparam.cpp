@@ -12,7 +12,7 @@ SliderParam::SliderParam(int min, int max, int val, Effect *parent) : Parameter(
     this->max = max;
     this->val = val;
 
-    sliderWidget = new QSlider(parent->getUI());
+    sliderWidget = new QSlider();
     sliderWidget->setMinimum(min);
     sliderWidget->setMaximum(max);
     sliderWidget->setValue(val);

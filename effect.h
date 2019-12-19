@@ -10,6 +10,7 @@
 QT_BEGIN_NAMESPACE
 class Audio;
 class EffectMap;
+class GUI_effect;
 class InPort;
 class OutPort;
 class Port;
@@ -48,13 +49,14 @@ public:
 
     QList<Port*> getPorts();
 
-    QGroupBox* generateUI();
-    bool isUIGenerated();
-    QGroupBox* getUI();
-
     virtual char* getData();
 
+    GUI_effect *getUi() const;
+    void setUi(GUI_effect *value);
+
 protected:
+    GUI_effect* ui;
+
     QList<InPort*> m_inPortList;
     QList<OutPort*> m_outPortList;
     QList<Parameter*> m_parameters;

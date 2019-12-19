@@ -6,6 +6,7 @@
 QT_BEGIN_NAMESPACE
 class Audio;
 class Effect;
+class EffectsScene;
 class InputEffect;
 class OutputEffect;
 class Port;
@@ -29,9 +30,13 @@ public:
     QList<Port*> getFreePorts();
     QList<Port*> getFreePortsOfType(int type);
 
+    Effect* getEffectFromPort(Port* port);
+    EffectsScene* getEffectsScene();
     //void createDefaultInputOutputEffects(InputEffect* in_e, OutputEffect* out_e);
 
 private:
+    EffectsScene* effectsScene;
+
     //default input and output effects
     InputEffect* inputEffect;
     OutputEffect* outputEffect;

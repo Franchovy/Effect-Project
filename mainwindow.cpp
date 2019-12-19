@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
     , m_effectsUI(new EffectsScene(this))
     , m_graphicsView(new QGraphicsView(this))
 {
+    m_audio->setUI(m_effectsUI);
+
     // UI SETUP
     ui->setupUi(this);
 
@@ -40,8 +42,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_graphicsView->setScene(m_effectsUI);
     m_graphicsView->setAttribute(Qt::WA_Hover);
-
     //Copied settings
+
     m_graphicsView->setCacheMode(QGraphicsView::CacheBackground);
     m_graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     m_graphicsView->setRenderHint(QPainter::Antialiasing);
@@ -50,16 +52,18 @@ MainWindow::MainWindow(QWidget *parent)
     m_graphicsView->setMinimumSize(400, 400);
     m_graphicsView->setWindowTitle(tr("Effect Workspace"));
 
+    m_effectsUI->setView(m_graphicsView);
     m_graphicsView->show();
+
+
 
     m_effectsUI->setupEffectsSelect(ui->effectsSelect);
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
 
-
-
     //Connect Audio and UI
     connect(m_audio->getEffectMap(), &EffectMap::constructor, m_effectsUI, &EffectsScene::effect_constructor);
-    connect(m_effectsUI,&EffectsScene::connectPorts, m_audio->getEffectMap(), &EffectMap::connectPorts);
+    connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_audio->getEffectMap(), &EffectMap::connectPorts);
+
     connect(ui->newEffectButton, &QPushButton::pressed, [=](){
         int effectType = m_effectsUI->getNewEffectType();
 
@@ -90,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
     Effect* e_in = m_audio->createEffect(0);
     Effect* e_out = m_audio->createEffect(1);
 
-    m_effectsUI->connectPorts(e_in->getPorts().first(), e_out->getPorts().first());
+    m_effectsUI->connectPortsSignal(e_in->getPorts().first(), e_out->getPorts().first());
 }
 
 

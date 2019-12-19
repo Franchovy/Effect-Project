@@ -1,12 +1,15 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
+#include "effectsscene.h"
+
 #include <QObject>
 
 QT_BEGIN_NAMESPACE
 class Effect;
 class EffectBuffer;
 class EffectMap;
+class EffectsScene;
 class InPort;
 class InputEffect;
 class OutPort;
@@ -36,7 +39,12 @@ public:
     void setInputDevice(QAudioDeviceInfo device);
     void setOutputDevice(QAudioDeviceInfo device);
 
+    EffectsScene* getUI();
+    void setUI(EffectsScene* ui);
+
 private:
+    EffectsScene* UI;
+
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
 

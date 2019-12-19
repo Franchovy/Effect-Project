@@ -30,12 +30,14 @@ EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
 {
     //Default settings or whatever
     setItemIndexMethod(QGraphicsScene::NoIndex);
-    setSceneRect(-200, -200, 400, 400);
+    setSceneRect(-1000, -1000, 2000, 2000);
     setBackgroundBrush(QColor(255,255,255));
 
     deviceTransform = QTransform();
 
     parent->setAcceptDrops(true);
+
+
 }
 
 void EffectsScene::setupEffectsSelect(QComboBox* effectsSelect)
@@ -60,43 +62,32 @@ GUI_effect* EffectsScene::addEffect(Effect* e)
 {
     GUI_effect* e_gui = new GUI_effect(e->effectName);
     addItem(e_gui);
+    e_gui->setPos(QPointF(-100,0));
+
+    while (!e_gui->collidingItems().empty()){
+        //Colliding with other stuff..
+        e_gui->moveBy(150,15);
+    }
+
     m_effects.append(e_gui);
 
     //Add Ports to effect
     for (Port* p : e->getPorts()){
         GUI_port* gp = e_gui->addPort(p,p->getPortType());
+        p->setUi(gp);
     }
     return e_gui;
 }
 
 void EffectsScene::deleteEffect(Effect *e)
 {
-    //CHANGEME Delete Effect must be changed
-    mainLayout->removeWidget(e->getUI());
-    e->getUI()->deleteLater(); //Should not have to do this?
-    mainLayout->update();
+    //TODO Delete Effect
 }
 
 
 int EffectsScene::getNewEffectType() const
 {
     return newEffectType;
-}
-
-GUI_port* EffectsScene::getContainingPort(QPointF point){
-    for (GUI_effect* e : m_effects){
-        for (GUI_port* g : e->getPorts()){
-            if (g->contains(point - e->scenePos())){
-                return g;
-            }
-        }
-    }
-    return nullptr;
-}
-
-void EffectsScene::effect_constructor(Effect *ptr)
-{
-    GUI_effect* e = addEffect(ptr);
 }
 
 void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -111,6 +102,7 @@ void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             //Separate out line into two
             portLines.first = new GUI_line();
             portLines.second = new GUI_line();
+
 
             portLines.first->setP1(portLine->getP1());
             portLines.second->setP2(portLine->getP2());
@@ -134,23 +126,16 @@ void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             addItem(portLine);
         } else if (draggedItem->data(0) == "effect"){
             dragging = true;
-        } else {
-
+        }  else {
+            dragView = true;
         }
-/*
-        GUI_port* port = getContainingPort(event->scenePos());
-        if (port != nullptr){
-        } else if (draggedItem != nullptr){
-            qDebug() << draggedItem->data(0);
-
-        }
-        */
     }
     update();
 }
 
 void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsView* v = getView();
     if (dragging){
         if (draggedItem->data(0) == "line"){
             portLines.first->setP2(event->scenePos());
@@ -161,6 +146,11 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         }
     } else if (portLineDrag){
         portLine->setP2(event->scenePos());
+    } else if (dragView){
+        //CHANGEME does not work
+        QPointF p = event->scenePos() - event->lastScenePos();
+        //v==nullptr ? qDebug() << 1 : qDebug() << 2;
+        //v->translate(p.rx(),p.ry());
     }
     QGraphicsScene::mouseMoveEvent(event);
 
@@ -175,7 +165,7 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             //Connected to port!
             portLine->setP2(port->center());
             //Emit connectPort signal
-            connectPorts(port->getPort(), port_ptr->getPort());
+            connectPortsSignal(port->getPort(), port_ptr->getPort());
         } else {
             //Nothing connected so delete temp data.
             //CHANGEME no garbage disposal implemented
@@ -196,6 +186,8 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         } else if (draggedItem->data(0) == "effect"){
 
         }
+    } else if (dragView){
+        dragView = false;
     }
 
     QGraphicsScene::mouseReleaseEvent(event);
@@ -203,6 +195,47 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     draggedItem = nullptr;
 
     update();
+}
+
+
+QGraphicsView *EffectsScene::getView()
+{
+    if (views().empty()){
+        // View is no longer valid.
+        qDebug() << "No view in sight!";
+        return nullptr;
+    } else {
+        return view;
+    }
+}
+
+GUI_port* EffectsScene::getContainingPort(QPointF point){
+    for (GUI_effect* e : m_effects){
+        for (GUI_port* g : e->getPorts()){
+            if (g->contains(point - e->scenePos())){
+                return g;
+            }
+        }
+    }
+    return nullptr;
+}
+
+void EffectsScene::setView(QGraphicsView *value)
+{
+    view = value;
+}
+
+void EffectsScene::effect_constructor(Effect *ptr)
+{
+    GUI_effect* e = addEffect(ptr);
+}
+
+
+GUI_line *EffectsScene::connectPorts(Port *p1, Port *p2)
+{
+    GUI_line* line = new GUI_line(p1->getUI(), p2->getUI());
+    addItem(line);
+    return line;
 }
 
 

@@ -32,6 +32,18 @@ public:
 
     int getNewEffectType() const;
 
+    GUI_port* getGUI_port(Port* p);
+    GUI_effect* getGUI_effect(Effect* e);
+
+    QGraphicsView* getView();
+    void setView(QGraphicsView *value);
+
+    // QGraphicsScene interface
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 private:
     EffectMap* effectMap;
 
@@ -50,22 +62,20 @@ private:
     QPointF portDragPoint;
     GUI_port* port_ptr;
 
+    QGraphicsView* view;
 
     QTransform deviceTransform;
     bool dragging = false;
     QGraphicsItem* draggedItem = nullptr;
+    bool dragView = false;
 
 signals:
-    void connectPorts(Port* p1, Port* p2);
+    void connectPortsSignal(Port* p1, Port* p2);
 
 public slots:
     void effect_constructor(Effect* ptr);
+    GUI_line* connectPorts(Port* p1, Port* p2);
 
-    // QGraphicsScene interface
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // EFFECTUI_H

@@ -50,63 +50,6 @@ QList<Port *> Effect::getPorts()
     return list;
 }
 
-
-QGroupBox* Effect::generateUI()
-{
-    frame = new QGroupBox();
-    frame->setTitle(effectName);
-
-    QHBoxLayout* layout = new QHBoxLayout(frame);
-    frame->setLayout(layout);
-
-    for (Parameter* p : *(getParamList())){
-        layout->addWidget(p->getWidget());
-    }
-
-    // delete button
-    deleteButton = new QPushButton(frame);
-    layout->addWidget(deleteButton);
-    connect(deleteButton, &QPushButton::pressed, [=](){
-        deleteLater();
-    });
-
-
-    // Input/output port comboBoxes
-    QVBoxLayout* portSelectLayout = new QVBoxLayout();
-    layout->addLayout(portSelectLayout);
-
-    portSelectLayout->addWidget(new QLabel("InPort"));
-    for(InPort* inP : m_inPortList){
-        portSelectLayout->addWidget(new QLabel(inP->getName()));
-        portSelectLayout->addWidget(inP->getConnectionSelect());
-        portSelectLayout->addWidget(inP->getDisconnectButton());
-    }
-
-    portSelectLayout->addWidget(new QLabel("OutPort"));
-    for(OutPort* outP : m_outPortList){
-        portSelectLayout->addWidget(new QLabel(outP->getName()));
-        portSelectLayout->addWidget(outP->getConnectionSelect());
-        portSelectLayout->addWidget(outP->getDisconnectButton());
-    }
-
-    bUIGenerated = true;
-    return frame;
-}
-
-bool Effect::isUIGenerated()
-{
-    return bUIGenerated;
-}
-
-/**
- * @brief Effect::getUI
- * @return nullptr if UI is not yet generated.
- */
-QGroupBox* Effect::getUI()
-{
-    return frame;
-}
-
 void Effect::addParameter(Parameter *param, QString name)
 {
     param = new Parameter(this);
@@ -128,5 +71,15 @@ SliderParam* Effect::addSliderParameter(QString name, int min, int max, int val)
 char *Effect::getData()
 {
     return nullptr;
+}
+
+GUI_effect *Effect::getUi() const
+{
+    return ui;
+}
+
+void Effect::setUi(GUI_effect *value)
+{
+    ui = value;
 }
 
