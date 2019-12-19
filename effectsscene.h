@@ -57,7 +57,7 @@ private:
 
     GUI_port* getContainingPort(QPointF point);
     bool portLineDrag = false;
-    GUI_line* portLine;
+    GUI_line* portLine = nullptr;
     QPair<GUI_line*,GUI_line*> portLines;
     QPointF portDragPoint;
     GUI_port* port_ptr;
@@ -68,6 +68,8 @@ private:
     bool dragging = false;
     QGraphicsItem* draggedItem = nullptr;
     bool dragView = false;
+
+    Effect* effectAt(QPointF point);
 
 signals:
     void connectPortsSignal(Port* p1, Port* p2);

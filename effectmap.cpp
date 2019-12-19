@@ -106,10 +106,6 @@ void EffectMap::connectPorts(Port *p1, Port *p2)
 
     //Connect effects
     p1->setConnectedPort(p2);
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Add to graphics
-    effectsScene->connectPorts(p1,p2);
 }
 
 QList<Port *> EffectMap::getPorts(Effect *e)

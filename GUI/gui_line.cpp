@@ -1,7 +1,9 @@
 #include "gui_line.h"
 
 #include "gui_port.h"
+#include "gui_effect.h"
 
+#include <QDebug>
 #include <QPainter>
 #include <QPen>
 
@@ -10,10 +12,11 @@ GUI_line::GUI_line(GUI_port* p1, GUI_port* p2, QGraphicsItem* parent) : QGraphic
     setData(0,"line");
 
     //Assign points
-    this->p1 = p1->center();
-    this->p2 = p2->center();
     port1 = p1;
     port2 = p2;
+    if (port1 != nullptr) {this->p1 = port1->center();}
+    if (port2 != nullptr) {this->p2 = port2->center();}
+
 
     setAcceptHoverEvents(true);
 
@@ -44,6 +47,36 @@ GUI_port *GUI_line::getPort2() const
 void GUI_line::setPort2(GUI_port *value)
 {
     port2 = value;
+}
+
+GUI_port *GUI_line::getPortFromEffect(GUI_effect *e) const
+{
+
+    if (port1 == nullptr) return nullptr;
+    if (port2 == nullptr) return nullptr;
+
+    if (e->getPorts().contains(port1)){
+        return port1;
+    } else if (e->getPorts().contains(port2)){
+        return port2;
+    }
+    return nullptr;
+}
+
+void GUI_line::drag(GUI_port *port, QPointF point)
+{
+    if (port == port1){
+        setP1(p1 + point);
+    } else if (port == port2){
+        setP2(p2 + point);
+    }
+}
+
+void GUI_line::destroy()
+{
+    port1->setConnection(nullptr);
+    port2->setConnection(nullptr);
+    this->~GUI_line();
 }
 
 GUI_port *GUI_line::getPort1() const

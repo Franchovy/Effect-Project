@@ -63,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     //Connect Audio and UI
     connect(m_audio->getEffectMap(), &EffectMap::constructor, m_effectsUI, &EffectsScene::effect_constructor);
     connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_audio->getEffectMap(), &EffectMap::connectPorts);
+    connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_effectsUI, &EffectsScene::connectPorts);
+
 
     connect(ui->newEffectButton, &QPushButton::pressed, [=](){
         int effectType = m_effectsUI->getNewEffectType();

@@ -14,6 +14,7 @@
 #include "ports/port.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
+#include "GUI/gui_effect.h"
 
 
 Effect::Effect(EffectMap* parent) : QObject(parent)
@@ -22,6 +23,12 @@ Effect::Effect(EffectMap* parent) : QObject(parent)
   , m_parameters(QList<Parameter*>())
 {
     effectName = "Default Effect Name";
+}
+
+GUI_effect *Effect::createGUI(GUI_effect *e)
+{
+    e = new GUI_effect(effectName, this);
+    return e;
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)

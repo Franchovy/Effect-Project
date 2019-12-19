@@ -5,6 +5,7 @@
 
 QT_BEGIN_NAMESPACE
 class QPen;
+class GUI_effect;
 class GUI_port;
 QT_END_NAMESPACE
 
@@ -24,11 +25,17 @@ public:
     GUI_port *getPort2() const;
     void setPort2(GUI_port *value);
 
+    GUI_port* getPortFromEffect(GUI_effect* e) const;
+
+    void drag(GUI_port *port, QPointF point);
+
+    void destroy();
+
     void hoverLeave();
 
 private:
-    GUI_port* port1;
-    GUI_port* port2;
+    GUI_port* port1 = nullptr;
+    GUI_port* port2 = nullptr;
     QPointF p1;
     QPointF p2;
 

@@ -40,6 +40,8 @@ public:
 
     EffectMap* getEffectMap(){return effectMap;}
 
+    GUI_effect* createGUI(GUI_effect* e);
+
     virtual void applyEffect(char* in, char* out, int readLength);
     void applyEffect(char *data, int readLength);
     QString effectName = "default effect";
@@ -64,7 +66,7 @@ protected:
     void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
     SliderParam* addSliderParameter(QString name, int min, int max, int val);
 
-private:
+protected:
     QGroupBox* frame = nullptr;
     bool bUIGenerated = false;
 

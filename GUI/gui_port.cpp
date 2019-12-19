@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "gui_effect.h"
+#include "gui_line.h"
 #include "ports/port.h"
 
 GUI_port::GUI_port(QPointF basePoint, Port* port, GUI_effect *parent) : QGraphicsItem(parent)
@@ -55,6 +56,14 @@ void GUI_port::setConnection(GUI_line *line)
     connection = line;
 }
 
+void GUI_port::eraseConnection()
+{
+    if (connection != nullptr){
+        connection->destroy();
+        connection = nullptr;
+    }
+}
+
 QRectF GUI_port::boundingRect() const
 {
     return *hoverBox;
@@ -77,14 +86,7 @@ void GUI_port::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 bool GUI_port::contains(const QPointF &point) const
 {
-
-    qDebug() << "HoverBox TopLeft: " << hoverBox->topLeft();
-    qDebug() << "HoverBox BottomRight" << hoverBox->bottomRight();
-    qDebug() << "Point Contained? : " << point;
-    qDebug() << "Scenepos: " << scenePos();
-    bool b = hoverBox->contains(point);
-    qDebug() << b;
-    return b;
+    return hoverBox->contains(point);;
 }
 
 void GUI_port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

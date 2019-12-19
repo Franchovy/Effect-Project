@@ -5,12 +5,15 @@
 #include <QGraphicsScene>
 
 #include "gui_port.h"
+#include "gui_line.h"
 #include "ports/port.h"
 
-GUI_effect::GUI_effect(QString name, QGraphicsItem* parent) : QGraphicsItem(parent)
+GUI_effect::GUI_effect(QString name, Effect* parent) : QGraphicsItem()
   , m_inPorts(QList<GUI_port*>())
   , m_outPorts(QList<GUI_port*>())
 {
+    this->parent = parent;
+
     setData(0,"effect");
     baseRect = QRectF(-200,-200,200,200);
     title = name;
@@ -72,6 +75,37 @@ QList<GUI_port *> GUI_effect::getPorts()
     list.append(m_inPorts);
     list.append(m_outPorts);
     return list;
+}
+
+void GUI_effect::drag(QPointF d)
+{
+    for (GUI_port* p : getPorts()){
+        GUI_line* l = p->getConnection(); //CHANGEME I think this is wrong
+        if (l != nullptr){
+            if (l->getPortFromEffect(this) != nullptr){
+                l->drag(p, d);
+            }
+        }
+    }
+    moveBy(d.x(),d.y());
+}
+
+QList<GUI_line *> GUI_effect::addConnectedLine(GUI_line *line)
+{
+    connectedLines.append(line);
+}
+
+QList<GUI_line *> GUI_effect::removeConnectedLine(GUI_line* line)
+{
+    if (connectedLines.contains(line)){
+        connectedLines.removeOne(line);
+        return connectedLines;
+    }
+}
+
+void GUI_effect::deleteConnectedLines()
+{
+    connectedLines.~QList();
 }
 
 

@@ -30,9 +30,10 @@ public:
 
     GUI_line* getConnection();
     void setConnection(GUI_line* line);
+    void eraseConnection();
 
 private:
-    GUI_line* connection;
+    GUI_line* connection = nullptr;
     GUI_effect* parent;
     Port* port;
 
