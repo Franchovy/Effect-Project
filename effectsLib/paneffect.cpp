@@ -2,17 +2,17 @@
 #include <QDebug>
 #include <QtMath>
 
-PanEffect::PanEffect(EffectMap* parent) : Effect(parent)
+PanEffect::PanEffect(Audio* parent) : Effect(parent)
 {
     effectName = "Pan Effect";
-
+/*
     speedParam = addSliderParameter("Speed", 1, 1000, 10);
     QObject::connect(speedParam, &SliderParam::valueChanged, [this](int value){
         panspeedtest = value * 100;
         if (pancount <= panspeedtest) pancount = 1;
         panVal = static_cast<double>(pancount) / (panspeedtest / 2);
 
-    });
+    });*/
 }
 
 void PanEffect::applyEffect(char *in, char *out, int readLength)

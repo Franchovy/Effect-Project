@@ -36,41 +36,22 @@ class Effect : public QObject
 {
     Q_OBJECT
 public:
-    explicit Effect(EffectMap *parent = nullptr);
-
-    EffectMap* getEffectMap(){return effectMap;}
+    explicit Effect(Audio *parent = nullptr);
 
     virtual void applyEffect(char* in, char* out, int readLength);
     void applyEffect(char *data, int readLength);
     QString effectName = "default effect";
 
+    QList<Port*> getPorts();
+
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &m_parameters;}
 
-    QList<Port*> getPorts();
-
     virtual char* getData();
-
-    GUI_effect *getUi() const;
-    void setUi(GUI_effect *value);
-
 protected:
-    GUI_effect* ui;
-
-    QList<InPort*> m_inPortList;
-    QList<OutPort*> m_outPortList;
+    QList<Port*> ports;
+    QList<QPointF> portLocs;
     QList<Parameter*> m_parameters;
-
-    void addParameter(Parameter* param, QString name); //TODO Add "connect" portion (lambda expr?)
-    SliderParam* addSliderParameter(QString name, int min, int max, int val);
-
-    QGroupBox* frame = nullptr;
-    bool bUIGenerated = false;
-
-    EffectMap* effectMap = nullptr;
-
-    QPushButton *deleteButton;
-
 };
 
 

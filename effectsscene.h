@@ -27,7 +27,6 @@ public:
 
     //dump
     void setupEffectsSelect(QComboBox* effectsSelect);
-    GUI_effect* addEffect(Effect* e);
     void deleteEffect(Effect* e);
 
     int getNewEffectType() const;
@@ -47,15 +46,20 @@ protected:
 private:
     EffectMap* effectMap;
 
-    QList<GUI_effect*> m_effects;
+    QMap<Effect*, QPointF>* m_effects;
+    QMap<Effect*, QPointF[]>* m_effectPorts;
+    QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>, GUI_line*>* m_connections; // QPair<Effect*,int> should be defined as a macro, or replaced with ID./
 
-    QList<QString> effectTypeList;
+    QPointF newEffectPos(Effect*);
+    QList<GUI_port*> getPorts(Effect*);
+    Effect* getEffectAt(QPointF);
+    QPointF getPortCenter(QPointF);
+    void connectLine();
+
+    /* //TODO move to MainWindow
     QComboBox* effectsSelect;
     QPushButton* newEffectButton;
-
-    int newEffectType = 0;
-
-    GUI_port* getContainingPort(QPointF point);
+    */
     bool portLineDrag = false;
     GUI_line* portLine = nullptr;
     QPair<GUI_line*,GUI_line*> portLines;
@@ -73,14 +77,13 @@ private:
     QGraphicsItem* draggedItem = nullptr;
     bool dragView = false;
 
-    Effect* effectAt(QPointF point);
-
 signals:
-    void connectPortsSignal(Port* p1, Port* p2);
+    void connectPortsSignal(QPair<Effect*, int>, QPair<Effect*, int>);
 
 public slots:
-    void effect_constructor(Effect* ptr);
-    GUI_line* connectPorts(Port* p1, Port* p2);
+    void addEffect(Effect*);
+
+    GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
 
 };
 

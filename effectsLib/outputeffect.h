@@ -13,7 +13,7 @@ class OutputEffect : public Effect
 {
     Q_OBJECT
 public:
-    OutputEffect(EffectMap* parent = nullptr);
+    OutputEffect(Audio* parent = nullptr);
 
 
     char* getData() override;

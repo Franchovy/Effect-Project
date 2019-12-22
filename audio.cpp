@@ -17,6 +17,7 @@
 #include "effectbuffer.h"
 #include "effectsLib/inputeffect.h"
 #include "effectsLib/outputeffect.h"
+#include "effectsLib/echoeffect1.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
@@ -47,20 +48,25 @@ Audio::Audio(QObject* parent) : QObject(parent)
     setupFormat();
 }
 
+//Upon receiving signal.
 Effect *Audio::createEffect(int effectType)
 {
-    if (effectType == 0){
-        InputEffect* e = m_effectMap->createInputEffect();
-        m_buffer->addInputEffect(e);
-        return e;
-    } else if (effectType == 1){
-        OutputEffect* e = m_effectMap->createOutputEffect();
-        m_buffer->addOutputEffect(e);
-        return e;
-    } else {
-        Effect* e = m_effectMap->createEffect(effectType);
-        return e;
+    Effect* e;
+    switch (effectType){
+    case 0: //InputEffect
+        e = new InputEffect(this);
+        break;
+    case 1: //OutputEffect
+        e = new OutputEffect(this);
+        break;
+    case 2: // EchoEffect1
+        e = new EchoEffect1(this);
+        break;
+    default:
+        qDebug() << "Unknown Effect requested.";
     }
+
+    return e;
 }
 
 void Audio::addEffect(Effect *e)
@@ -147,18 +153,6 @@ void Audio::record(){
         m_audioRecorder->setEncodingSettings(settings, QVideoEncoderSettings(), container);
         m_audioRecorder->record();
     }
-}
-
-
-
-EffectsScene *Audio::getUI()
-{
-    return UI;
-}
-
-void Audio::setUI(EffectsScene *ui)
-{
-    UI = ui;
 }
 
 bool Audio::runAudio()

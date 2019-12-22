@@ -13,35 +13,23 @@ QT_END_NAMESPACE
 class GUI_port : public QGraphicsItem
 {
 public:
-    GUI_port(QPointF basePoint, Port* port, GUI_effect *parent);
+    GUI_port(QPointF basePoint);
 
     void setHoverBoxVisible(bool vis = true);
     void setBasePoint(QPointF basePoint);
 
-    QPointF center();
-
-// QGraphicsItem interface
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-    bool contains(const QPointF &point) const override;
-
-    Port *getPort() const;
-
-    GUI_line* getConnection();
-    void eraseConnection();
-
-    GUI_effect* getParent() const;
-
-    void connectPort(Port*, GUI_line*);
+    QPointF pos;
 
 private:
-    GUI_line* connection = nullptr;
-    GUI_effect* parent;
-    Port* port;
-
     QRectF* hoverBox;
     QRectF* portBox;
     bool hoverBoxVisible = false;
+
+    // QGraphicsItem interface
+public:
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    bool contains(const QPointF &point) const override;
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;

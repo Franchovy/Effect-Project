@@ -42,17 +42,11 @@ public:
     void setInputDevice(QAudioDeviceInfo device);
     void setOutputDevice(QAudioDeviceInfo device);
 
-    EffectsScene* getUI();
-    void setUI(EffectsScene* ui);
-
     void record();
 
 private:
-    EffectsScene* UI;
-
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
-
 
     QAudioRecorder* m_audioRecorder;
     QAudioProbe* m_audioProbe;
@@ -61,11 +55,6 @@ private:
 
     template <class T>
     QVector<qreal> getBufferLevels(const T *buffer, int frames, int channels);
-
-    QAudioDeviceInfo* inputDevice;
-    QAudioDeviceInfo* outputDevice;
-    QAudioInput* inputAudio;
-    QAudioOutput* outputAudio;
 
     bool running = false;
 

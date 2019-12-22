@@ -17,9 +17,7 @@
 #include "GUI/gui_effect.h"
 
 
-Effect::Effect(EffectMap* parent) : QObject(parent)
-  , m_inPortList(QList<InPort*>())
-  , m_outPortList(QList<OutPort*>())
+Effect::Effect(Audio* parent) : QObject(parent)
   , m_parameters(QList<Parameter*>())
 {
     effectName = "Default Effect Name";
@@ -40,47 +38,11 @@ void Effect::applyEffect(char *data, int readLength){
 
 QList<Port *> Effect::getPorts()
 {
-    QList<Port *> list = QList<Port *>();
-    Port* p;
-    foreach(p, m_inPortList){
-        list.append(p);
-    }
-    foreach(p, m_outPortList){
-        list.append(p);
-    }
-    return list;
-}
-
-void Effect::addParameter(Parameter *param, QString name)
-{
-    param = new Parameter(this);
-
-    param->setObjectName("name");
-    m_parameters.append(param);
-}
-
-//Meant to be the same as "addParameter" but got stuck trying to use child class parameters.
-//TODO try again and make sure it wasn't just a #include problem.
-SliderParam* Effect::addSliderParameter(QString name, int min, int max, int val){
-    SliderParam *param = new SliderParam(min, max, val, this);
-    param->setObjectName(name);
-    m_parameters.append(param);
-
-    return param;
+    return ports;
 }
 
 char *Effect::getData()
 {
     return nullptr;
-}
-
-GUI_effect *Effect::getUi() const
-{
-    return ui;
-}
-
-void Effect::setUi(GUI_effect *value)
-{
-    ui = value;
 }
 

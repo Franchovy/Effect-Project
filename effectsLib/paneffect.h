@@ -8,7 +8,7 @@ class PanEffect : public Effect
 {
     Q_OBJECT
 public:
-    explicit PanEffect(EffectMap* parent = nullptr);
+    explicit PanEffect(Audio* parent = nullptr);
 
     // Effect interface
 public:

@@ -16,10 +16,6 @@ class Port : public QObject
 public:
     explicit Port(QString name, Effect *parent = nullptr);
 
-    bool isConnectedPortSet();
-    Port* getConnectedPort();
-    void setConnectedPort(Port* port);
-
     virtual char* getData();
 
     QString getName(){return portName;}
@@ -27,20 +23,10 @@ public:
     virtual int getConnectPortType(){return 0;}
     virtual int getPortType() {return 0;}
 
-    GUI_port* getUI();
-
-    void setUi(GUI_port *value);
-
 protected:
-    GUI_port* ui;
     Port* connectedPort = nullptr;
     QString portName;
 
-    Effect* parentEffect;
-
-    //temporary UI
-    QComboBox* connectionSelect;
-    QPushButton* disconnectButton;
 signals:
     void constructor(Port* this_ptr);
 public slots:

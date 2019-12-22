@@ -6,15 +6,15 @@
 #include "Params/sliderparam.h"
 
 
-EchoEffect1::EchoEffect1(EffectMap* parent) : Effect(parent)
+EchoEffect1::EchoEffect1(Audio* parent) : Effect(parent)
   , inPort(new InPort("Echo In", this))
   , outPort(new OutPort("Echo Out", this))
 {
     effectName = "Echo Effect 1";
 
-    m_inPortList.append(inPort);
-    m_outPortList.append(outPort);
-
+    ports.append(inPort);
+    ports.append(outPort);
+/*
     lenParam = addSliderParameter("Buffer Length", 800, 80000, len = 8000);
     QObject::connect(lenParam, &SliderParam::valueChanged, [this](int value){
         resizeBuffer(value);
@@ -24,7 +24,7 @@ EchoEffect1::EchoEffect1(EffectMap* parent) : Effect(parent)
     QObject::connect(delayParam, &SliderParam::valueChanged, [this](int newVal){
         delayVal = newVal;
     });
-
+*/
     effectBuffer = QByteArray(len, 0);
     effectBufferpt = 1;
     effectBuffer.fill(0);

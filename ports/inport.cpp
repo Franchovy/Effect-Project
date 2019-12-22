@@ -9,7 +9,7 @@
 
 InPort::InPort(QString name, Effect* parent) : Port(name, parent)
 {
-    parentEffect = parent;
+
 }
 
 char *InPort::getData()

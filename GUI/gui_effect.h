@@ -14,33 +14,17 @@ QT_END_NAMESPACE
 class GUI_effect : public QGraphicsItem
 {
 public:
-    GUI_effect(QString name = "Default name", Effect* parent = nullptr);
-
-    Effect* parent;
-
-    GUI_port* addPort(Port* port, int portType);
-    QList<GUI_port*> addPort(QList<Port*> portList, int portType);
-
-    QList<GUI_port*> getPorts();
+    GUI_effect(QString name, QPointF pos);
     void drag(QPointF d);
 
-    QList<GUI_line*> addConnectedLine(GUI_line* line);
-    QList<GUI_line*> removeConnectedLine(GUI_line* line);
-    void deleteConnectedLines();
-
 private:
+    QPointF pos;
     QRectF baseRect;
     QString title;
-
-    QList<GUI_line*> connectedLines;
-
-    QList<GUI_port*> m_inPorts;
-    QList<GUI_port*> m_outPorts;
 
     bool hover = false;
     QPen* pen_normal;
     QPen* pen_highlight;
-
 
     // QGraphicsItem interface
 public:

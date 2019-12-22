@@ -13,7 +13,7 @@ class InputEffect : public Effect
 {
     Q_OBJECT
 public:
-    InputEffect(EffectMap* parent = nullptr);
+    InputEffect(Audio* parent = nullptr);
 
 
     void giveData(char* data);

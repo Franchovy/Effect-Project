@@ -7,13 +7,15 @@
 #include "gui_line.h"
 #include "ports/port.h"
 
-GUI_port::GUI_port(QPointF basePoint, Port* port, GUI_effect *parent) : QGraphicsItem(parent)
-  , hoverBox(new QRectF(basePoint - QPointF(30,30), QSize(60,60)))
-  , portBox(new QRectF(basePoint - QPointF(10,10), QSize(20,20)))
+GUI_port::GUI_port(QPointF basePoint)
 {
     setData(0,"port");
-    this->parent = parent;
-    this->port = port;
+
+    hoverBox = new QRectF(basePoint - QPointF(30,30), QSize(60,60));
+    portBox = new QRectF(basePoint - QPointF(10,10), QSize(20,20));
+
+    pos = basePoint;
+
     setAcceptHoverEvents(true);
 }
 
@@ -29,40 +31,6 @@ void GUI_port::setBasePoint(QPointF basePoint)
     portBox->~QRectF();
     hoverBox = new QRectF(basePoint - QPointF(30,30), QSize(60,60));
     portBox = new  QRectF(basePoint - QPointF(10,10), QSize(20,20));
-}
-
-QPointF GUI_port::center()
-{
-    return portBox->center() + parent->scenePos();
-}
-
-Port *GUI_port::getPort() const
-{
-    return port;
-}
-
-GUI_line *GUI_port::getConnection()
-{
-    return connection;
-}
-
-void GUI_port::eraseConnection()
-{
-    if (connection != nullptr){
-        connection->destroy();
-        connection = nullptr;
-    }
-}
-
-GUI_effect *GUI_port::getParent() const
-{
-    return parent;
-}
-
-void GUI_port::connectPort(Port * p, GUI_line* l)
-{
-    port = p;
-    connection = l;
 }
 
 QRectF GUI_port::boundingRect() const

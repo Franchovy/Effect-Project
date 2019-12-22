@@ -3,17 +3,16 @@
 #include "ports/outport.h"
 #include <QDebug>
 
-InputEffect::InputEffect(EffectMap* parent) : Effect(parent)
+InputEffect::InputEffect(Audio* parent) : Effect(parent)
 {
     effectName = "Input Device Effect";
     inputDevicePort = new OutPort("Input Device port", this);
-    m_outPortList.append(inputDevicePort);
+    ports.append(inputDevicePort);
 }
 
 void InputEffect::giveData(char *data)
 {
-    this->data = data;
-    hasData = true;
+
 }
 
 void InputEffect::applyEffect(char *in, char *out, int readLength)

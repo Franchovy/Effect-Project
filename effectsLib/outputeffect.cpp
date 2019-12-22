@@ -2,12 +2,12 @@
 
 #include "ports/inport.h"
 
-OutputEffect::OutputEffect(EffectMap* parent) : Effect(parent),
+OutputEffect::OutputEffect(Audio* parent) : Effect(parent),
     outputDevicePort(new InPort("Output device port", this))
 {
     effectName = "Output Device Name";
 
-    m_inPortList.append(outputDevicePort);
+    ports.append(outputDevicePort);
 }
 
 void OutputEffect::applyEffect(char *in, char *out, int readLength)
@@ -17,5 +17,5 @@ void OutputEffect::applyEffect(char *in, char *out, int readLength)
 
 char *OutputEffect::getData()
 {
-    return outputDevicePort->getData();
+    //
 }
