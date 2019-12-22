@@ -80,12 +80,15 @@ QList<GUI_port *> GUI_effect::getPorts()
 void GUI_effect::drag(QPointF d)
 {
     for (GUI_port* p : getPorts()){
+        for (GUI_line* l : connectedLines){
+            l->drag(p,d);
+        }/*
         GUI_line* l = p->getConnection(); //CHANGEME I think this is wrong
         if (l != nullptr){
             if (l->getPortFromEffect(this) != nullptr){
                 l->drag(p, d);
             }
-        }
+        }*/
     }
     moveBy(d.x(),d.y());
 }
@@ -93,14 +96,15 @@ void GUI_effect::drag(QPointF d)
 QList<GUI_line *> GUI_effect::addConnectedLine(GUI_line *line)
 {
     connectedLines.append(line);
+    return connectedLines;
 }
 
 QList<GUI_line *> GUI_effect::removeConnectedLine(GUI_line* line)
 {
     if (connectedLines.contains(line)){
         connectedLines.removeOne(line);
-        return connectedLines;
     }
+    return connectedLines;
 }
 
 void GUI_effect::deleteConnectedLines()

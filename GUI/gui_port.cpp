@@ -41,19 +41,9 @@ Port *GUI_port::getPort() const
     return port;
 }
 
-void GUI_port::setPort(Port *value)
-{
-    port = value;
-}
-
 GUI_line *GUI_port::getConnection()
 {
     return connection;
-}
-
-void GUI_port::setConnection(GUI_line *line)
-{
-    connection = line;
 }
 
 void GUI_port::eraseConnection()
@@ -62,6 +52,17 @@ void GUI_port::eraseConnection()
         connection->destroy();
         connection = nullptr;
     }
+}
+
+GUI_effect *GUI_port::getParent() const
+{
+    return parent;
+}
+
+void GUI_port::connectPort(Port * p, GUI_line* l)
+{
+    port = p;
+    connection = l;
 }
 
 QRectF GUI_port::boundingRect() const
@@ -86,7 +87,7 @@ void GUI_port::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 bool GUI_port::contains(const QPointF &point) const
 {
-    return hoverBox->contains(point);;
+    return hoverBox->contains(point);
 }
 
 void GUI_port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

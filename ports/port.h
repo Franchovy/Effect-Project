@@ -20,9 +20,6 @@ public:
     Port* getConnectedPort();
     void setConnectedPort(Port* port);
 
-    void setupConnectionSelect();
-    QComboBox* getConnectionSelect(){return connectionSelect;}
-    QPushButton* getDisconnectButton(){return disconnectButton;}
     virtual char* getData();
 
     QString getName(){return portName;}
@@ -46,7 +43,6 @@ protected:
     QPushButton* disconnectButton;
 signals:
     void constructor(Port* this_ptr);
-    void sendConnectionSelect(int portType);
 public slots:
     void disconnectPort();
 };

@@ -1,4 +1,4 @@
-#include "effect.h"
+ #include "effect.h"
 
 #include <QDebug>
 #include <QList>
@@ -23,12 +23,6 @@ Effect::Effect(EffectMap* parent) : QObject(parent)
   , m_parameters(QList<Parameter*>())
 {
     effectName = "Default Effect Name";
-}
-
-GUI_effect *Effect::createGUI(GUI_effect *e)
-{
-    e = new GUI_effect(effectName, this);
-    return e;
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)

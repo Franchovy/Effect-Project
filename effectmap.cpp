@@ -35,9 +35,6 @@ void EffectMap::addEffect(Effect *e)
     }
     m_effectMap->insert(e, list);
 
-    for (Port* p: e->getPorts()){
-        p->sendConnectionSelect(p->getConnectPortType());
-    }
 }
 
 Effect* EffectMap::createEffect(int effectType)
@@ -194,27 +191,4 @@ void EffectMap::createDefaultInputOutputEffects(InputEffect *inputEffect, Output
  * @brief EffectMap::updatePortConnectionSelect Updates connectionSelect lists of ports of given type.
  * @param type Port type to be updated - fetches "connectPortType" of type to populate list.
  */
-void EffectMap::updatePortConnectionSelect(int type)
-{
-    QList<Port*> portList = getPortsOfType(type);
-    QList<Port*> selectList;
-    if (portList.length() > 0){
-        selectList = getFreePortsOfType(portList.first()->getConnectPortType());
-    }
 
-    for (Port* port : portList){
-        //TODO separate this out to avoid redefining at every update
-        //Connect the connectionSelect
-        connect(port->getConnectionSelect(),
-                QOverload<int>::of(&QComboBox::currentIndexChanged),
-                [=](int i){
-            if (i != -1)
-                port->setConnectedPort(selectList.at(i));
-        });
-        port->getConnectionSelect()->clear();
-
-        for (Port* port2 : selectList){
-            port->getConnectionSelect()->addItem(port2->getName());
-        }
-    }
-}

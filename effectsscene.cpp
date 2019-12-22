@@ -61,6 +61,7 @@ void EffectsScene::setupEffectsSelect(QComboBox* effectsSelect)
 GUI_effect* EffectsScene::addEffect(Effect* e)
 {
     GUI_effect* e_gui = new GUI_effect(e->effectName, e);
+    e->setUi(e_gui);
     addItem(e_gui);
     e_gui->setPos(QPointF(-100,0));
 
@@ -100,17 +101,7 @@ void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             portLine = static_cast<GUI_line*>(draggedItem);
             removeItem(portLine);
 
-            //Separate out line into two
-            portLines.first = new GUI_line();
-            portLines.second = new GUI_line();
-
-            portLines.first->setP1(portLine->getP1());
-            portLines.second->setP2(portLine->getP2());
-            portLines.first->setP2(event->scenePos());
-            portLines.second->setP1(event->scenePos());
-
-            addItem(portLines.first);
-            addItem(portLines.second);
+            splitLineCreate(event->scenePos());
 
             dragging = true;
 
@@ -146,8 +137,7 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
     if (dragging){
         if (draggedItem->data(0) == "line"){
-            portLines.first->setP2(event->scenePos());
-            portLines.second->setP1(event->scenePos());
+            splitLineDrag(event->scenePos());
         } else if (draggedItem->data(0) == "effect"){
             GUI_effect* e = static_cast<GUI_effect*>(draggedItem);
             e->drag(d);
@@ -190,13 +180,7 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     } else if (dragging){
         if (draggedItem->data(0) == "line"){
             //Unsuccessful line split
-            removeItem(portLines.first);
-            removeItem(portLines.second);
-            portLines.first->~GUI_line();
-            portLines.first = nullptr;
-            portLines.second->~GUI_line();
-            portLines.second = nullptr;
-            addItem(portLine);
+            splitLineErase();
             portLine->hoverLeave();
         } else if (draggedItem->data(0) == "effect"){
 
@@ -211,7 +195,6 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
     update();
 }
-
 
 QGraphicsView *EffectsScene::getView()
 {
@@ -232,6 +215,38 @@ GUI_port* EffectsScene::getContainingPort(QPointF point){
         }
     }
     return nullptr;
+}
+
+void EffectsScene::splitLineCreate(QPointF p)
+{
+    //Separate out line into two
+    portLines.first = new GUI_line();
+    portLines.second = new GUI_line();
+
+    portLines.first->setP1(portLine->getP1());
+    portLines.second->setP2(portLine->getP2());
+    portLines.first->setP2(p);
+    portLines.second->setP1(p);
+
+    addItem(portLines.first);
+    addItem(portLines.second);
+}
+
+void EffectsScene::splitLineDrag(QPointF p)
+{
+    portLines.first->setP2(p);
+    portLines.second->setP1(p);
+}
+
+void EffectsScene::splitLineErase()
+{
+    removeItem(portLines.first);
+    removeItem(portLines.second);
+    portLines.first->~GUI_line();
+    portLines.first = nullptr;
+    portLines.second->~GUI_line();
+    portLines.second = nullptr;
+    addItem(portLine);
 }
 
 Effect *EffectsScene::effectAt(QPointF point)
@@ -268,8 +283,6 @@ GUI_line *EffectsScene::connectPorts(Port *p1, Port *p2)
     } else {
         line = portLine;
     }
-    p1->getUI()->setConnection(line);
-    p2->getUI()->setConnection(line);
 
     return line;
 }

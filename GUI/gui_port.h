@@ -26,11 +26,13 @@ public:
     bool contains(const QPointF &point) const override;
 
     Port *getPort() const;
-    void setPort(Port *value);
 
     GUI_line* getConnection();
-    void setConnection(GUI_line* line);
     void eraseConnection();
+
+    GUI_effect* getParent() const;
+
+    void connectPort(Port*, GUI_line*);
 
 private:
     GUI_line* connection = nullptr;

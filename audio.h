@@ -14,9 +14,12 @@ class InPort;
 class InputEffect;
 class OutPort;
 class OutputEffect;
+class QAudioBuffer;
 class QAudioInput;
 class QAudioOutput;
 class QAudioDeviceInfo;
+class QAudioProbe;
+class QAudioRecorder;
 QT_END_NAMESPACE
 
 
@@ -42,11 +45,22 @@ public:
     EffectsScene* getUI();
     void setUI(EffectsScene* ui);
 
+    void record();
+
 private:
     EffectsScene* UI;
 
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
+
+
+    QAudioRecorder* m_audioRecorder;
+    QAudioProbe* m_audioProbe;
+
+    QVector<qreal> getBufferLevels(const QAudioBuffer& buffer);
+
+    template <class T>
+    QVector<qreal> getBufferLevels(const T *buffer, int frames, int channels);
 
     QAudioDeviceInfo* inputDevice;
     QAudioDeviceInfo* outputDevice;
@@ -59,6 +73,7 @@ private:
 
 public slots:
     bool runAudio();
+    //void processBuffer(const QAudioBuffer&);
 
 };
 

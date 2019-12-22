@@ -19,7 +19,6 @@ public:
     explicit EffectMap(Audio *parent = nullptr);
 
     void addEffect(Effect* e);
-    void addPort(Effect* e, Port*);
     Effect* createEffect(int effectType);
     InputEffect* createInputEffect();
     OutputEffect* createOutputEffect();
@@ -50,7 +49,6 @@ signals:
 
 public slots:
     void connectPorts(Port* p1, Port* p2);
-    void updatePortConnectionSelect(int type);
 };
 
 #endif // EFFECTMAP_H

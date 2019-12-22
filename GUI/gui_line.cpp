@@ -47,6 +47,7 @@ GUI_port *GUI_line::getPort2() const
 void GUI_line::setPort2(GUI_port *value)
 {
     port2 = value;
+    connectPorts();
 }
 
 GUI_port *GUI_line::getPortFromEffect(GUI_effect *e) const
@@ -74,8 +75,8 @@ void GUI_line::drag(GUI_port *port, QPointF point)
 
 void GUI_line::destroy()
 {
-    port1->setConnection(nullptr);
-    port2->setConnection(nullptr);
+    //port1->eraseconnection
+    //port2->eraseconnection
     this->~GUI_line();
 }
 
@@ -87,6 +88,7 @@ GUI_port *GUI_line::getPort1() const
 void GUI_line::setPort1(GUI_port *value)
 {
     port1 = value;
+    connectPorts();
 }
 
 QPointF GUI_line::getP1() const
@@ -97,6 +99,14 @@ QPointF GUI_line::getP1() const
 void GUI_line::setP1(const QPointF &value)
 {
     p1 = value;
+}
+
+void GUI_line::connectPorts()
+{
+    if (port1 != nullptr && port2 != nullptr){
+        port2->connectPort(port1->getPort(), this);
+        port1->connectPort(port2->getPort(), this);
+    }
 }
 
 QRectF GUI_line::boundingRect() const

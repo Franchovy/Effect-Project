@@ -1,11 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QAudioBuffer>
+#include <QAudioProbe>
+#include <QAudioRecorder>
 #include <QComboBox>
 #include <QFrame>
 #include <QGroupBox>
 #include <QGraphicsView>
 #include <QDebug>
+#include <QAudioRecorder>
 
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/fuzzeffect.h"
@@ -19,7 +23,6 @@
 #include "effectsscene.h"
 
 
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -30,9 +33,11 @@ MainWindow::MainWindow(QWidget *parent)
     , m_effectsUI(new EffectsScene(this))
     , m_graphicsView(new QGraphicsView(this))
 {
+
+    // Set up audio
     m_audio->setUI(m_effectsUI);
 
-    // UI SETUP
+    // Set up UI
     ui->setupUi(this);
 
     QLayout* masterLayout = ui->effectGrid->layout();
@@ -42,7 +47,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_graphicsView->setScene(m_effectsUI);
     m_graphicsView->setAttribute(Qt::WA_Hover);
-    //Copied settings
+
+    // Totally my own settings
 
     m_graphicsView->setCacheMode(QGraphicsView::CacheBackground);
     m_graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -55,15 +61,32 @@ MainWindow::MainWindow(QWidget *parent)
     m_effectsUI->setView(m_graphicsView);
     m_graphicsView->show();
 
-
-
     m_effectsUI->setupEffectsSelect(ui->effectsSelect);
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
 
-    //Connect Audio and UI
+    // Connect Audio and UI
+
+    runAudioUIConnections();
+
+    // Set up default in and out effects
+    Effect* e_in = m_audio->createEffect(0);
+    Effect* e_out = m_audio->createEffect(1);
+
+    m_effectsUI->connectPortsSignal(e_in->getPorts().first(), e_out->getPorts().first());
+}
+
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::runAudioUIConnections()
+{
     connect(m_audio->getEffectMap(), &EffectMap::constructor, m_effectsUI, &EffectsScene::effect_constructor);
     connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_audio->getEffectMap(), &EffectMap::connectPorts);
     connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_effectsUI, &EffectsScene::connectPorts);
+
 
 
     connect(ui->newEffectButton, &QPushButton::pressed, [=](){
@@ -92,17 +115,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->runButton, &QPushButton::pressed, m_audio, &Audio::runAudio);
     connect(ui->settings, &QPushButton::clicked, this, &MainWindow::showSettingsDialog);
 
-    //Create default in and out effects
-    Effect* e_in = m_audio->createEffect(0);
-    Effect* e_out = m_audio->createEffect(1);
-
-    m_effectsUI->connectPortsSignal(e_in->getPorts().first(), e_out->getPorts().first());
-}
-
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::showSettingsDialog()
@@ -112,4 +124,12 @@ void MainWindow::showSettingsDialog()
         m_audio->setInputDevice(m_settingsDialog->inputDevice());
         m_audio->setOutputDevice(m_settingsDialog->outputDevice());
     }
+}
+
+
+
+
+void MainWindow::on_toggleRecordButton_clicked()
+{
+    m_audio->record();
 }

@@ -25,6 +25,8 @@ public:
     GUI_port *getPort2() const;
     void setPort2(GUI_port *value);
 
+    void connectPorts();
+
     GUI_port* getPortFromEffect(GUI_effect* e) const;
 
     void drag(GUI_port *port, QPointF point);

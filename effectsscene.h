@@ -64,6 +64,10 @@ private:
 
     QGraphicsView* view;
 
+    void splitLineCreate(QPointF p);
+    void splitLineDrag(QPointF p);
+    void splitLineErase();
+
     QTransform deviceTransform;
     bool dragging = false;
     QGraphicsItem* draggedItem = nullptr;

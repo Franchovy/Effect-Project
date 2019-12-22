@@ -31,9 +31,15 @@ private:
     SettingsDialog *m_settingsDialog;
     EffectsScene* m_effectsUI;
 
+
+
     QGraphicsView* m_graphicsView;
+
+    void runAudioUIConnections();
+
 
 private slots:
     void showSettingsDialog();
+    void on_toggleRecordButton_clicked();
 };
 #endif // MAINWINDOW_H

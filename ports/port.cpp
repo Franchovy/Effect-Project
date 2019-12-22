@@ -1,5 +1,6 @@
 #include "port.h"
 
+#include "GUI/gui_port.h"
 #include "effect.h"
 #include "effectmap.h"
 #include <QComboBox>
@@ -33,12 +34,6 @@ void Port::setConnectedPort(Port *port)
     }
 }
 
-void Port::setupConnectionSelect()
-{
-    //connect(this, &Port::sendConnectionSelect, parentEffect->getEffectMap(), &EffectMap::updatePortConnectionSelect);
-    //connect(disconnectButton, &QPushButton::clicked, this, &Port::disconnectPort);
-}
-
 char *Port::getData()
 {
     return nullptr;
@@ -52,6 +47,7 @@ GUI_port *Port::getUI()
 void Port::setUi(GUI_port *value)
 {
     ui = value;
+    qDebug() << "UI: " << ui;
 }
 
 void Port::disconnectPort()
