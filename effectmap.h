@@ -20,11 +20,17 @@ public:
 
     Effect* getEffectFromPort(Port* port);
     EffectsScene* getEffectsScene();
+
+    char* getData(Effect* e);
+
     //void createDefaultInputOutputEffects(InputEffect* in_e, OutputEffect* out_e);
 
+    int readLength = 0;
+
 private:
-    QHash<Effect*, QList<Port*>>* m_effectMap;
+    QMap<Effect*, Port*>* m_effectMap;
     QHash<Port*, Port*>* m_connectionsMap;
+
 
 public slots:
     void addEffect(Effect* e);

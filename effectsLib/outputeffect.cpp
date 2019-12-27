@@ -6,8 +6,8 @@ OutputEffect::OutputEffect(Audio* parent) : Effect(parent),
     outputDevicePort(new InPort("Output device port", this))
 {
     effectName = "Output Device Name";
-
-    ports.append(outputDevicePort);
+    type = 1;
+    addPort(outputDevicePort, QPointF(150,100));
 }
 
 void OutputEffect::applyEffect(char *in, char *out, int readLength)
@@ -15,7 +15,7 @@ void OutputEffect::applyEffect(char *in, char *out, int readLength)
     out = in;
 }
 
-char *OutputEffect::getData()
+char *OutputEffect::getData(int readLength)
 {
     //
 }

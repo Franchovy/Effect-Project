@@ -15,11 +15,11 @@ class InPort : public Port
 public:
     InPort(QString name, Effect* parent);
 
-    char *getData() override;
-    int getPortType() override {return 1;}
     int getConnectPortType() override {return 2;}
+    char* getData();
 
 private:
+    Effect* parentEffect;
     static QList<InPort*>* inportList;
 
 //public slots:

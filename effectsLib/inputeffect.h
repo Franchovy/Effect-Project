@@ -16,13 +16,14 @@ public:
     InputEffect(Audio* parent = nullptr);
 
 
-    void giveData(char* data);
+    void giveData(char* data, int readLength);
+    char *getData(int) override;
+
 
 private:
     OutPort* inputDevicePort;
 
     void applyEffect(char *in, char *out, int readLength) override;
-    char *getData() override;
 
     bool hasData = false;
     char* data = nullptr;

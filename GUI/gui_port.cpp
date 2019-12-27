@@ -7,14 +7,18 @@
 #include "gui_line.h"
 #include "ports/port.h"
 
-GUI_port::GUI_port(QPointF basePoint)
+GUI_port::GUI_port(QPointF basePoint, int portType, GUI_effect* parent) : QGraphicsItem(parent)
 {
     setData(0,"port");
-
-    hoverBox = new QRectF(basePoint - QPointF(30,30), QSize(60,60));
-    portBox = new QRectF(basePoint - QPointF(10,10), QSize(20,20));
-
+    this->portType = portType;
     pos = basePoint;
+
+    hoverBox = new QRectF(QPointF(0,0), QSize(60,60));
+    portBox = new QRectF(QPointF(0,0), QSize(20,20));
+    hoverBox->moveCenter(basePoint);
+    portBox->moveCenter(basePoint);
+
+    portNumber = 0;
 
     setAcceptHoverEvents(true);
 }
@@ -23,14 +27,6 @@ void GUI_port::setHoverBoxVisible(bool vis)
 {
     hoverBoxVisible = vis;
     update();
-}
-
-void GUI_port::setBasePoint(QPointF basePoint)
-{
-    hoverBox->~QRectF();
-    portBox->~QRectF();
-    hoverBox = new QRectF(basePoint - QPointF(30,30), QSize(60,60));
-    portBox = new  QRectF(basePoint - QPointF(10,10), QSize(20,20));
 }
 
 QRectF GUI_port::boundingRect() const

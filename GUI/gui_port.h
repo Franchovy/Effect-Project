@@ -13,12 +13,14 @@ QT_END_NAMESPACE
 class GUI_port : public QGraphicsItem
 {
 public:
-    GUI_port(QPointF basePoint);
+    GUI_port(QPointF basePoint, int portType, GUI_effect *parent = nullptr);
 
     void setHoverBoxVisible(bool vis = true);
     void setBasePoint(QPointF basePoint);
 
     QPointF pos;
+    int portNumber;
+    int portType;
 
 private:
     QRectF* hoverBox;

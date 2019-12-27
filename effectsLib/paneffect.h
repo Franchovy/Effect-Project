@@ -12,8 +12,13 @@ public:
 
     // Effect interface
 public:
-    void applyEffect(char *in, char *out, int readLength);
+    void applyEffect(char *in, char *out, int readLength) override;
+    char *getData(int) override;
+
 private:
+    InPort *inPort;
+    OutPort *outPort;
+
     int speed = 0;
     SliderParam* speedParam = nullptr;
     int stereocount = 0;
@@ -23,7 +28,6 @@ private:
 
     //working variable
     int x; // try uint8_t
-
 };
 
 #endif // PANEFFECT_H

@@ -17,7 +17,7 @@ public:
 
     void applyEffect(char *in, char *out, int readLength) override;
 
-    char * getData() override;
+    char * getData(int) override;
 
 private:
     SliderParam* lenParam = nullptr;

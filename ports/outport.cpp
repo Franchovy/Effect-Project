@@ -10,10 +10,7 @@
 
 OutPort::OutPort(QString name, Effect* parent) : Port(name, parent)
 {
-    parentEffect = parent;
+    //parentEffect = parent;
+    portType = 1;
 }
 
-char *OutPort::getData()
-{
-    return parentEffect->getData();
-}

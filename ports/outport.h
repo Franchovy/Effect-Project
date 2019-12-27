@@ -16,10 +16,6 @@ class OutPort : public Port
 public:
     OutPort(QString name, Effect* parent);
 
-    char* getData() override;
-    int getPortType() override {return 2;}
-    int getConnectPortType() override {return 1;}
-
 private:
     static QList<OutPort*>* outportList;
     Effect* parentEffect;

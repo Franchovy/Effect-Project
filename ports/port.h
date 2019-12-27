@@ -2,7 +2,7 @@
 #define PORT_H
 
 #include <QObject>
-
+#include <QPointF>
 QT_BEGIN_NAMESPACE
 class Effect;
 class QComboBox;
@@ -16,12 +16,11 @@ class Port : public QObject
 public:
     explicit Port(QString name, Effect *parent = nullptr);
 
-    virtual char* getData();
-
     QString getName(){return portName;}
 
+    int portType;
+
     virtual int getConnectPortType(){return 0;}
-    virtual int getPortType() {return 0;}
 
 protected:
     Port* connectedPort = nullptr;
@@ -29,8 +28,6 @@ protected:
 
 signals:
     void constructor(Port* this_ptr);
-public slots:
-    void disconnectPort();
 };
 
 #endif // PORT_H

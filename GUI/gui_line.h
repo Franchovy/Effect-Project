@@ -17,6 +17,8 @@ public:
     QPointF p1;
     QPointF p2;
 
+
+
 private:
     bool hover = false;
     QPen* pen_normal;

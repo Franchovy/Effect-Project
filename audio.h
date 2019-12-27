@@ -25,14 +25,9 @@ QT_END_NAMESPACE
 
 class Audio : public QObject
 {
+    Q_OBJECT
 public:
     Audio(QObject* parent = nullptr);
-    Q_OBJECT
-
-public:
-    Effect* createEffect(int effectType);
-    void addEffect(Effect* e);
-    void removeEffect(Effect* e);
 
     EffectMap* getEffectMap() {return m_effectMap;}
     EffectBuffer* getEffectBuffer() {return m_buffer;}
@@ -44,9 +39,17 @@ public:
 
     void record();
 
+    bool isRunning() {return running;}
+
 private:
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
+
+    // Temp
+    QAudioInput* inputAudio;
+    QAudioOutput* outputAudio;
+    QAudioDeviceInfo* inputDevice;
+    QAudioDeviceInfo* outputDevice;
 
     QAudioRecorder* m_audioRecorder;
     QAudioProbe* m_audioProbe;
@@ -60,7 +63,19 @@ private:
 
     void setupFormat();
 
+signals:
+    void newEffectSignal(Effect* e);
+    // For use in EffectMap
+    void deleteEffectSignal(Effect* e);
+    void connectPortsSignal(Port*, Port*);
+    void disconnectPortsSignal(Port*, Port*);
+
 public slots:
+    void createEffect(int effectType);
+    void deleteEffect(Effect*);
+    void connectPorts(QPair<Effect*,int>,QPair<Effect*,int>);
+    void disconnectPorts(QPair<Effect*,int>,QPair<Effect*,int>);
+
     bool runAudio();
     //void processBuffer(const QAudioBuffer&);
 

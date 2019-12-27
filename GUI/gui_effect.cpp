@@ -8,11 +8,11 @@
 #include "gui_line.h"
 #include "ports/port.h"
 
-GUI_effect::GUI_effect(QString name, QPointF pos) : QGraphicsItem()
+GUI_effect::GUI_effect(QString name, QPointF pos) : GUI_item()
 {
     setData(0,"effect");
     this->pos = pos;
-    baseRect = QRectF(-200,-200,200,200);
+    baseRect = QRectF(pos.x()-200,pos.y()-200,pos.x()+200,pos.y()+200);
     title = name;
 
     setAcceptHoverEvents(true);
@@ -21,6 +21,13 @@ GUI_effect::GUI_effect(QString name, QPointF pos) : QGraphicsItem()
     pen_highlight = new QPen(QColor(100,100,255,150),2);
 }
 
+void GUI_effect::drag(QPointF d)
+{
+    //baseRect.translate(d);
+    this->moveBy(d.x(),d.y());
+
+    pos = scenePos() + baseRect.center();
+}
 
 QRectF GUI_effect::boundingRect() const
 {
@@ -41,7 +48,11 @@ void GUI_effect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         painter->drawRect(QRectF(baseRect.topLeft()-QPoint(5,5), baseRect.bottomRight()+QPoint(5,5)));
     }
 
-    painter->setPen(*pen_normal);
+    if (selected){
+        painter->setPen(*pen_highlight);
+    } else {
+        painter->setPen(*pen_normal);
+    }
     painter->drawRect(baseRect);
     painter->drawText(QPointF(baseRect.topLeft().x()+10, baseRect.topLeft().y()+10), title);
 }

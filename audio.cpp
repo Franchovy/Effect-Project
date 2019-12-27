@@ -18,6 +18,7 @@
 #include "effectsLib/inputeffect.h"
 #include "effectsLib/outputeffect.h"
 #include "effectsLib/echoeffect1.h"
+#include "effectsLib/paneffect.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
@@ -33,50 +34,68 @@ Audio::Audio(QObject* parent) : QObject(parent)
     , m_audioRecorder(new QAudioRecorder(this))
     , m_audioProbe(new QAudioProbe(this))
 {
+    // Set up recording
 
     inputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice());
     outputDevice = new QAudioDeviceInfo(QAudioDeviceInfo::defaultOutputDevice());
-
-    // Set up recording
 
     m_audioProbe->setSource(m_audioRecorder);
 
     m_audioRecorder = new QAudioRecorder(this);
     m_audioProbe = new QAudioProbe(this);
 
+    // Make connections with EffectMap
+    connect(this, &Audio::newEffectSignal, m_effectMap, &EffectMap::addEffect);
+    connect(this, &Audio::deleteEffectSignal, m_effectMap, &EffectMap::deleteEffect);
+    connect(this, &Audio::connectPortsSignal, m_effectMap, &EffectMap::connectPorts);
+    connect(this, &Audio::disconnectPortsSignal, m_effectMap, &EffectMap::disconnectPorts);
+
+    m_buffer->setEffectMap(m_effectMap);
 
     setupFormat();
 }
 
 //Upon receiving signal.
-Effect *Audio::createEffect(int effectType)
+void Audio::createEffect(int effectType)
 {
     Effect* e;
     switch (effectType){
     case 0: //InputEffect
         e = new InputEffect(this);
+        m_buffer->addInputEffect(static_cast<InputEffect*>(e));
         break;
     case 1: //OutputEffect
         e = new OutputEffect(this);
+        m_buffer->addOutputEffect(static_cast<OutputEffect*>(e));
         break;
     case 2: // EchoEffect1
         e = new EchoEffect1(this);
         break;
+    case 3: // PanEffect
+        e = new PanEffect(this);
+        break;
     default:
         qDebug() << "Unknown Effect requested.";
     }
-
-    return e;
+    emit(newEffectSignal(e));
 }
 
-void Audio::addEffect(Effect *e)
+void Audio::deleteEffect(Effect *e)
 {
-    m_effectMap->addEffect(e);
+    // Pass down to EffectMap
+    m_effectMap->deleteEffect(e);
+
 }
 
-void Audio::removeEffect(Effect* e)
+void Audio::connectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
 {
-    m_buffer->removeEffect(e);
+    // TODO
+    connectPortsSignal(e1.first->getPorts().at(e1.second), e2.first->getPorts().at(e2.second));
+}
+
+void Audio::disconnectPorts(QPair<Effect *, int>, QPair<Effect *, int>)
+{
+    // TODO
 }
 
 
@@ -174,8 +193,11 @@ bool Audio::runAudio()
         qDebug() << inputAudio->state();
         qDebug() << outputAudio->state();
     } else {
-        qDebug() << inputAudio->state();
-        qDebug() << outputAudio->state();
+        m_buffer->close();
+        inputAudio->stop();
+        outputAudio->stop();
+        running = false;
+
     }
 
     return running;

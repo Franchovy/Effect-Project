@@ -18,15 +18,40 @@
 #include <effectsLib/paneffect.h>
 
 EffectMap::EffectMap(Audio *parent) : QObject(parent),
-    m_effectMap(new QHash<Effect*, QList<Port*>>()),
+    m_effectMap(new QMap<Effect*, Port*>()),
     m_connectionsMap(new QHash<Port*, Port*>())
 {
 
 }
 
+char *EffectMap::getData(Effect *e)
+{
+    if (e->type == 0){
+        // Input port
+        return static_cast<InputEffect*>(e)->getData(readLength);
+    }
+
+
+    for(Port* p : e->getPorts()){
+        if (m_connectionsMap->contains(p)){
+            if (p->portType == 0){
+                // Input Port - returns connected output port effect
+                return m_effectMap->key(m_connectionsMap->value(p))->getData(readLength);
+            } /* else if (p->portType == 1){
+                // Output Port
+                char* data = getData(m_effectMap->key(m_connectionsMap->value(p)));
+                e->applyEffect(data, data, readLength);
+                return data;
+            } */
+        }
+    }
+}
+
 void EffectMap::addEffect(Effect *e)
 {
-    m_effectMap->insert(e,e->getPorts());
+    for (Port* p : e->getPorts()){
+        m_effectMap->insertMulti(e,p);
+    }
 }
 
 void EffectMap::deleteEffect(Effect *e)

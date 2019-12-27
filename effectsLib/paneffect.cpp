@@ -1,18 +1,30 @@
 #include "paneffect.h"
+
+#include "ports/inport.h"
+#include "ports/outport.h"
+
 #include <QDebug>
 #include <QtMath>
 
 PanEffect::PanEffect(Audio* parent) : Effect(parent)
+  , inPort(new InPort("Pan In", this))
+  , outPort(new OutPort("Pan Out", this))
 {
     effectName = "Pan Effect";
-/*
+    type = 3;
+
+    addPort(inPort, QPointF(150,100));
+    addPort(outPort, QPointF(50, 100));
+
+    /*
     speedParam = addSliderParameter("Speed", 1, 1000, 10);
     QObject::connect(speedParam, &SliderParam::valueChanged, [this](int value){
         panspeedtest = value * 100;
         if (pancount <= panspeedtest) pancount = 1;
-        panVal = static_cast<double>(pancount) / (panspeedtest / 2);
+
 
     });*/
+    panVal = static_cast<double>(pancount) / (panspeedtest / 2);
 }
 
 void PanEffect::applyEffect(char *in, char *out, int readLength)
@@ -65,4 +77,11 @@ void PanEffect::applyEffect(char *in, char *out, int readLength)
         }
 
     }
+}
+
+char *PanEffect::getData(int readLength)
+{
+    char* data = inPort->getData();
+    PanEffect::applyEffect(data, data, readLength);
+    return data;
 }

@@ -42,15 +42,23 @@ public:
     void applyEffect(char *data, int readLength);
     QString effectName = "default effect";
 
+    int type;
+
+    EffectMap* effectMap;
+
+    QList<QPointF> getPortLocs();
     QList<Port*> getPorts();
 
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &m_parameters;}
 
-    virtual char* getData();
+    virtual char* getData(int);
 protected:
-    QList<Port*> ports;
-    QList<QPointF> portLocs;
+    void addPort(Port*, QPointF);
+    void addParam(Parameter*);
+
+private:
+    QMap<Port*, QPointF>* m_ports;
     QList<Parameter*> m_parameters;
 };
 

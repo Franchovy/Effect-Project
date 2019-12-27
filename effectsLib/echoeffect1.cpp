@@ -12,9 +12,12 @@ EchoEffect1::EchoEffect1(Audio* parent) : Effect(parent)
 {
     effectName = "Echo Effect 1";
 
-    ports.append(inPort);
-    ports.append(outPort);
-/*
+    type = 2;
+
+    addPort(inPort, QPointF(150,100));
+    addPort(outPort, QPointF(50, 100));
+
+    /*
     lenParam = addSliderParameter("Buffer Length", 800, 80000, len = 8000);
     QObject::connect(lenParam, &SliderParam::valueChanged, [this](int value){
         resizeBuffer(value);
@@ -24,16 +27,18 @@ EchoEffect1::EchoEffect1(Audio* parent) : Effect(parent)
     QObject::connect(delayParam, &SliderParam::valueChanged, [this](int newVal){
         delayVal = newVal;
     });
-*/
+    */
+
+
     effectBuffer = QByteArray(len, 0);
     effectBufferpt = 1;
     effectBuffer.fill(0);
 
-    resizeBuffer(len);
+    delayVal = 2;
+    resizeBuffer(5000);
 }
 //In and Out data buffers
 void EchoEffect1::applyEffect(char *in, char *out, int readLength){
-    qDebug() << "Test";
     if (readLength == -1){
         //Calculate readLength searching for /0 char
         readLength = 0;
@@ -44,7 +49,7 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
     for (int i = 0; i < readLength; i += 1){
 
         effectBuffer[effectBufferpt-1] = (0x00ff & in[i]) + (0x00ff & static_cast<char>(effectBuffer[effectBufferpt] / static_cast<float>(delayVal)));
-        out[i] = effectBuffer[effectBufferpt];//effectBuffer[effectBufferpt];
+        out[i] = effectBuffer[effectBufferpt];
 
         effectBufferpt += 1;
         if (effectBufferpt > len) {
@@ -53,10 +58,10 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
     }
 }
 
-char *EchoEffect1::getData()
+char *EchoEffect1::getData(int readLength)
 {
     char* data = inPort->getData();
-    EchoEffect1::applyEffect(data, data, -1);
+    EchoEffect1::applyEffect(data, data, readLength);
     return data;
 }
 

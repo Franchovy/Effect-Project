@@ -1,5 +1,6 @@
 #include "port.h"
 
+
 #include "GUI/gui_port.h"
 #include "effect.h"
 #include "effectmap.h"
@@ -11,6 +12,7 @@ Port::Port(QString name, Effect *parent) : QObject(parent)
 {
     constructor(this);
     portName = name;
+    portType = -1;
 }
 
 

@@ -6,6 +6,7 @@
 #include "effectsLib/inputeffect.h"
 #include "effectsLib/outputeffect.h"
 #include "effect.h"
+#include "effectmap.h"
 #include <QDebug>
 #include <QtMath>
 #include <QAudioBuffer>
@@ -27,11 +28,13 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
 
     //Supply data to inputEffects
     for (InputEffect* in_e : inputEffects){
-        in_e->giveData(buffer.data());
+        in_e->giveData(buffer.data(), readLength);
     }
     //Output data from outputEffects
     for (OutputEffect* out_e : outputEffects){
-        memcpy(data, out_e->getData(), readLength);
+        // Set readLength for effectMap (temp // ?)
+        effectMap->readLength = readLength;
+        memcpy(data, effectMap->getData(out_e), readLength);
     }
 
     buffer.remove(0, readLength);
@@ -51,6 +54,11 @@ qint64 EffectBuffer::writeData(const char* data, qint64 maxlen){
     return maxlen;
 }
 
+void EffectBuffer::setEffectMap(EffectMap *em)
+{
+    effectMap = em;
+}
+
 void EffectBuffer::addInputEffect(InputEffect *e)
 {
     inputEffects.append(e);
@@ -59,15 +67,4 @@ void EffectBuffer::addInputEffect(InputEffect *e)
 void EffectBuffer::addOutputEffect(OutputEffect *e)
 {
     outputEffects.append(e);
-}
-
-void EffectBuffer::removeEffect(Effect *e)
-{
-    //TODO
-}
-
-
-void EffectBuffer::addEffect(Effect *e)
-{
-    //TODO
 }

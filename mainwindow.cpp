@@ -34,8 +34,13 @@ MainWindow::MainWindow(QWidget *parent)
     , m_graphicsView(new QGraphicsView(this))
 {
 
-    // Set up audio
-    m_audio->setUI(m_effectsUI);
+    // Set up Audio
+
+    //default in/out effects
+    //Effect* e_in = m_audio->createEffect(0);
+    //Effect* e_out = m_audio->createEffect(1);
+
+    //m_effectsUI->connectPortsSignal(QPair<Effect*,int>(e_in,0), QPair<Effect*,int>(e_out,0));
 
     // Set up UI
     ui->setupUi(this);
@@ -61,18 +66,17 @@ MainWindow::MainWindow(QWidget *parent)
     m_effectsUI->setView(m_graphicsView);
     m_graphicsView->show();
 
-    m_effectsUI->setupEffectsSelect(ui->effectsSelect);
+    ui->effectsSelect->addItem("Input Effect");
+    ui->effectsSelect->addItem("Output Effect");
+    ui->effectsSelect->addItem("Echo Effect 1");
+    ui->effectsSelect->addItem("Pan Effect");
+
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
 
     // Connect Audio and UI
 
     runAudioUIConnections();
 
-    // Set up default in and out effects
-    Effect* e_in = m_audio->createEffect(0);
-    Effect* e_out = m_audio->createEffect(1);
-
-    m_effectsUI->connectPortsSignal(e_in->getPorts().first(), e_out->getPorts().first());
 }
 
 
@@ -83,36 +87,27 @@ MainWindow::~MainWindow()
 
 void MainWindow::runAudioUIConnections()
 {
-    connect(m_audio->getEffectMap(), &EffectMap::constructor, m_effectsUI, &EffectsScene::effect_constructor);
-    connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_audio->getEffectMap(), &EffectMap::connectPorts);
-    connect(m_effectsUI,&EffectsScene::connectPortsSignal, m_effectsUI, &EffectsScene::connectPorts);
-
-
-
-    connect(ui->newEffectButton, &QPushButton::pressed, [=](){
-        int effectType = m_effectsUI->getNewEffectType();
-
-        Effect* e = m_audio->createEffect(effectType);
-
-        switch(effectType){
-        case 0: //Input effect
-            break;
-        case 1: //Output effect
-            break;
-        default:
-            m_effectsUI->addEffect(e);
-            m_audio->addEffect(e);
-        }
-
-        //connect to delete operation
-        connect(e,&Effect::destroyed,[=](){
-            //Delete effect audio
-            m_audio->removeEffect(e);
-            //Delete effect UI
-            m_effectsUI->deleteEffect(e);
-        });
+    // Connect new effect button to
+    connect(ui->newEffectButton, &QPushButton::clicked, [=](){
+        m_effectsUI->newEffectSignal(ui->effectsSelect->currentIndex());
     });
-    connect(ui->runButton, &QPushButton::pressed, m_audio, &Audio::runAudio);
+
+    // Connect all Audio slots to EffectsScene signals
+    connect(m_effectsUI, &EffectsScene::newEffectSignal, m_audio, &Audio::createEffect);
+    connect(m_effectsUI, &EffectsScene::deleteEffectSignal, m_audio, &Audio::deleteEffect);
+    connect(m_effectsUI, &EffectsScene::connectPortsSignal, m_audio, &Audio::connectPorts);
+    connect(m_effectsUI, &EffectsScene::disconnectPortsSignal, m_audio, &Audio::disconnectPorts);
+
+    connect(m_audio, &Audio::newEffectSignal, m_effectsUI, &EffectsScene::addEffect);
+
+    connect(ui->runButton, &QPushButton::pressed, [=](){
+        m_audio->runAudio();
+        if (m_audio->isRunning()){
+            ui->runButton->setText("Stop");
+        } else {
+            ui->runButton->setText("Run Audio");
+        }
+    });
     connect(ui->settings, &QPushButton::clicked, this, &MainWindow::showSettingsDialog);
 
 }

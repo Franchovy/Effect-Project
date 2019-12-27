@@ -1,6 +1,7 @@
 #ifndef EFFECTGUI_H
 #define EFFECTGUI_H
 
+#include "gui_item.h"
 #include <QGraphicsItem>
 
 QT_BEGIN_NAMESPACE
@@ -11,14 +12,15 @@ class GUI_port;
 class QGraphicsScene;
 QT_END_NAMESPACE
 
-class GUI_effect : public QGraphicsItem
+class GUI_effect : public GUI_item
 {
 public:
     GUI_effect(QString name, QPointF pos);
-    void drag(QPointF d);
+    void drag(QPointF);
+
+    QPointF pos;
 
 private:
-    QPointF pos;
     QRectF baseRect;
     QString title;
 

@@ -16,7 +16,7 @@ public:
     OutputEffect(Audio* parent = nullptr);
 
 
-    char* getData() override;
+    char* getData(int) override;
 
 private:
     InPort* outputDevicePort;

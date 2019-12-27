@@ -15,6 +15,8 @@ class QGridLayout;
 class QComboBox;
 class QGraphicsScene;
 class QPushButton;
+class QState;
+class QStateMachine;
 QT_END_NAMESPACE
 
 
@@ -24,10 +26,6 @@ class EffectsScene : public QGraphicsScene
 public:
     explicit EffectsScene(QWidget *parent = nullptr);
     QGridLayout* mainLayout;
-
-    //dump
-    void setupEffectsSelect(QComboBox* effectsSelect);
-    void deleteEffect(Effect* e);
 
     int getNewEffectType() const;
 
@@ -46,15 +44,28 @@ protected:
 private:
     EffectMap* effectMap;
 
-    QMap<Effect*, QPointF>* m_effects;
-    QMap<Effect*, QPointF[]>* m_effectPorts;
+    QSet<QGraphicsItem*>* selectedItems;
+
+    QSet<Effect*>* m_effects;
+    QMap<Effect*, QList<QPointF>>* m_effectPorts;
+    QMap<GUI_effect*, Effect*>* m_GUIeffects;
+    QMap<GUI_port*, Effect*>* m_GUIports;
     QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>, GUI_line*>* m_connections; // QPair<Effect*,int> should be defined as a macro, or replaced with ID./
 
     QPointF newEffectPos(Effect*);
     QList<GUI_port*> getPorts(Effect*);
     Effect* getEffectAt(QPointF);
     QPointF getPortCenter(QPointF);
+    GUI_port* getPortAt(QPointF);
+    int getPortNumber(QPointF);
+    GUI_line* getConnection(Effect*, int);
     void connectLine();
+
+    void drag(QPointF p);
+    double dragDistance = 0;
+
+    enum mouseStates {neutral, dragging, linedrag, splitlines, selecting, deselecting};
+    mouseStates mouseState;
 
     /* //TODO move to MainWindow
     QComboBox* effectsSelect;
@@ -68,23 +79,33 @@ private:
 
     QGraphicsView* view;
 
-    void splitLineCreate(QPointF p);
+    void splitLineStart(QPointF p);
     void splitLineDrag(QPointF p);
+    void connectSplitLines();
     void splitLineErase();
 
-    QTransform deviceTransform;
-    bool dragging = false;
-    QGraphicsItem* draggedItem = nullptr;
-    bool dragView = false;
+    QTransform transform;
+    //bool dragging = false;
+    //QGraphicsItem* draggedItem = nullptr;
+    //bool dragView = false;
 
 signals:
+//  Signals relay to audio
+    void newEffectSignal(int effectType);
+    void deleteEffectSignal(Effect* e);
     void connectPortsSignal(QPair<Effect*, int>, QPair<Effect*, int>);
+    void disconnectPortsSignal(QPair<Effect*, int>, QPair<Effect*, int>);
 
 public slots:
     void addEffect(Effect*);
+    void deleteEffect(Effect*);
 
-    GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
+    //GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
 
+
+    // QGraphicsScene interface
+protected:
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // EFFECTUI_H

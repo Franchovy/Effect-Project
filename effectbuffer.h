@@ -7,6 +7,7 @@
 QT_BEGIN_NAMESPACE
 class Audio;
 class Effect;
+class EffectMap;
 class InPort;
 class InputEffect;
 class OutPort;
@@ -26,12 +27,15 @@ public:
     qint64 readData(char* data, qint64 maxlen) override;
     qint64 writeData(const char* data, qint64 maxlen) override;
 
+    void setEffectMap(EffectMap*);
+
     void addInputEffect(InputEffect* e);
     void addOutputEffect(OutputEffect* e);
-    void removeEffect(Effect* e);
 
 private:
     QByteArray buffer; //TODO investigate using QAudioBuffer instead. Same for effectBuffer
+
+    EffectMap* effectMap;
 
     qint64 bufferUsed;
     qint64 bufferCurrent;
@@ -41,10 +45,6 @@ private:
     QList<OutputEffect*> outputEffects;
 
     void applyEffect(char* in, char* out, int readLength);
-
-public slots:
-    void addEffect(Effect* e);
-
 };
 
 #endif // EFFECTBUFFER_H

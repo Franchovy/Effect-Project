@@ -9,12 +9,11 @@
 
 InPort::InPort(QString name, Effect* parent) : Port(name, parent)
 {
-
+    portType = 0;
+    parentEffect = parent;
 }
 
 char *InPort::getData()
 {
-    if (connectedPort != nullptr){
-        return connectedPort->getData();
-    } else return nullptr;
+    parentEffect->effectMap->getData(parentEffect);
 }
