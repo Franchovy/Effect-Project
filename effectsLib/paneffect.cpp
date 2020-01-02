@@ -79,7 +79,7 @@ void PanEffect::applyEffect(char *in, char *out, int readLength)
     }
 }
 
-char *PanEffect::getData(int readLength)
+char *PanEffect::getData(OutPort*, int readLength)
 {
     char* data = inPort->getData();
     PanEffect::applyEffect(data, data, readLength);

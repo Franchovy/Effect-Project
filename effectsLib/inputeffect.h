@@ -17,7 +17,7 @@ public:
 
 
     void giveData(char* data, int readLength);
-    char *getData(int) override;
+    char *getData(OutPort*, int) override;
 
 
 private:

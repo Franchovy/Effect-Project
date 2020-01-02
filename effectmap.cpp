@@ -27,22 +27,18 @@ EffectMap::EffectMap(Audio *parent) : QObject(parent),
 char *EffectMap::getData(Effect *e)
 {
     if (e->type == 0){
-        // Input port
-        return static_cast<InputEffect*>(e)->getData(readLength);
+        // Input device effect - just get data.
+        return static_cast<InputEffect*>(e)->getData(nullptr, readLength);
     }
-
 
     for(Port* p : e->getPorts()){
         if (m_connectionsMap->contains(p)){
             if (p->portType == 0){
                 // Input Port - returns connected output port effect
-                return m_effectMap->key(m_connectionsMap->value(p))->getData(readLength);
-            } /* else if (p->portType == 1){
-                // Output Port
-                char* data = getData(m_effectMap->key(m_connectionsMap->value(p)));
-                e->applyEffect(data, data, readLength);
-                return data;
-            } */
+                OutPort* connectedPort = static_cast<OutPort*>(m_connectionsMap->value(p));
+                Effect* connectedEffect = m_effectMap->key(connectedPort);
+                return connectedEffect->getData(connectedPort, readLength);
+            }
         }
     }
 }

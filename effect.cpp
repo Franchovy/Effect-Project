@@ -49,7 +49,7 @@ QList<Port *> Effect::getPorts()
     return m_ports->keys();
 }
 
-char *Effect::getData(int)
+char *Effect::getData(OutPort*, int)
 {
     return nullptr;
 }
@@ -57,5 +57,10 @@ char *Effect::getData(int)
 void Effect::addPort(Port *port, QPointF p)
 {
     m_ports->insert(port, p);
+    if (port->portType == 0){
+        inPorts.append(static_cast<InPort*>(port));
+    } else if (port->portType == 1){
+        outPorts.append(static_cast<OutPort*>(port));
+    }
 }
 

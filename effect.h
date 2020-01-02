@@ -52,10 +52,13 @@ public:
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &m_parameters;}
 
-    virtual char* getData(int);
+    virtual char* getData(OutPort*, int);
 protected:
     void addPort(Port*, QPointF);
     void addParam(Parameter*);
+
+    QList<InPort*> inPorts;
+    QList<OutPort*> outPorts;
 
 private:
     QMap<Port*, QPointF>* m_ports;

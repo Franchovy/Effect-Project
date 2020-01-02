@@ -13,7 +13,7 @@ public:
     // Effect interface
 public:
     void applyEffect(char *in, char *out, int readLength) override;
-    char *getData(int) override;
+    char *getData(OutPort*, int) override;
 
 private:
     InPort *inPort;

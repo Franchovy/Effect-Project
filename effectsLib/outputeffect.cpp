@@ -15,7 +15,7 @@ void OutputEffect::applyEffect(char *in, char *out, int readLength)
     out = in;
 }
 
-char *OutputEffect::getData(int readLength)
+char *OutputEffect::getData(OutPort*, int readLength)
 {
     //
 }

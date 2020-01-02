@@ -7,12 +7,13 @@
 
 
 EchoEffect1::EchoEffect1(Audio* parent) : Effect(parent)
-  , inPort(new InPort("Echo In", this))
-  , outPort(new OutPort("Echo Out", this))
 {
     effectName = "Echo Effect 1";
 
     type = 2;
+
+    InPort* inPort = new InPort("Echo In", this);
+    OutPort* outPort = new OutPort("Echo Out", this);
 
     addPort(inPort, QPointF(150,100));
     addPort(outPort, QPointF(50, 100));
@@ -58,14 +59,22 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
     }
 }
 
-char *EchoEffect1::getData(int readLength)
+char *EchoEffect1::getData(OutPort*, int readLength)
 {
-    char* data = inPort->getData();
-    EchoEffect1::applyEffect(data, data, readLength);
-    return data;
+    // Only one outport
+    char* outData = outPorts.first()->data;
+    if (outPorts.first()->dataLength < readLength){
+        // Initialise data container in output port
+        outData = new char[readLength];
+        // Copy over any data needed
+        memcpy(outData, outPorts.first()->data, outPorts.first()->dataLength);
+        // Set new Outport data
+        outPorts.first()->data = outData;
+        outPorts.first()->dataLength = readLength;
+    }
+    EchoEffect1::applyEffect(inPorts.first()->getData(), outPorts.first()->data, readLength);
+    return outData;
 }
-
-
 
 void EchoEffect1::resizeBuffer(int newSize){
     newSize *= 8;

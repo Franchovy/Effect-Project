@@ -17,7 +17,7 @@ public:
 
     void applyEffect(char *in, char *out, int readLength) override;
 
-    char * getData(int) override;
+    char * getData(OutPort*, int) override;
 
 private:
     SliderParam* lenParam = nullptr;
@@ -26,9 +26,6 @@ private:
     SliderParam* delayParam = nullptr;
     int delayVal;
     double delayOpVal;
-
-    InPort *inPort;
-    OutPort *outPort;
 
     QByteArray effectBuffer;
     int effectBufferpt;

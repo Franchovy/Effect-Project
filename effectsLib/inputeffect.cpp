@@ -29,7 +29,7 @@ void InputEffect::applyEffect(char *in, char *out, int readLength)
     out = in;
 }
 
-char *InputEffect::getData(int readLength)
+char *InputEffect::getData(OutPort*, int readLength)
 {
     if (hasData){
         hasData = false;

@@ -22,6 +22,9 @@ public:
 
     virtual int getConnectPortType(){return 0;}
 
+    int dataLength = 0;
+    char* data;
+
 protected:
     Port* connectedPort = nullptr;
     QString portName;
