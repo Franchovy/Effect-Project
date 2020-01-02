@@ -8,7 +8,7 @@
 #include <QPen>
 
 
-GUI_line::GUI_line(QPointF p1, QPointF p2, QGraphicsItem* parent) : QGraphicsItem(parent)
+GUI_line::GUI_line(QPointF p1, QPointF p2, QGraphicsItem* parent) : GUI_item(parent)
 {
     setData(0,"line");
 
@@ -21,6 +21,9 @@ GUI_line::GUI_line(QPointF p1, QPointF p2, QGraphicsItem* parent) : QGraphicsIte
     //painter = new QPainter();
     pen_normal = new QPen(QColor(0,0,0));
     pen_highlight = new QPen(QColor(100,100,255,150),2);
+
+    selected = false;
+
 }
 
 QRectF GUI_line::boundingRect() const
@@ -31,6 +34,10 @@ QRectF GUI_line::boundingRect() const
 void GUI_line::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     if (hover){
+        pen_highlight->setStyle(Qt::DashLine);
+        painter->setPen(*pen_highlight);
+    } else if (selected){
+        pen_highlight->setStyle(Qt::SolidLine);
         painter->setPen(*pen_highlight);
     } else {
         painter->setPen(*pen_normal);

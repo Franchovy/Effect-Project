@@ -32,6 +32,9 @@ public:
     void addInputEffect(InputEffect* e);
     void addOutputEffect(OutputEffect* e);
 
+    void deleteInputEffect(InputEffect* e);
+    void deleteOutputEffect(OutputEffect* e);
+
 private:
     QByteArray buffer; //TODO investigate using QAudioBuffer instead. Same for effectBuffer
 

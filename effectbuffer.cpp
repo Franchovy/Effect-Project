@@ -68,3 +68,21 @@ void EffectBuffer::addOutputEffect(OutputEffect *e)
 {
     outputEffects.append(e);
 }
+
+void EffectBuffer::deleteInputEffect(InputEffect *e)
+{
+    if (inputEffects.contains(e)){
+        inputEffects.removeOne(e);
+    } else {
+        qDebug() << "Failed to remove nonexistent input effect from buffer";
+    }
+}
+
+void EffectBuffer::deleteOutputEffect(OutputEffect *e)
+{
+    if (outputEffects.contains(e)){
+        outputEffects.removeOne(e);
+    } else {
+        qDebug() << "Failed to remove nonexistent output effect from buffer";
+    }
+}

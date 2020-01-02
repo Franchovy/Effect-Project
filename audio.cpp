@@ -85,6 +85,11 @@ void Audio::deleteEffect(Effect *e)
     // Pass down to EffectMap
     m_effectMap->deleteEffect(e);
 
+    if (e->type == 0){
+        m_buffer->deleteInputEffect(static_cast<InputEffect*>(e));
+    } else if (e->type == 1){
+        m_buffer->deleteOutputEffect(static_cast<OutputEffect*>(e));
+    }
 }
 
 void Audio::connectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
@@ -93,9 +98,10 @@ void Audio::connectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
     connectPortsSignal(e1.first->getPorts().at(e1.second), e2.first->getPorts().at(e2.second));
 }
 
-void Audio::disconnectPorts(QPair<Effect *, int>, QPair<Effect *, int>)
+void Audio::disconnectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
 {
     // TODO
+    disconnectPortsSignal(e1.first->getPorts().at(e1.second), e2.first->getPorts().at(e2.second));
 }
 
 

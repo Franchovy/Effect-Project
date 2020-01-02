@@ -44,7 +44,7 @@ protected:
 private:
     EffectMap* effectMap;
 
-    QSet<QGraphicsItem*>* selectedItems;
+    QList<QGraphicsItem*>* selectedItems;
 
     QSet<Effect*>* m_effects;
     QMap<Effect*, QList<QPointF>>* m_effectPorts;
@@ -99,7 +99,7 @@ signals:
 public slots:
     void addEffect(Effect*);
     void deleteEffect(Effect*);
-
+    void disconnectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
     //GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
 
 

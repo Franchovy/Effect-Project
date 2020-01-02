@@ -7,7 +7,7 @@
 #include "gui_line.h"
 #include "ports/port.h"
 
-GUI_port::GUI_port(QPointF basePoint, int portType, GUI_effect* parent) : QGraphicsItem(parent)
+GUI_port::GUI_port(QPointF basePoint, int portType, GUI_effect* parent) : GUI_item(parent)
 {
     setData(0,"port");
     this->portType = portType;

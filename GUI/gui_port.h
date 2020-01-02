@@ -1,6 +1,7 @@
 #ifndef GUI_PORT_H
 #define GUI_PORT_H
 
+#include "gui_item.h"
 #include <QGraphicsItem>
 #include <QObject>
 
@@ -10,7 +11,7 @@ class GUI_line;
 class Port;
 QT_END_NAMESPACE
 
-class GUI_port : public QGraphicsItem
+class GUI_port : public GUI_item
 {
 public:
     GUI_port(QPointF basePoint, int portType, GUI_effect *parent = nullptr);

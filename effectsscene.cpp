@@ -25,12 +25,12 @@
 
 
 EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
-    , mainLayout(new QGridLayout())
-    , m_effects(new QSet<Effect*>)
-    , m_effectPorts(new QMap<Effect*, QList<QPointF>>())
-    , m_GUIeffects(new QMap<GUI_effect*, Effect*>())
-    , m_GUIports(new QMap<GUI_port*, Effect*>())
-    , m_connections(new QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>,GUI_line*>())
+  , mainLayout(new QGridLayout())
+  , m_effects(new QSet<Effect*>)
+  , m_effectPorts(new QMap<Effect*, QList<QPointF>>())
+  , m_GUIeffects(new QMap<GUI_effect*, Effect*>())
+  , m_GUIports(new QMap<GUI_port*, Effect*>())
+  , m_connections(new QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>,GUI_line*>())
 {
     // Set up state handling
 
@@ -43,12 +43,14 @@ EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
 
     transform = QTransform();
 
-    selectedItems = new QSet<QGraphicsItem*>();
+    selectedItems = new QList<QGraphicsItem*>();
 
     portLine = new GUI_line(QPointF(0,0),QPointF(0,0));
     addItem(portLine);
 
     //connect(this, &EffectsScene::connectPortsSignal, this, &EffectsScene::connectPorts);
+    connect(this, &EffectsScene::deleteEffectSignal, this, &EffectsScene::deleteEffect);
+    connect(this, &EffectsScene::disconnectPortsSignal, this, &EffectsScene::disconnectPorts);
 
     parent->setAcceptDrops(true);
 }
@@ -82,38 +84,84 @@ void EffectsScene::addEffect(Effect* e)
 
 void EffectsScene::deleteEffect(Effect *e)
 {
-    //TODO Delete Effect
+    m_effects->remove(e);
+    m_effectPorts->remove(e);
+    GUI_effect* g = m_GUIeffects->key(e);
+    m_GUIeffects->remove(g);
+    removeItem(g);
+    g->~GUI_effect();
+    for (GUI_port* p : m_GUIports->keys(e)){
+        GUI_line* l = getConnection(e, p->portNumber);
+        if (l) {
+            QPair<QPair<Effect*, int>,QPair<Effect*, int>> c = m_connections->key(l);
+            disconnectPortsSignal(c.first,c.second);
+        }
+        m_GUIports->remove(p);
+    }
+    //e->~Effect();
+    update();
+}
+
+void EffectsScene::disconnectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
+{
+    GUI_line* l = m_connections->take(QPair<QPair<Effect*,int>,QPair<Effect*,int>>(e1,e2));
+    if (selectedItems->contains(l)) selectedItems->removeOne(l);
+    removeItem(l);
+    l->~GUI_line();
 }
 
 void EffectsScene::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == 16777223){
-        for (QGraphicsItem* item : selectedItems->toList()){
+        for (QGraphicsItem* item : *selectedItems){
             if (item->data(0) == "effect"){
                 deleteEffectSignal(m_GUIeffects->value(static_cast<GUI_effect*>(item)));
+            } else if (item->data(0) == "line"){
+                QPair<QPair<Effect*, int>,QPair<Effect*, int>> pair =
+                        m_connections->key(static_cast<GUI_line*>(item));
+                disconnectPortsSignal(pair.first, pair.second);
+            } else {
+                item->~QGraphicsItem();
             }
-            item->~QGraphicsItem();
         }
     }
+    update();
     qDebug() << event->key();
 }
 
 void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton){
-        if (mouseState == neutral){
+        dragDistance = 0;
+        for (QGraphicsItem* item : items(event->scenePos())){
+            if (selectedItems->contains(item)){
+                mouseState = deselecting;
+            } else {
+                selectedItems->append(item);
+                mouseState = selecting;
+            }
+            break;
+        }
+    }
+    update();
+}
 
-            QGraphicsItem* item = itemAt(event->scenePos(), transform);
-            if (item->data(0) == "line"){
+void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsView* v = getView();
+    QPointF d = event->scenePos() - event->lastScenePos();
+
+    if(mouseState == selecting || mouseState == deselecting){
+        if (dragDistance > 10){
+            if (selectedItems->first()->data(0) == "line"){ // Top selected item is line
                 //Save line state
-                portLine = static_cast<GUI_line*>(item);
+                portLine = static_cast<GUI_line*>(selectedItems->first());
                 portLine->hide();
                 splitLineStart(event->scenePos());
 
                 mouseState = splitlines;
-
-            } else if (item->data(0) == "port"){
-                GUI_port* p = static_cast<GUI_port*>(item);
+            } else if (selectedItems->first()->data(0) == "port"){
+                GUI_port* p = static_cast<GUI_port*>(selectedItems->first());
 
                 // Remove existing lines
                 int n = getPortNumber(event->scenePos());
@@ -130,42 +178,15 @@ void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 portLine->show();
 
                 mouseState = linedrag;
-
             } else {
-                // Set state to dragging
-                dragDistance = 0;
-
-                GUI_item* g = static_cast<GUI_item*>(item);
-                if (g != nullptr){
-                    if (selectedItems->contains(g)){
-                        mouseState = deselecting;
-                    } else {
-                        mouseState = selecting;
-                        selectedItems->insert(item);
-                    }
-                }
+                mouseState = dragging;
             }
-        }
-    }
-    update();
-}
-
-void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsView* v = getView();
-    QPointF d = event->scenePos() - event->lastScenePos();
-
-    if(mouseState == selecting || mouseState == deselecting){
-        if (dragDistance > 10){
-            mouseState = dragging;
         } else {
             dragDistance += d.manhattanLength();
         }
     }
     if(mouseState == dragging){
-        if (QGraphicsItem* item = itemAt(event->scenePos(), transform)){
-            drag(d);
-        }
+        drag(d);
     } else if (mouseState == linedrag){
         portLine->p2 = event->scenePos();
     } else if (mouseState == splitlines){
@@ -177,6 +198,7 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
+//TODO encapsulate selection mechanism into gui_item.
 void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (mouseState == neutral){
@@ -184,28 +206,30 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     } else if (mouseState == selecting){
         for (QGraphicsItem* item : items(event->scenePos())){
             GUI_item* g = static_cast<GUI_item*>(item);
-            qDebug() << "Select";
             if (g) g->select();
         }
     } else if (mouseState == deselecting){
         for (QGraphicsItem* item : items(event->scenePos())){
             if (selectedItems->contains(item)){
-                selectedItems->remove(item);
-                qDebug() << "Deselect";
+                selectedItems->removeOne(item);
                 GUI_item* g = static_cast<GUI_item*>(item);
                 if (g) g->deselect();
             }
         }
     } else if (mouseState == dragging){
-        for (QGraphicsItem* item : selectedItems->toList()){
+        for (QGraphicsItem* item : *selectedItems){
             GUI_item* g = static_cast<GUI_item*>(item);
+            qDebug() << "Item: " << item;
             if (g) g->deselect();
         }
         selectedItems->clear();
     } else if (mouseState == splitlines){
         connectSplitLines();
+        QGraphicsScene::mouseReleaseEvent(event);
+        selectedItems->clear();
     } else if (mouseState == linedrag){
         connectLine();
+        selectedItems->clear();
     }
     mouseState = neutral;
     update();
@@ -276,7 +300,7 @@ GUI_line *EffectsScene::getConnection(Effect *e, int n)
 
     for(QPair<QPair<Effect*, int>,QPair<Effect*, int>> pair : m_connections->keys()){
         if ((pair.first.first == e && pair.first.second == n) // If either of pairs match
-               || (pair.second.first == e && pair.second.second == n)){
+                || (pair.second.first == e && pair.second.second == n)){
             return m_connections->value(pair);
         }
     }
@@ -312,18 +336,20 @@ void EffectsScene::connectLine()
         // Successful connection
         GUI_line* l = new GUI_line(portLine->p1,portLine->p2,portLine->parentItem());
         m_connections->insert(QPair<QPair<Effect*,int>,QPair<Effect*,int>>(QPair<Effect*, int>(effects.first, portNumbers.first),
-                              QPair<Effect*, int>(effects.second, portNumbers.second)), l);
+                                                                           QPair<Effect*, int>(effects.second, portNumbers.second)), l);
         addItem(l);
 
         connectPortsSignal(QPair<Effect*, int>(effects.first, portNumbers.first),
-                     QPair<Effect*, int>(effects.second, portNumbers.second));
+                           QPair<Effect*, int>(effects.second, portNumbers.second));
     }
     portLine->hide();
 }
 
 void EffectsScene::drag(QPointF d)
 {
+    //TODO effect when dragged seems to be added twice to selectedItems. (issue previously solved by using set).
     for (QGraphicsItem* item : *selectedItems){
+        qDebug() << item->data(0);
         if (item->data(0) == "effect"){
             // Normal drag - update data as well
             Effect* e = m_GUIeffects->value(static_cast<GUI_effect*>(item));
@@ -342,9 +368,6 @@ void EffectsScene::drag(QPointF d)
                     }
                 }
             }
-
-            // Move any line points connected
-            //TODO
         }
     }
 }
@@ -377,6 +400,8 @@ void EffectsScene::splitLineDrag(QPointF p)
 
 void EffectsScene::connectSplitLines()
 {
+    //TODO properly connect line to ports. (through signal??)
+
     bool connectionValid = false;
     // If valid middle point
     for (QGraphicsItem* item : items(portLines.first->p2)){
@@ -394,7 +419,7 @@ void EffectsScene::connectSplitLines()
 
                     // Emit first connection
                     emit(connectPortsSignal(QPair<Effect*,int>(e1,first_port->portNumber),
-                                      QPair<Effect*,int>(e2,middle_port->portNumber)));
+                                            QPair<Effect*,int>(e2,middle_port->portNumber)));
 
                     // Emit second connection (with first free port)
                     emit(connectPortsSignal(QPair<Effect*,int>(e2,p->portNumber),

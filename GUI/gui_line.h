@@ -1,23 +1,23 @@
 #ifndef GUI_LINE_H
 #define GUI_LINE_H
 
+#include "gui_item.h"
 #include <QGraphicsItem>
 
 QT_BEGIN_NAMESPACE
 class QPen;
 class GUI_effect;
+class GUI_item;
 class GUI_port;
 QT_END_NAMESPACE
 
-class GUI_line : public QGraphicsItem
+class GUI_line : public GUI_item
 {
 public:
     GUI_line(QPointF p1, QPointF p2, QGraphicsItem* parent = nullptr);
 
     QPointF p1;
     QPointF p2;
-
-
 
 private:
     bool hover = false;
