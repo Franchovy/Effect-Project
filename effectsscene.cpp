@@ -172,6 +172,7 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         splitLineDrag(event->scenePos());
     }
 
+    event->setButtons(Qt::MouseButton::NoButton);
     QGraphicsScene::mouseMoveEvent(event);
     update();
 }
