@@ -198,15 +198,17 @@ bool Audio::runAudio()
 
         qDebug() << inputAudio->state();
         qDebug() << outputAudio->state();
-    } else {
-        m_buffer->close();
-        inputAudio->stop();
-        outputAudio->stop();
-        running = false;
-
     }
 
     return running;
+}
+
+void Audio::stopAudio()
+{
+    m_buffer->close();
+    inputAudio->stop();
+    outputAudio->stop();
+    running = false;
 }
 
 // returns the audio level for each channel

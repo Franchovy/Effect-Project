@@ -96,11 +96,15 @@ signals:
     void connectPortsSignal(QPair<Effect*, int>, QPair<Effect*, int>);
     void disconnectPortsSignal(QPair<Effect*, int>, QPair<Effect*, int>);
 
+    void runAudioSignal();
+    void stopAudioSignal();
+
+
 public slots:
     void addEffect(Effect*);
     void deleteEffect(Effect*);
     void disconnectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
-    //GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
+    GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
 
 
     // QGraphicsScene interface

@@ -37,7 +37,13 @@ char *EffectMap::getData(Effect *e)
                 // Input Port - returns connected output port effect
                 OutPort* connectedPort = static_cast<OutPort*>(m_connectionsMap->value(p));
                 Effect* connectedEffect = m_effectMap->key(connectedPort);
-                return connectedEffect->getData(connectedPort, readLength);
+                char* data = connectedEffect->getData(connectedPort, readLength);
+                if (data){
+                    return data;
+                } else {
+                    qDebug() << "Audio stopped.";
+
+                }
             }
         }
     }

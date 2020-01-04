@@ -48,7 +48,7 @@ EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
     portLine = new GUI_line(QPointF(0,0),QPointF(0,0));
     addItem(portLine);
 
-    //connect(this, &EffectsScene::connectPortsSignal, this, &EffectsScene::connectPorts);
+    connect(this, &EffectsScene::connectPortsSignal, this, &EffectsScene::connectPorts);
     connect(this, &EffectsScene::deleteEffectSignal, this, &EffectsScene::deleteEffect);
     connect(this, &EffectsScene::disconnectPortsSignal, this, &EffectsScene::disconnectPorts);
 
@@ -108,6 +108,17 @@ void EffectsScene::disconnectPorts(QPair<Effect *, int> e1, QPair<Effect *, int>
     if (selectedItems->contains(l)) selectedItems->removeOne(l);
     removeItem(l);
     l->~GUI_line();
+}
+
+void EffectsScene::connectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
+{
+    GUI_line* l = new GUI_line(m_GUIeffects->key(e1.first)->pos + m_effectPorts->value(e1.first).at(e1.second),
+                               m_GUIeffects->key(e2.first)->pos + m_effectPorts->value(e2.first).at(e2.second));
+
+    //GUI_line* l = new GUI_line(portLine->p1,portLine->p2,portLine->parentItem());
+    m_connections->insert(QPair<QPair<Effect*,int>,QPair<Effect*,int>>(e1,e2), l);
+    addItem(l);
+
 }
 
 void EffectsScene::keyPressEvent(QKeyEvent *event)
@@ -334,14 +345,13 @@ void EffectsScene::connectLine()
     }
     if (effects.first != nullptr && effects.second != nullptr){
         // Successful connection
-        GUI_line* l = new GUI_line(portLine->p1,portLine->p2,portLine->parentItem());
-        m_connections->insert(QPair<QPair<Effect*,int>,QPair<Effect*,int>>(QPair<Effect*, int>(effects.first, portNumbers.first),
-                                                                           QPair<Effect*, int>(effects.second, portNumbers.second)), l);
-        addItem(l);
 
         connectPortsSignal(QPair<Effect*, int>(effects.first, portNumbers.first),
                            QPair<Effect*, int>(effects.second, portNumbers.second));
-    }
+
+
+
+        }
     portLine->hide();
 }
 

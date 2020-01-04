@@ -101,11 +101,30 @@ void MainWindow::runAudioUIConnections()
     connect(m_audio, &Audio::newEffectSignal, m_effectsUI, &EffectsScene::addEffect);
 
     connect(ui->runButton, &QPushButton::pressed, [=](){
-        m_audio->runAudio();
+        if (m_audio->isRunning()){
+            m_audio->runAudio();
+        } else {
+            m_audio->stopAudio();
+        }
+    });
+    connect(m_audio, &Audio::runAudioSignal, m_effectsUI, &EffectsScene::runAudioSignal);
+    connect(m_effectsUI, &EffectsScene::runAudioSignal, m_audio, &Audio::runAudio);
+    connect(m_audio, &Audio::runAudioSignal, [=](){
+        ui->runButton->setText("Stop Audio");
+    });
+    connect(m_audio, &Audio::stopAudioSignal, m_effectsUI, &EffectsScene::stopAudioSignal);
+    connect(m_effectsUI, &EffectsScene::stopAudioSignal, m_audio, &Audio::stopAudio);
+    connect(m_audio, &Audio::stopAudioSignal, [=](){
+        ui->runButton->setText("Run Audio");
+    });
+
+    connect(ui->runButton, &QPushButton::pressed, [=](){
         if (m_audio->isRunning()){
             ui->runButton->setText("Stop");
+            m_audio->stopAudioSignal();
         } else {
             ui->runButton->setText("Run Audio");
+            m_audio->runAudioSignal();
         }
     });
     connect(ui->settings, &QPushButton::clicked, this, &MainWindow::showSettingsDialog);

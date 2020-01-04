@@ -70,6 +70,10 @@ signals:
     void connectPortsSignal(Port*, Port*);
     void disconnectPortsSignal(Port*, Port*);
 
+    void runAudioSignal();
+    void stopAudioSignal();
+
+
 public slots:
     void createEffect(int effectType);
     void deleteEffect(Effect*);
@@ -77,6 +81,7 @@ public slots:
     void disconnectPorts(QPair<Effect*,int>,QPair<Effect*,int>);
 
     bool runAudio();
+    void stopAudio();
     //void processBuffer(const QAudioBuffer&);
 
 };
