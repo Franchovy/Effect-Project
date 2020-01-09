@@ -34,7 +34,16 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
     for (OutputEffect* out_e : outputEffects){
         // Set readLength for effectMap (temp // ?)
         effectMap->readLength = readLength;
-        memcpy(data, effectMap->getData(out_e), readLength);
+        char* writeData = effectMap->getData(out_e);
+        if (writeData){
+            memcpy(data, writeData, readLength);
+        } else {
+            qDebug() << "Empty data";
+            for (int i = 0; i < readLength; i++){
+                writeData[i] = 0;
+            }
+        }
+
     }
 
     buffer.remove(0, readLength);

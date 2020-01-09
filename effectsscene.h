@@ -47,7 +47,7 @@ private:
     QList<QGraphicsItem*>* selectedItems;
 
     QSet<Effect*>* m_effects;
-    QMap<Effect*, QList<QPointF>>* m_effectPorts;
+    QMap<Effect*, QList<GUI_port*>>* m_effectPorts;
     QMap<GUI_effect*, Effect*>* m_GUIeffects;
     QMap<GUI_port*, Effect*>* m_GUIports;
     QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>, GUI_line*>* m_connections; // QPair<Effect*,int> should be defined as a macro, or replaced with ID./
@@ -104,7 +104,7 @@ public slots:
     void addEffect(Effect*);
     void deleteEffect(Effect*);
     void disconnectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
-    GUI_line* connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
+    void connectPorts(QPair<Effect*, int>, QPair<Effect*, int>);
 
 
     // QGraphicsScene interface

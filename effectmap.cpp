@@ -41,8 +41,7 @@ char *EffectMap::getData(Effect *e)
                 if (data){
                     return data;
                 } else {
-                    qDebug() << "Audio stopped.";
-
+                    return nullptr;
                 }
             }
         }

@@ -27,7 +27,7 @@
 EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
   , mainLayout(new QGridLayout())
   , m_effects(new QSet<Effect*>)
-  , m_effectPorts(new QMap<Effect*, QList<QPointF>>())
+  , m_effectPorts(new QMap<Effect*, QList<GUI_port*>>())
   , m_GUIeffects(new QMap<GUI_effect*, Effect*>())
   , m_GUIports(new QMap<GUI_port*, Effect*>())
   , m_connections(new QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>,GUI_line*>())
@@ -67,18 +67,18 @@ void EffectsScene::addEffect(Effect* e)
     // GUI_effect position actually set?
 
     m_effects->insert(e);
-    m_effectPorts->insert(e, e->getPortLocs());
-
 
     //Add Ports to effect
     int i = 0;
-    if (m_effectPorts->contains(e)){
-        for (i = 0; i < m_effectPorts->find(e).value().size(); i++){
-            GUI_port* gp = new GUI_port(e_gui->pos - m_effectPorts->find(e).value().at(i), e->getPorts().at(i)->portType, e_gui);
-            gp->portNumber = i;
-            m_GUIports->insert(gp, e);
-            addItem(gp);
-        }
+
+    for (i = 0; i < e->getPorts().size(); i++){
+        GUI_port* gp = new GUI_port(e_gui->pos - e->getPortLocs().at(i), e->getPorts().at(i)->portType, e_gui);
+        gp->portNumber = i;
+        m_GUIports->insert(gp, e);
+        QList<GUI_port*> portlist = m_effectPorts->take(e);
+        portlist.append(gp);
+        m_effectPorts->insert(e, portlist);
+        addItem(gp);
     }
 }
 
@@ -112,13 +112,22 @@ void EffectsScene::disconnectPorts(QPair<Effect *, int> e1, QPair<Effect *, int>
 
 void EffectsScene::connectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2)
 {
-    GUI_line* l = new GUI_line(m_GUIeffects->key(e1.first)->pos + m_effectPorts->value(e1.first).at(e1.second),
-                               m_GUIeffects->key(e2.first)->pos + m_effectPorts->value(e2.first).at(e2.second));
+    GUI_line* l1 = getConnection(e1.first, e1.second);
+    GUI_line* l2 = getConnection(e2.first, e2.second);
+    if (l1 != nullptr){
+        disconnectPorts(m_connections->key(l1).first, m_connections->key(l1).second);
+    }
+    if (l2 != nullptr){
+        disconnectPorts(m_connections->key(l2).first, m_connections->key(l2).second);
+    }
 
-    //GUI_line* l = new GUI_line(portLine->p1,portLine->p2,portLine->parentItem());
+
+    GUI_line* l = new GUI_line(m_effectPorts->value(e1.first).at(e1.second)->pos,
+                               m_effectPorts->value(e2.first).at(e2.second)->pos);
+
+
     m_connections->insert(QPair<QPair<Effect*,int>,QPair<Effect*,int>>(e1,e2), l);
     addItem(l);
-
 }
 
 void EffectsScene::keyPressEvent(QKeyEvent *event)
@@ -348,16 +357,12 @@ void EffectsScene::connectLine()
 
         connectPortsSignal(QPair<Effect*, int>(effects.first, portNumbers.first),
                            QPair<Effect*, int>(effects.second, portNumbers.second));
-
-
-
         }
     portLine->hide();
 }
 
 void EffectsScene::drag(QPointF d)
 {
-    //TODO effect when dragged seems to be added twice to selectedItems. (issue previously solved by using set).
     for (QGraphicsItem* item : *selectedItems){
         qDebug() << item->data(0);
         if (item->data(0) == "effect"){
@@ -368,7 +373,7 @@ void EffectsScene::drag(QPointF d)
                 p->pos = p->pos + d;
                 GUI_line* l = getConnection(e,p->portNumber);
                 if (l != nullptr){
-                    // Move line
+                   // Move line
                     if (m_connections->key(l).first == QPair<Effect*,int>(e,p->portNumber)){
                         // Move p1
                         l->p1 = l->p1 + d;
@@ -441,9 +446,12 @@ void EffectsScene::connectSplitLines()
     }
     if (!connectionValid){
         portLine->show();
-        portLines.first->~GUI_line();
-        portLines.second->~GUI_line();
+        //portLines.first->~GUI_line();
+        //portLines.second->~GUI_line();
     }
+
+    portLines.first->hide();
+    portLines.second->hide();
     update();
 }
 
