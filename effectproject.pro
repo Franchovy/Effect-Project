@@ -66,6 +66,7 @@ HEADERS += \
 INCLUDEPATH += \
     fft-real/
 
+
 FORMS += \
     mainwindow.ui
 
@@ -73,3 +74,10 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/release/ -ljack
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/debug/ -ljack
+else:unix: LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/ -ljack
+
+INCLUDEPATH += $$PWD/../../../usr/include/jack
+DEPENDPATH += $$PWD/../../../usr/include/jack

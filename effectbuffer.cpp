@@ -11,15 +11,136 @@
 #include <QtMath>
 #include <QAudioBuffer>
 
+#include <jack/jack.h>
+
+EffectBuffer* effectbuffer; // for use by jack
+
 //TODO sort out conversions!!!
 //TODO sort out multiple instances. Including switching streams etc.
 EffectBuffer::EffectBuffer(Audio* parent) : QIODevice(parent)
 {
     buffer = QByteArray();
+    effectbuffer = this;
 
     //effectChain = QList<Effect*>();
     //Use default input and output for now
 }
+
+/*
+int nonmember_jack_process(jack_nframes_t nframes, void *arg)
+{
+    return static_cast<EffectBuffer*>(arg)->jack_process(nframes, arg);
+}
+
+void nonmember_jack_shutdown(void *arg){
+    return static_cast<EffectBuffer*>(arg)->jack_shutdown(arg);
+}
+*/
+
+int jack_process(jack_nframes_t nframes, void *arg);
+void jack_shutdown(void *arg);
+int jack_runaudio(int argc, char *argv[]);
+jack_client_t *client;
+jack_port_t *inputport;
+jack_port_t *outputport;
+
+int jack_process(jack_nframes_t nframes, void *arg)
+{
+    jack_default_audio_sample_t *in, *out;
+
+    in = static_cast<float*>(jack_port_get_buffer(inputport, nframes));
+    out = static_cast<float*>(jack_port_get_buffer(outputport, nframes));
+
+    for (InputEffect* in_e : effectbuffer->getInputEffects()){
+        in_e->giveDataFloat(in, nframes);
+    }
+    for (OutputEffect* out_e : effectbuffer->getOutputEffects()){
+        effectbuffer->getEffectMap()->readLength = nframes;
+    }
+
+    memcpy(out, in,
+           sizeof(jack_default_audio_sample_t) * nframes);
+
+    return 0;
+}
+
+void jack_shutdown(void *arg){
+    exit(1);
+}
+
+int jack_runaudio(int argc, char *argv[])
+{
+    const char **ports;
+    const char* clientname = static_cast<const char*>("simple");
+    const char* servername = NULL;
+    jack_options_t options = JackNullOption;
+    jack_status_t status;
+
+    client = jack_client_open(clientname, options, &status, servername);
+
+    if (client == NULL){
+        qDebug() << "Failed to start";
+        exit(1);
+    }
+
+    if (status & JackServerStarted){
+        qDebug() << "Jack server started";
+    }
+    if (status & JackNameNotUnique){
+        clientname = jack_get_client_name(client);
+        qDebug() << "Unique name assigned";
+    }
+
+    jack_set_process_callback(client, jack_process, 0);
+
+    jack_on_shutdown(client, jack_shutdown, 0);
+
+    printf("Engine sample rate: %", PRIu32 "\n",
+           jack_get_sample_rate(client));
+
+    inputport = jack_port_register(client, "input",
+                                   JACK_DEFAULT_AUDIO_TYPE,
+                                   JackPortIsInput, 0);
+    outputport = jack_port_register(client, "output",
+                                    JACK_DEFAULT_AUDIO_TYPE,
+                                    JackPortIsOutput, 0);
+
+    if ((inputport == NULL) || (outputport == NULL)){
+        fprintf(stderr, "no more JACK ports available\n");
+        exit(1);
+    }
+
+    if (jack_activate(client)){
+        fprintf(stderr, "cannot activate client");
+        exit(1);
+    }
+
+    ports = jack_get_ports(client, NULL, NULL,
+                           JackPortIsPhysical | JackPortIsOutput);
+
+    if (ports == NULL){
+        fprintf(stderr, "no physical capture ports\n");
+        exit(1);
+    }
+
+    if (jack_connect(client, ports[0], jack_port_name(inputport))){
+        fprintf(stderr, "cannot connect input ports\n");
+    }
+
+    free(ports);
+
+    ports = jack_get_ports(client, NULL, NULL,
+                           JackPortIsPhysical | JackPortIsInput);
+    if (ports == NULL){
+        fprintf(stderr, "no physical playback ports\n");
+        exit(1);
+    }
+
+    if (jack_connect(client, jack_port_name(outputport), ports[0])){
+        fprintf(stderr, "cannot connect output ports\n");
+    }
+}
+
 
 //EffectBuffer (QIODevice) is being asked to read data from whatever. Aka - write to "data" (param)
 qint64 EffectBuffer::readData(char* data, qint64 maxlen){
@@ -94,4 +215,19 @@ void EffectBuffer::deleteOutputEffect(OutputEffect *e)
     } else {
         qDebug() << "Failed to remove nonexistent output effect from buffer";
     }
+}
+
+QList<InputEffect *> EffectBuffer::getInputEffects() const
+{
+    return inputEffects;
+}
+
+QList<OutputEffect *> EffectBuffer::getOutputEffects() const
+{
+    return outputEffects;
+}
+
+EffectMap *EffectBuffer::getEffectMap() const
+{
+    return effectMap;
 }

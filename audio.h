@@ -54,6 +54,8 @@ private:
     QAudioRecorder* m_audioRecorder;
     QAudioProbe* m_audioProbe;
 
+    int audioSystem = 1; // 0 - QIODevice, 1 - JACK
+
     QVector<qreal> getBufferLevels(const QAudioBuffer& buffer);
 
     template <class T>

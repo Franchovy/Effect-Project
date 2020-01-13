@@ -35,6 +35,11 @@ public:
     void deleteInputEffect(InputEffect* e);
     void deleteOutputEffect(OutputEffect* e);
 
+    QList<InputEffect *> getInputEffects() const;
+    QList<OutputEffect *> getOutputEffects() const;
+
+    EffectMap *getEffectMap() const;
+
 private:
     QByteArray buffer; //TODO investigate using QAudioBuffer instead. Same for effectBuffer
 

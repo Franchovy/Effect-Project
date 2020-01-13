@@ -19,6 +19,9 @@ public:
     void giveData(char* data, int readLength);
     char *getData(OutPort*, int) override;
 
+    void giveDataFloat(float* data, int readLength);
+
+
 
 private:
     OutPort* inputDevicePort;
@@ -27,6 +30,7 @@ private:
 
     bool hasData = false;
     char* data = nullptr;
+    float* dataFloat = nullptr;
 };
 
 #endif // INPUTEFFECT_H
