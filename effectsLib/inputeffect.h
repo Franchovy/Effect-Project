@@ -19,7 +19,7 @@ public:
     void giveData(char* data, int readLength);
     char *getData(OutPort*, int) override;
 
-    void giveDataFloat(float* data, int readLength);
+    void giveData(float* data, int readLength);
 
 
 
@@ -30,7 +30,6 @@ private:
 
     bool hasData = false;
     char* data = nullptr;
-    float* dataFloat = nullptr;
 };
 
 #endif // INPUTEFFECT_H

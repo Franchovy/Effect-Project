@@ -24,15 +24,15 @@ void InputEffect::giveData(char *data, int readLength)
     hasData = true;
 }
 
-void InputEffect::giveDataFloat(float *dataFloat, int readLength)
+void InputEffect::giveData(float *dataFloat, int readLength)
 {
-    if (sizeof(this->dataFloat) < readLength){
-        this->dataFloat = new float[readLength];
-    }
+    /* Figure out length to assert
+    if (sizeof(this->data) < readLength){
+        this->data = new char[readLength];
+    }*/
     for (int i = 0; i < readLength; i++){
-        this->dataFloat[i] = dataFloat[i];
+        this->data[i] = dataFloat[i]; //TODO
     }
-    //memcpy(this->data, data, readLength);
     hasData = true;
 }
 

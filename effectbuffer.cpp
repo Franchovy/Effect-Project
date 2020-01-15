@@ -12,6 +12,7 @@
 #include <QAudioBuffer>
 
 #include <jack/jack.h>
+#include <jack/control.h>
 
 EffectBuffer* effectbuffer; // for use by jack
 
@@ -52,7 +53,7 @@ int jack_process(jack_nframes_t nframes, void *arg)
     out = static_cast<float*>(jack_port_get_buffer(outputport, nframes));
 
     for (InputEffect* in_e : effectbuffer->getInputEffects()){
-        in_e->giveDataFloat(in, nframes);
+        in_e->giveData(in, nframes);
     }
     for (OutputEffect* out_e : effectbuffer->getOutputEffects()){
         effectbuffer->getEffectMap()->readLength = nframes;
@@ -121,6 +122,11 @@ int jack_runaudio(int argc, char *argv[])
     if (ports == NULL){
         fprintf(stderr, "no physical capture ports\n");
         exit(1);
+    } else {
+        qDebug() << "Output ports:";
+        for (int i = 0; i < sizeof(ports); i++){
+            qDebug() << ports[i];
+        }
     }
 
     if (jack_connect(client, ports[0], jack_port_name(inputport))){
@@ -134,6 +140,11 @@ int jack_runaudio(int argc, char *argv[])
     if (ports == NULL){
         fprintf(stderr, "no physical playback ports\n");
         exit(1);
+    } else {
+        qDebug() << "Input ports:";
+        for (int i = 0; i < sizeof(ports); i++){
+            qDebug() << ports[i];
+        }
     }
 
     if (jack_connect(client, jack_port_name(outputport), ports[0])){
@@ -230,4 +241,9 @@ QList<OutputEffect *> EffectBuffer::getOutputEffects() const
 EffectMap *EffectBuffer::getEffectMap() const
 {
     return effectMap;
+}
+
+int EffectBuffer::run_jackaudio(int argc, char *argv[])
+{
+    jack_runaudio(argc, argv);
 }

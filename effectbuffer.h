@@ -40,6 +40,8 @@ public:
 
     EffectMap *getEffectMap() const;
 
+    int run_jackaudio(int argc, char *argv[]);
+
 private:
     QByteArray buffer; //TODO investigate using QAudioBuffer instead. Same for effectBuffer
 

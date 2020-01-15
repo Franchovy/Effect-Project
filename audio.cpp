@@ -123,7 +123,7 @@ void Audio::setupFormat()
     format.setSampleSize(32);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleSize(QAudioFormat::SignedInt);
+    format.setSampleSize(QAudioFormat::Float);
 
     format = inputDevice->nearestFormat(format);
     format = outputDevice->nearestFormat(format);
@@ -189,12 +189,16 @@ bool Audio::runAudio()
         qDebug() << "Audio Running!";
         running = true;
 
-        m_buffer->open(QIODevice::ReadWrite);
+        if (audioSystem == 0){
+            // QAudio system
+            m_buffer->open(QIODevice::ReadWrite);
 
-        //outputAudio->start(inputAudio->start());
-
-        inputAudio->start(m_buffer);
-        outputAudio->start(m_buffer);
+            inputAudio->start(m_buffer);
+            outputAudio->start(m_buffer);
+        } else {
+            // JACK system
+            m_buffer->run_jackaudio(NULL,nullptr);
+        }
 
         qDebug() << inputAudio->state();
         qDebug() << outputAudio->state();
