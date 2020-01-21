@@ -1,8 +1,12 @@
 QT       += core gui multimedia
 
+CONFIG += no_keywords
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+
+LIBS += -lstdc++fs
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -29,8 +33,10 @@ SOURCES += \
     effectsLib/echoeffect1.cpp \
     effectsLib/fuzzeffect.cpp \
     effectsLib/inputeffect.cpp \
+    effectsLib/joinereffect.cpp \
     effectsLib/outputeffect.cpp \
     effectsLib/paneffect.cpp \
+    effectsLib/waveeffect.cpp \
     effectsscene.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -53,8 +59,10 @@ HEADERS += \
     effectsLib/echoeffect1.h \
     effectsLib/fuzzeffect.h \
     effectsLib/inputeffect.h \
+    effectsLib/joinereffect.h \
     effectsLib/outputeffect.h \
     effectsLib/paneffect.h \
+    effectsLib/waveeffect.h \
     effectsscene.h \
     effectsui.h \
     mainwindow.h \

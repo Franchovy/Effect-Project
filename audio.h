@@ -4,6 +4,7 @@
 #include "effectsscene.h"
 
 #include <QObject>
+#include <QAudioFormat>
 
 QT_BEGIN_NAMESPACE
 class Effect;
@@ -18,6 +19,7 @@ class QAudioBuffer;
 class QAudioInput;
 class QAudioOutput;
 class QAudioDeviceInfo;
+class QAudioFormat;
 class QAudioProbe;
 class QAudioRecorder;
 QT_END_NAMESPACE
@@ -37,6 +39,8 @@ public:
     void setInputDevice(QAudioDeviceInfo device);
     void setOutputDevice(QAudioDeviceInfo device);
 
+    QAudioFormat getAudioFormat(){return format;};
+
     void record();
 
     bool isRunning() {return running;}
@@ -44,6 +48,8 @@ public:
 private:
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
+
+    QAudioFormat format;
 
     // Temp
     QAudioInput* inputAudio;
@@ -54,7 +60,8 @@ private:
     QAudioRecorder* m_audioRecorder;
     QAudioProbe* m_audioProbe;
 
-    int audioSystem = 1; // 0 - QIODevice, 1 - JACK
+    enum AudioSystem {Qt, JACK};
+    AudioSystem audioSystem = Qt;
 
     QVector<qreal> getBufferLevels(const QAudioBuffer& buffer);
 
@@ -65,7 +72,7 @@ private:
 
     void setupFormat();
 
-signals:
+Q_SIGNALS:
     void newEffectSignal(Effect* e);
     // For use in EffectMap
     void deleteEffectSignal(Effect* e);
@@ -76,7 +83,7 @@ signals:
     void stopAudioSignal();
 
 
-public slots:
+public Q_SLOTS:
     void createEffect(int effectType);
     void deleteEffect(Effect*);
     void connectPorts(QPair<Effect*,int>,QPair<Effect*,int>);

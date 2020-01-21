@@ -24,6 +24,11 @@ Effect::Effect(Audio* parent) : QObject(parent)
     effectMap = parent->getEffectMap();
     effectName = "Default Effect Name";
     type = -1;
+
+    format = parent->getAudioFormat();
+
+    step = format.sampleSize()/8;
+    qDebug() << "Step: " << step;
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)
@@ -49,7 +54,7 @@ QList<Port *> Effect::getPorts()
     return m_ports->keys();
 }
 
-char *Effect::getData(OutPort*, int)
+char *Effect::getData(OutPort*, int readLength)
 {
     return nullptr;
 }
@@ -64,3 +69,14 @@ void Effect::addPort(Port *port, QPointF p)
     }
 }
 
+float Effect::getFloat(char* c){
+    float x = 0;
+    memcpy(&x, c, 4);
+    return x;
+}
+
+int16_t Effect::getInt(char* c){
+    int x = 0;
+    memcpy(&x, c, 2);
+    return x;
+}

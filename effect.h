@@ -4,6 +4,11 @@
 #include <QObject>
 #include <QWidget>
 
+#include <QAudioFormat>
+
+#include "ports/port.h"
+#include "ports/inport.h"
+#include "ports/outport.h"
 #include "Params/parameter.h"
 #include "Params/sliderparam.h"
 
@@ -11,9 +16,6 @@ QT_BEGIN_NAMESPACE
 class Audio;
 class EffectMap;
 class GUI_effect;
-class InPort;
-class OutPort;
-class Port;
 class QComboBox;
 class QGroupBox;
 class QPushButton;
@@ -52,7 +54,8 @@ public:
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &m_parameters;}
 
-    virtual char* getData(OutPort*, int);
+    virtual char* getData(OutPort*, int readLength);
+
 protected:
     void addPort(Port*, QPointF);
     void addParam(Parameter*);
@@ -60,9 +63,17 @@ protected:
     QList<InPort*> inPorts;
     QList<OutPort*> outPorts;
 
+    QAudioFormat format;
+
+    float getFloat(char* c);
+    int16_t getInt(char *c);
+
+    int step;
+
 private:
     QMap<Port*, QPointF>* m_ports;
     QList<Parameter*> m_parameters;
+
 };
 
 

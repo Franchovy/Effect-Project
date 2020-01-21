@@ -48,20 +48,28 @@ jack_port_t *outputport;
 int jack_process(jack_nframes_t nframes, void *arg)
 {
     jack_default_audio_sample_t *in, *out;
+    int readLength = sizeof(jack_default_audio_sample_t)*nframes; //sizeof(jack_default_audio_sample_t) * nframes
 
     in = static_cast<float*>(jack_port_get_buffer(inputport, nframes));
     out = static_cast<float*>(jack_port_get_buffer(outputport, nframes));
 
+    /*
     for (InputEffect* in_e : effectbuffer->getInputEffects()){
-        in_e->giveData(in, nframes);
+        in_e->giveData(in, readLength);
     }
+
     for (OutputEffect* out_e : effectbuffer->getOutputEffects()){
-        effectbuffer->getEffectMap()->readLength = nframes;
-    }
+        effectbuffer->getEffectMap()->readLength = readLength;
+
+        char* writeData = effectbuffer->getEffectMap()->getData(out_e);
+        memcpy(out, writeData,readLength);
+
+    }*/
 
     memcpy(out, in,
            sizeof(jack_default_audio_sample_t) * nframes);
 
+    //jack_cycle_wait(client);
     return 0;
 }
 
@@ -243,7 +251,12 @@ EffectMap *EffectBuffer::getEffectMap() const
     return effectMap;
 }
 
-int EffectBuffer::run_jackaudio(int argc, char *argv[])
+void EffectBuffer::stopJackAudio()
 {
-    jack_runaudio(argc, argv);
+    //jack_shutdown(NULL);
+}
+
+int EffectBuffer::runJackAudio()
+{
+    jack_runaudio(NULL, NULL);
 }

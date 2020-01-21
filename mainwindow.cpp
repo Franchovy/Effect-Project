@@ -9,7 +9,11 @@
 #include <QGroupBox>
 #include <QGraphicsView>
 #include <QDebug>
+#include <QFile>
+#include <QDir>
 #include <QAudioRecorder>
+
+#include <experimental/filesystem>
 
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/fuzzeffect.h"
@@ -33,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
     , m_effectsUI(new EffectsScene(this))
     , m_graphicsView(new QGraphicsView(this))
 {
-
     // Set up Audio
 
     //default in/out effects
@@ -66,10 +69,19 @@ MainWindow::MainWindow(QWidget *parent)
     m_effectsUI->setView(m_graphicsView);
     m_graphicsView->show();
 
+    // Load effect files (to be updated.. to "effect container" files
+
+    applicationPath = getApplicationPath();
+    //readEffectFiles();
+
+    // Load base effects
+
     ui->effectsSelect->addItem("Input Effect");
     ui->effectsSelect->addItem("Output Effect");
     ui->effectsSelect->addItem("Echo Effect 1");
     ui->effectsSelect->addItem("Pan Effect");
+    ui->effectsSelect->addItem("Wave Effect");
+    ui->effectsSelect->addItem("Joiner Effect");
 
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
 
@@ -83,6 +95,28 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::readEffectFiles()
+{
+    QString dirPath = QString(applicationPath + "/" + effectsFolderName);
+    QDir folder(dirPath);
+    if (!folder.exists()){
+        QDir().mkdir(dirPath);
+    }
+
+    //assume the directory exists and contains some files and you want all jpg and JPG files
+    QStringList images = folder.entryList(QStringList(), QDir::Files);
+    for(QString filename : images) {
+        qDebug() << filename;
+    }
+}
+
+
+QString MainWindow::getApplicationPath()
+{
+    QString path = QString::fromStdString(std::experimental::filesystem::current_path());
+    return path;
 }
 
 void MainWindow::runAudioUIConnections()

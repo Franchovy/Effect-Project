@@ -25,63 +25,69 @@ PanEffect::PanEffect(Audio* parent) : Effect(parent)
 
     });*/
     panVal = static_cast<double>(pancount) / (panspeedtest / 2);
+
+    //step = format.sampleSize()/8 * format.channelCount();
 }
 
 void PanEffect::applyEffect(char *in, char *out, int readLength)
 {
     for (int i = 0; i < readLength; i += 2){
-        //Assuming stereo is 24 bit, aka 3 bytes per side
-        if (stereocount <= 1){
-//#define NO_EFFECT_TEST
-#ifdef NO_EFFECT_TEST
-            out[i] = in[i];
-            out[i+1] = in[i+1];
-#else
-            //Left
-            x = in[i+1];
-            x = x << 8;
-            x = x | (0x00ff & in[i]);
-            //x *= 0.1;
-            x = static_cast<int>(x * abs(1 - panVal));
-            //qDebug() << "Left: " << (sin(static_cast<double>(pancount)/panspeedtest)+1)/2;
-            out[i] = x & 0x00ff;
-            out[i+1] = (x & 0xFF00) >> 8;
-#endif
-        } else {
-#ifdef NO_EFFECT_TEST
-            out[i] = in[i];
-            out[i+1] = in[i+1];
-#else
-            //Right
-            x = in[i+1];
-            x = x << 8;
-            x = x | (0x00ff & in[i]);
-            if (panVal > 1) x = static_cast<int>(x * abs(2 - panVal));
-            else x = static_cast<int>(x * abs(-panVal));
-//            //qDebug() << "Right: " << (cos(static_cast<double>(pancount)/panspeedtest)+1)/2;
+        //for (int c = 0; c < format.channelCount(); c++){
+            /*if (format.sampleType() == QAudioFormat::Float){
+                if (c % 2 == 0){
+                    // First phase for even number channel
 
-            out[i] = x & 0x00ff;
-            out[i+1] = (x & 0xFF00) >> 8;
-#endif
+                } else if (c % 2 == 1){
+                    // Second phase
+
+                }
+            }*/
+
+
+            if (stereocount <= 1){
+                //Left
+                memcpy(&x, &in[i], 2);
+                x = static_cast<int16_t>(x * abs(1 - panVal));
+                memcpy(&out[i], &x, 2);//format.sampleSize()/8);
+
+            } else {
+                //Right
+                memcpy(&x, &in[i], 2);
+
+                if (panVal > 1) x = static_cast<int16_t>(x * abs(2 - panVal));
+                else x = static_cast<int16_t>(x * abs(-panVal));
+
+                memcpy(&out[i], &x, 2);
+            }
+
+            stereocount += 2;
+            if (stereocount == 4) stereocount = 0;
+
+            pancount ++;
+
+            panVal = static_cast<double>(pancount) / (panspeedtest / 2);
+            //qDebug() << panVal;
+            if (pancount == panspeedtest-1) {
+                //qDebug() << "Loop";
+                pancount = 1;
+            }
         }
-        pancount ++;
-        stereocount += 2;
-        if (stereocount == 4) stereocount = 0;
-
-
-        panVal = static_cast<double>(pancount) / (panspeedtest / 2);
-        //qDebug() << panVal;
-        if (pancount == panspeedtest-1) {
-            //qDebug() << "Loop";
-            pancount = 1;
-        }
-
-    }
+    //}
 }
 
 char *PanEffect::getData(OutPort*, int readLength)
 {
-    char* data = inPort->getData();
-    PanEffect::applyEffect(data, data, readLength);
-    return data;
+    // Only one outport
+    char* outData = outPorts.first()->data;
+    if (outPorts.first()->dataLength < readLength){
+        // Initialise data container in output port
+        outData = new char[readLength];
+        // Copy over any data needed
+        memcpy(outData, outPorts.first()->data, outPorts.first()->dataLength);
+        // Set new Outport data
+        outPorts.first()->data = outData;
+        outPorts.first()->dataLength = readLength;
+    }
+    PanEffect::applyEffect(inPorts.first()->getData(), outPorts.first()->data, readLength);
+    return outData;
 }

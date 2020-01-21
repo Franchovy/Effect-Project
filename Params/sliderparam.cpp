@@ -26,7 +26,7 @@ SliderParam::SliderParam(int min, int max, int val, Effect *parent) : Parameter(
 
     QObject::connect(sliderWidget, &QSlider::sliderReleased, [this](){
         sliderWidget->setToolTip(getName());
-        emit this->valueChanged(sliderWidget->value());
+        this->valueChanged(sliderWidget->value());
     });
 }
 

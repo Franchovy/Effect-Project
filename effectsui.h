@@ -47,7 +47,6 @@ private:
     int newEffectType = 0;
 
 
-signals:
 
 public slots:
 };

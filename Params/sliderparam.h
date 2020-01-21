@@ -19,7 +19,7 @@ private:
     int min, max, val;
     QSlider* sliderWidget;
 
-signals:
+Q_SIGNALS:
     void valueChanged(int newValue);
 
 };

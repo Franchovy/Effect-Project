@@ -4,6 +4,7 @@
 #include <QAudioInput>
 #include <QAudioOutput>
 #include <QAudioDeviceInfo>
+#include <QAudioFormat>
 #include <QAudio>
 
 #include <QAudioEncoderSettings>
@@ -19,6 +20,7 @@
 #include "effectsLib/outputeffect.h"
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/paneffect.h"
+#include "effectsLib/waveeffect.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
@@ -74,10 +76,13 @@ void Audio::createEffect(int effectType)
     case 3: // PanEffect
         e = new PanEffect(this);
         break;
+    case 4: // WaveEffect
+        e = new WaveEffect(this);
+        break;
     default:
         qDebug() << "Unknown Effect requested.";
     }
-    emit(newEffectSignal(e));
+    newEffectSignal(e);
 }
 
 void Audio::deleteEffect(Effect *e)
@@ -117,13 +122,17 @@ QList<QAudioDeviceInfo> Audio::availableAudioOutputDevices()
 
 void Audio::setupFormat()
 {
-    QAudioFormat format;
     format.setSampleRate(96000);
     format.setChannelCount(2);
-    format.setSampleSize(32);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
-    format.setSampleSize(QAudioFormat::Float);
+    if (audioSystem == Qt){
+        qDebug() << "Audio system set to Qt";
+        format.setSampleType(QAudioFormat::SignedInt);
+    } else if (audioSystem == JACK){
+        qDebug() << "Audio system set to JACK";
+        format.setSampleType(QAudioFormat::Float);
+    }
 
     format = inputDevice->nearestFormat(format);
     format = outputDevice->nearestFormat(format);
@@ -155,15 +164,14 @@ void Audio::record(){
         QString container;
 
         for (auto n : m_audioRecorder->supportedContainers()){
-            //qDebug() << n;
+            //CHANGEME
             container = n;
-
         }
 
         QAudioEncoderSettings settings;
 
         for (auto a : m_audioRecorder->supportedAudioCodecs()){
-            //qDebug() << a;
+            //CHANGEME
             settings.setCodec(a);
         }
         //default settings - full settings example in audiorecorder project
@@ -189,15 +197,13 @@ bool Audio::runAudio()
         qDebug() << "Audio Running!";
         running = true;
 
-        if (audioSystem == 0){
-            // QAudio system
+        if (audioSystem == Qt){
             m_buffer->open(QIODevice::ReadWrite);
 
             inputAudio->start(m_buffer);
             outputAudio->start(m_buffer);
-        } else {
-            // JACK system
-            m_buffer->run_jackaudio(NULL,nullptr);
+        } else if (audioSystem == JACK) {
+            m_buffer->runJackAudio();
         }
 
         qDebug() << inputAudio->state();
@@ -209,9 +215,14 @@ bool Audio::runAudio()
 
 void Audio::stopAudio()
 {
-    m_buffer->close();
-    inputAudio->stop();
-    outputAudio->stop();
+    if (audioSystem == Qt){
+        m_buffer->close();
+        inputAudio->stop();
+        outputAudio->stop();
+    } else if (audioSystem == JACK){
+        m_buffer->stopJackAudio();
+    }
+
     running = false;
 }
 

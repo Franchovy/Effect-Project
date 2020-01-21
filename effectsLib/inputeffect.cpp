@@ -26,13 +26,23 @@ void InputEffect::giveData(char *data, int readLength)
 
 void InputEffect::giveData(float *dataFloat, int readLength)
 {
-    /* Figure out length to assert
     if (sizeof(this->data) < readLength){
         this->data = new char[readLength];
-    }*/
-    for (int i = 0; i < readLength; i++){
-        this->data[i] = dataFloat[i]; //TODO
     }
+    memcpy(data, dataFloat, readLength);
+
+    //qDebug() << "Data: " << static_cast<char>(data[0]);
+    //qDebug() << "FloatData: " << static_cast<char>(dataFloat[0]);
+
+    /*
+    for (int i = 0; i < readLength; i++){
+        this->data[i] = dataFloat[i];
+
+        qDebug() << "Data size: " << sizeof(dataFloat[i]);
+        qDebug() << "Float:";
+        qDebug() << hex << dataFloat[i];
+
+    }*/
     hasData = true;
 }
 

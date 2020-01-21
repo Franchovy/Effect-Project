@@ -89,7 +89,7 @@ private:
     //QGraphicsItem* draggedItem = nullptr;
     //bool dragView = false;
 
-signals:
+Q_SIGNALS:
 //  Signals relay to audio
     void newEffectSignal(int effectType);
     void deleteEffectSignal(Effect* e);
@@ -100,7 +100,7 @@ signals:
     void stopAudioSignal();
 
 
-public slots:
+public Q_SLOTS:
     void addEffect(Effect*);
     void deleteEffect(Effect*);
     void disconnectPorts(QPair<Effect*, int>, QPair<Effect*, int>);

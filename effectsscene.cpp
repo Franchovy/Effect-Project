@@ -239,7 +239,7 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     } else if (mouseState == dragging){
         for (QGraphicsItem* item : *selectedItems){
             GUI_item* g = static_cast<GUI_item*>(item);
-            qDebug() << "Item: " << item;
+            //qDebug() << "Item: " << item;
             if (g) g->deselect();
         }
         selectedItems->clear();
@@ -364,7 +364,6 @@ void EffectsScene::connectLine()
 void EffectsScene::drag(QPointF d)
 {
     for (QGraphicsItem* item : *selectedItems){
-        qDebug() << item->data(0);
         if (item->data(0) == "effect"){
             // Normal drag - update data as well
             Effect* e = m_GUIeffects->value(static_cast<GUI_effect*>(item));
@@ -433,12 +432,12 @@ void EffectsScene::connectSplitLines()
                 if (p->portType != middle_port->portType){
 
                     // Emit first connection
-                    emit(connectPortsSignal(QPair<Effect*,int>(e1,first_port->portNumber),
-                                            QPair<Effect*,int>(e2,middle_port->portNumber)));
+                    connectPortsSignal(QPair<Effect*,int>(e1,first_port->portNumber),
+                                            QPair<Effect*,int>(e2,middle_port->portNumber));
 
                     // Emit second connection (with first free port)
-                    emit(connectPortsSignal(QPair<Effect*,int>(e2,p->portNumber),
-                                            QPair<Effect*,int>(e3,last_port->portNumber)));
+                    connectPortsSignal(QPair<Effect*,int>(e2,p->portNumber),
+                                            QPair<Effect*,int>(e3,last_port->portNumber));
                     connectionValid = true;
                 }
             }

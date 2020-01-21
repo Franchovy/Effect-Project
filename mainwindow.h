@@ -31,14 +31,17 @@ private:
     SettingsDialog *m_settingsDialog;
     EffectsScene* m_effectsUI;
 
-
+    void readEffectFiles();
+    QString effectsFolderName = "Effects";
+    QString getApplicationPath();
+    QString applicationPath;
 
     QGraphicsView* m_graphicsView;
 
     void runAudioUIConnections();
 
 
-private slots:
+private Q_SLOTS:
     void showSettingsDialog();
     void on_toggleRecordButton_clicked();
 };

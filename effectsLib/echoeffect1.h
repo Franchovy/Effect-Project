@@ -27,7 +27,7 @@ private:
     int delayVal;
     double delayOpVal;
 
-    QByteArray effectBuffer;
+    int16_t* effectBuffer;
     int effectBufferpt;
 
     void resizeBuffer(int newSize);

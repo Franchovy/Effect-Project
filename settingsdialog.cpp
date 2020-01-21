@@ -24,10 +24,12 @@ SettingsDialog::SettingsDialog(
     //Populate combo boxes
 
     QAudioDeviceInfo device;
-    foreach (device, availableInputDevices)
+    for (QAudioDeviceInfo device : availableInputDevices){
         m_inputDeviceComboBox->addItem(device.deviceName(), QVariant::fromValue(device));
-    foreach (device, availableOutputDevices)
+    }
+    for (QAudioDeviceInfo device : availableOutputDevices){
         m_outputDeviceComboBox->addItem(device.deviceName(), QVariant::fromValue(device));
+    }
 
     //Initialize default devices
     if (!availableInputDevices.empty())

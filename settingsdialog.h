@@ -22,7 +22,7 @@ public:
     const QAudioDeviceInfo &inputDevice() const { return m_inputDevice; }
     const QAudioDeviceInfo &outputDevice() const { return m_outputDevice; }
 
-private slots:
+private Q_SLOTS:
     void inputDeviceChanged(int index);
     void outputDeviceChanged(int index);
 

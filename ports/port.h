@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointF>
+
 QT_BEGIN_NAMESPACE
 class Effect;
 class QComboBox;
@@ -29,7 +30,7 @@ protected:
     Port* connectedPort = nullptr;
     QString portName;
 
-signals:
+Q_SIGNALS:
     void constructor(Port* this_ptr);
 };
 

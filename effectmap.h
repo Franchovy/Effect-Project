@@ -31,7 +31,7 @@ private:
     QMap<Effect*, Port*>* m_effectMap;
     QHash<Port*, Port*>* m_connectionsMap;
 
-public slots:
+public Q_SLOTS:
     void addEffect(Effect* e);
     void deleteEffect(Effect* e);
     void connectPorts(Port* p1, Port* p2);
