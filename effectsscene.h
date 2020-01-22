@@ -9,6 +9,7 @@ class Effect;
 class EffectMap;
 class GUI_effect;
 class GUI_line;
+class GUI_item;
 class GUI_port;
 class Port;
 class QGridLayout;
@@ -65,7 +66,7 @@ private:
     double dragDistance = 0;
 
     enum mouseStates {neutral, dragging, linedrag, splitlines, selecting, deselecting};
-    mouseStates mouseState;
+    mouseStates dragState;
 
     /* //TODO move to MainWindow
     QComboBox* effectsSelect;
@@ -83,6 +84,9 @@ private:
     void splitLineDrag(QPointF p);
     void connectSplitLines();
     void splitLineErase();
+
+    void select(GUI_item*);
+    void deselect(GUI_item*);
 
     QTransform transform;
     //bool dragging = false;

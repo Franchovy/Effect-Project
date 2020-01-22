@@ -69,6 +69,20 @@ void Effect::addPort(Port *port, QPointF p)
     }
 }
 
+char* Effect::getOutPortData(Port* port, int readLength){
+    char* outData = port->data;
+    if (port->dataLength < readLength){
+        // Initialise data container in output port
+        outData = new char[readLength];
+        // Copy over any data needed
+        //memcpy(outData, port->data, port->dataLength);
+        // Set new Outport data
+        port->data = outData;
+        port->dataLength = readLength;
+    }
+    return outData;
+}
+
 float Effect::getFloat(char* c){
     float x = 0;
     memcpy(&x, c, 4);

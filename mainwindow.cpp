@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->effectsSelect->addItem("Pan Effect");
     ui->effectsSelect->addItem("Wave Effect");
     ui->effectsSelect->addItem("Joiner Effect");
+    ui->effectsSelect->addItem("Splitter Effect");
 
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
 

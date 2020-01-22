@@ -21,6 +21,8 @@
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/paneffect.h"
 #include "effectsLib/waveeffect.h"
+#include "effectsLib/joinereffect.h"
+#include "effectsLib/splittereffect.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
@@ -78,6 +80,12 @@ void Audio::createEffect(int effectType)
         break;
     case 4: // WaveEffect
         e = new WaveEffect(this);
+        break;
+    case 5: // JoinerEffect
+        e = new JoinerEffect(this);
+        break;
+    case 6: // SplitterEffect
+        e = new SplitterEffect(this);
         break;
     default:
         qDebug() << "Unknown Effect requested.";

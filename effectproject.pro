@@ -1,6 +1,6 @@
 QT       += core gui multimedia
 
-CONFIG += no_keywords
+#CONFIG += no_keywords
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,6 +36,7 @@ SOURCES += \
     effectsLib/joinereffect.cpp \
     effectsLib/outputeffect.cpp \
     effectsLib/paneffect.cpp \
+    effectsLib/splittereffect.cpp \
     effectsLib/waveeffect.cpp \
     effectsscene.cpp \
     main.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
     effectsLib/joinereffect.h \
     effectsLib/outputeffect.h \
     effectsLib/paneffect.h \
+    effectsLib/splittereffect.h \
     effectsLib/waveeffect.h \
     effectsscene.h \
     effectsui.h \

@@ -30,6 +30,10 @@ private:
 
     bool hasData = false;
     char* data = nullptr;
+    int dataLength = 0;
+
+    //temp test stuff
+    int freq = 800;
 };
 
 #endif // INPUTEFFECT_H

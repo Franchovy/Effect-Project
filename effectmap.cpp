@@ -24,28 +24,31 @@ EffectMap::EffectMap(Audio *parent) : QObject(parent),
 
 }
 
-char *EffectMap::getData(Effect *e)
+char *EffectMap::getData(Effect *e, Port* p)
 {
     if (e->type == 0){
         // Input device effect - just get data.
         return static_cast<InputEffect*>(e)->getData(nullptr, readLength);
     }
 
-    for(Port* p : e->getPorts()){
-        if (m_connectionsMap->contains(p)){
-            if (p->portType == 0){
-                // Input Port - returns connected output port effect
-                OutPort* connectedPort = static_cast<OutPort*>(m_connectionsMap->value(p));
-                Effect* connectedEffect = m_effectMap->key(connectedPort);
-                char* data = connectedEffect->getData(connectedPort, readLength);
-                if (data){
-                    return data;
-                } else {
-                    return nullptr;
-                }
+    if (m_connectionsMap->contains(p)){
+        if (p->portType == 0){
+            // Input Port - returns connected output port effect
+            OutPort* connectedPort = static_cast<OutPort*>(m_connectionsMap->value(p));
+            Effect* connectedEffect = m_effectMap->key(connectedPort);
+            char* data = connectedEffect->getData(connectedPort, readLength);
+            if (data){
+                return data;
+            } else {
+                return nullptr;
             }
         }
     }
+}
+
+bool EffectMap::isPortConnected(Port *p)
+{
+    return m_connectionsMap->contains(p);
 }
 
 void EffectMap::addEffect(Effect *e)
@@ -70,6 +73,10 @@ void EffectMap::deleteEffect(Effect *e)
 
 void EffectMap::connectPorts(Port *p1, Port *p2)
 {
+    qDebug() << "Connecting: ";
+    qDebug() << p1->getName();
+    qDebug() << p2->getName();
+/*
     if (m_connectionsMap->contains(p1)){
         p1 = m_connectionsMap->take(p1);
         p1 = m_connectionsMap->take(p1);
@@ -77,7 +84,7 @@ void EffectMap::connectPorts(Port *p1, Port *p2)
     if (m_connectionsMap->contains(p2)){
         p2 = m_connectionsMap->take(p2);
         p2 = m_connectionsMap->take(p2);
-    }
+    }*/
     m_connectionsMap->insert(p1, p2);
     m_connectionsMap->insert(p2, p1);
 }

@@ -15,8 +15,6 @@ GUI_effect::GUI_effect(QString name, QPointF pos) : GUI_item()
     baseRect = QRectF(pos.x()-200,pos.y()-200,pos.x()+200,pos.y()+200);
     title = name;
 
-    setAcceptHoverEvents(true);
-
     pen_normal = new QPen(QColor(0,0,0));
     pen_highlight = new QPen(QColor(100,100,255,150),2);
 }

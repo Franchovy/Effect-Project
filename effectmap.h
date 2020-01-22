@@ -21,9 +21,11 @@ public:
     Effect* getEffectFromPort(Port* port);
     EffectsScene* getEffectsScene();
 
-    char* getData(Effect* e);
+    char* getData(Effect* e, Port* p);
 
     //void createDefaultInputOutputEffects(InputEffect* in_e, OutputEffect* out_e);
+
+    bool isPortConnected(Port*);
 
     int readLength = 0;
 

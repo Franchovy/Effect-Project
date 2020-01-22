@@ -21,8 +21,6 @@ public:
 
     int portType;
 
-    virtual int getConnectPortType(){return 0;}
-
     int dataLength = 0;
     char* data;
 

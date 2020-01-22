@@ -12,7 +12,9 @@
 #include <QAudioBuffer>
 
 #include <jack/jack.h>
+#undef signals
 #include <jack/control.h>
+
 
 EffectBuffer* effectbuffer; // for use by jack
 
@@ -26,17 +28,6 @@ EffectBuffer::EffectBuffer(Audio* parent) : QIODevice(parent)
     //effectChain = QList<Effect*>();
     //Use default input and output for now
 }
-
-/*
-int nonmember_jack_process(jack_nframes_t nframes, void *arg)
-{
-    return static_cast<EffectBuffer*>(arg)->jack_process(nframes, arg);
-}
-
-void nonmember_jack_shutdown(void *arg){
-    return static_cast<EffectBuffer*>(arg)->jack_shutdown(arg);
-}
-*/
 
 int jack_process(jack_nframes_t nframes, void *arg);
 void jack_shutdown(void *arg);
@@ -84,6 +75,8 @@ int jack_runaudio(int argc, char *argv[])
     const char* servername = NULL;
     jack_options_t options = JackNullOption;
     jack_status_t status;
+
+    //jackctl_server* server = jackctl_server_create(NULL, NULL);
 
     client = jack_client_open(clientname, options, &status, servername);
 
@@ -174,7 +167,7 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
     for (OutputEffect* out_e : outputEffects){
         // Set readLength for effectMap (temp // ?)
         effectMap->readLength = readLength;
-        char* writeData = effectMap->getData(out_e);
+        char* writeData = effectMap->getData(out_e, out_e->getPorts().first());
         if (writeData){
             memcpy(data, writeData, readLength);
         } else {
@@ -185,8 +178,10 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
         }
 
     }
+    //memcpy(data, buffer.data(), readLength);
 
     buffer.remove(0, readLength);
+
 
     return readLength;
 }

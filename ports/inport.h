@@ -15,8 +15,9 @@ class InPort : public Port
 public:
     InPort(QString name, Effect* parent);
 
-    int getConnectPortType() override {return 2;}
     char* getData();
+
+    bool connected;
 
 private:
     Effect* parentEffect;

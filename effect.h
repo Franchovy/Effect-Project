@@ -70,6 +70,7 @@ protected:
 
     int step;
 
+    char* getOutPortData(Port *port, int readLength);
 private:
     QMap<Port*, QPointF>* m_ports;
     QList<Parameter*> m_parameters;

@@ -34,7 +34,7 @@ EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
 {
     // Set up state handling
 
-    mouseState = neutral;
+    dragState = neutral;
 
     //Default settings or whatever
     setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -133,15 +133,24 @@ void EffectsScene::connectPorts(QPair<Effect *, int> e1, QPair<Effect *, int> e2
 void EffectsScene::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == 16777223){
+        // Delete key
         for (QGraphicsItem* item : *selectedItems){
             if (item->data(0) == "effect"){
                 deleteEffectSignal(m_GUIeffects->value(static_cast<GUI_effect*>(item)));
             } else if (item->data(0) == "line"){
                 QPair<QPair<Effect*, int>,QPair<Effect*, int>> pair =
                         m_connections->key(static_cast<GUI_line*>(item));
-                disconnectPortsSignal(pair.first, pair.second);
+                disconnectPortsSignal(pair.first, pair.second); //TODO something wrong here?
             } else {
+                qDebug() << "Default delete operation on " << item;
                 item->~QGraphicsItem();
+            }
+        }
+    } else if (event->key() == 16777216){
+        for (QGraphicsItem* item : *selectedItems){
+            GUI_item* gitem = static_cast<GUI_item*>(item);
+            if (gitem){
+                deselect(gitem);
             }
         }
     }
@@ -155,10 +164,10 @@ void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         dragDistance = 0;
         for (QGraphicsItem* item : items(event->scenePos())){
             if (selectedItems->contains(item)){
-                mouseState = deselecting;
+                dragState = deselecting;
             } else {
                 selectedItems->append(item);
-                mouseState = selecting;
+                dragState = selecting;
             }
             break;
         }
@@ -171,7 +180,7 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsView* v = getView();
     QPointF d = event->scenePos() - event->lastScenePos();
 
-    if(mouseState == selecting || mouseState == deselecting){
+    if(dragState == selecting || dragState == deselecting){
         if (dragDistance > 10){
             if (selectedItems->first()->data(0) == "line"){ // Top selected item is line
                 //Save line state
@@ -179,7 +188,7 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 portLine->hide();
                 splitLineStart(event->scenePos());
 
-                mouseState = splitlines;
+                dragState = splitlines;
             } else if (selectedItems->first()->data(0) == "port"){
                 GUI_port* p = static_cast<GUI_port*>(selectedItems->first());
 
@@ -197,19 +206,19 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
                 portLine->p2 = event->scenePos();
                 portLine->show();
 
-                mouseState = linedrag;
+                dragState = linedrag;
             } else {
-                mouseState = dragging;
+                dragState = dragging;
             }
         } else {
             dragDistance += d.manhattanLength();
         }
     }
-    if(mouseState == dragging){
+    if(dragState == dragging){
         drag(d);
-    } else if (mouseState == linedrag){
+    } else if (dragState == linedrag){
         portLine->p2 = event->scenePos();
-    } else if (mouseState == splitlines){
+    } else if (dragState == splitlines){
         splitLineDrag(event->scenePos());
     }
 
@@ -221,37 +230,37 @@ void EffectsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 //TODO encapsulate selection mechanism into gui_item.
 void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (mouseState == neutral){
+    if (dragState == neutral){
 
-    } else if (mouseState == selecting){
+    } else if (dragState == selecting){
         for (QGraphicsItem* item : items(event->scenePos())){
             GUI_item* g = static_cast<GUI_item*>(item);
             if (g) g->select();
         }
-    } else if (mouseState == deselecting){
+    } else if (dragState == deselecting){
         for (QGraphicsItem* item : items(event->scenePos())){
             if (selectedItems->contains(item)){
                 selectedItems->removeOne(item);
                 GUI_item* g = static_cast<GUI_item*>(item);
-                if (g) g->deselect();
+                if (g) deselect(g);
             }
         }
-    } else if (mouseState == dragging){
+    } else if (dragState == dragging){
         for (QGraphicsItem* item : *selectedItems){
             GUI_item* g = static_cast<GUI_item*>(item);
             //qDebug() << "Item: " << item;
-            if (g) g->deselect();
+            if (g) deselect(g);
         }
         selectedItems->clear();
-    } else if (mouseState == splitlines){
+    } else if (dragState == splitlines){
         connectSplitLines();
         QGraphicsScene::mouseReleaseEvent(event);
         selectedItems->clear();
-    } else if (mouseState == linedrag){
+    } else if (dragState == linedrag){
         connectLine();
         selectedItems->clear();
     }
-    mouseState = neutral;
+    dragState = neutral;
     update();
 }
 
@@ -463,6 +472,14 @@ void EffectsScene::splitLineErase()
     portLines.second->~GUI_line();
     portLines.second = nullptr;
     addItem(portLine);
+}
+
+void EffectsScene::deselect(GUI_item *item)
+{
+    if (selectedItems->contains(item)){
+        selectedItems->removeOne(item);
+        item->deselect();
+    }
 }
 
 void EffectsScene::setView(QGraphicsView *value)

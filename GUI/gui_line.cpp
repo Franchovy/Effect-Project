@@ -16,8 +16,6 @@ GUI_line::GUI_line(QPointF p1, QPointF p2, QGraphicsItem* parent) : GUI_item(par
     this->p1 = p1;
     this->p2 = p2;
 
-    setAcceptHoverEvents(true);
-
     //painter = new QPainter();
     pen_normal = new QPen(QColor(0,0,0));
     pen_highlight = new QPen(QColor(100,100,255,150),2);

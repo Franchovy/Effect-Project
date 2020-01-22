@@ -20,7 +20,6 @@ GUI_port::GUI_port(QPointF basePoint, int portType, GUI_effect* parent) : GUI_it
 
     portNumber = 0;
 
-    setAcceptHoverEvents(true);
 }
 
 void GUI_port::setHoverBoxVisible(bool vis)

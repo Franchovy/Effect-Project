@@ -15,11 +15,9 @@ private:
     InPort* in2;
     OutPort* out;
 
-    bool addMode = false;
-
     // Effect interface
 public:
-    void applyEffect(char *in, char *out, int readLength);
+    void applyEffect(char *in1, char *in2, char *out, int readLength);
     char *getData(OutPort *, int readLength);
 };
 

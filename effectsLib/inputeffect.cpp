@@ -14,14 +14,21 @@ InputEffect::InputEffect(Audio* parent) : Effect(parent)
 
 void InputEffect::giveData(char *data, int readLength)
 {
-    if (sizeof(this->data) < readLength){
+    /*
+    if (dataLength < readLength){
+        //TODO something wrong here
         this->data = new char[readLength];
+        dataLength = readLength;
+        qDebug() << "New char";
     }
     for (int i = 0; i < readLength; i++){
         this->data[i] = data[i];
     }
     //memcpy(this->data, data, readLength);
     hasData = true;
+    */
+    this->data = data;
+
 }
 
 void InputEffect::giveData(float *dataFloat, int readLength)
@@ -48,16 +55,22 @@ void InputEffect::giveData(float *dataFloat, int readLength)
 
 void InputEffect::applyEffect(char *in, char *out, int readLength)
 {
-    out = in;
+    for (int i = 0; i < readLength; i++){
+        freq--;
+        if (freq >= 400){
+            out[i] = 1;
+        } else if (freq <= 400){
+            out[i] = 0;
+            if (freq == 0){
+                freq = 800;
+            }
+        }
+    }
 }
 
 char *InputEffect::getData(OutPort*, int readLength)
 {
-    if (hasData){
-        hasData = false;
-        return data;
-    } else {
-        qWarning() << "Error, has no data!";
-        return nullptr;
-    }
+    //char* outData = getOutPortData(outPorts.first(), readLength);
+    //applyEffect(nullptr, outData, readLength);
+    return data;
 }

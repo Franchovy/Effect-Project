@@ -2,7 +2,7 @@
 
 GUI_item::GUI_item(QGraphicsItem* parent) : QGraphicsItem(parent)
 {
-
+    setAcceptHoverEvents(true);
 }
 
 void GUI_item::select()
@@ -13,6 +13,9 @@ void GUI_item::select()
 
 void GUI_item::deselect()
 {
-    selected = false;
-    update();
+
+    if (this->selected){
+        selected = false;
+        update();
+    }
 }

@@ -15,5 +15,5 @@ InPort::InPort(QString name, Effect* parent) : Port(name, parent)
 
 char *InPort::getData()
 {
-    parentEffect->effectMap->getData(parentEffect);
+    parentEffect->effectMap->getData(parentEffect, this);
 }

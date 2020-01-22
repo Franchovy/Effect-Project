@@ -70,16 +70,7 @@ void EchoEffect1::applyEffect(char *in, char *out, int readLength){
 char *EchoEffect1::getData(OutPort*, int readLength)
 {
     // Only one outport
-    char* outData = outPorts.first()->data;
-    if (outPorts.first()->dataLength < readLength){
-        // Initialise data container in output port
-        outData = new char[readLength];
-        // Copy over any data needed
-        memcpy(outData, outPorts.first()->data, outPorts.first()->dataLength);
-        // Set new Outport data
-        outPorts.first()->data = outData;
-        outPorts.first()->dataLength = readLength;
-    }
+    char* outData = getOutPortData(outPorts.first(), readLength);
     //TODO resize buffer here based on readLength;
 
     EchoEffect1::applyEffect(inPorts.first()->getData(), outPorts.first()->data, readLength);
