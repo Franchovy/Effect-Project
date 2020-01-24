@@ -8,6 +8,8 @@
 #include <QFrame>
 #include <QGroupBox>
 #include <QGraphicsView>
+#include <QGraphicsSceneMouseEvent>
+#include <QScrollBar>
 #include <QDebug>
 #include <QFile>
 #include <QDir>
@@ -61,10 +63,12 @@ MainWindow::MainWindow(QWidget *parent)
     m_graphicsView->setCacheMode(QGraphicsView::CacheBackground);
     m_graphicsView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     m_graphicsView->setRenderHint(QPainter::Antialiasing);
-    m_graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    m_graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
     m_graphicsView->scale(qreal(0.8), qreal(0.8));
     m_graphicsView->setMinimumSize(400, 400);
     m_graphicsView->setWindowTitle(tr("Effect Workspace"));
+
+    m_effectsUI->installEventFilter(this);
 
     m_effectsUI->setView(m_graphicsView);
     m_graphicsView->show();
@@ -175,7 +179,24 @@ void MainWindow::showSettingsDialog()
     }
 }
 
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == m_effectsUI && event->type() == QEvent::GraphicsSceneMouseMove)
+    {
+        if (m_effectsUI->getDragState() == 3) // if view drag state
+        {
+            QGraphicsSceneMouseEvent *m = static_cast<QGraphicsSceneMouseEvent*>(event);
+            QPointF d = m->lastScreenPos() - m->screenPos();
+            int newX = m_graphicsView->horizontalScrollBar()->value() + d.x();
+            int newY = m_graphicsView->verticalScrollBar()->value() + d.y();
+            m_graphicsView->horizontalScrollBar()->setValue(newX);
+            m_graphicsView->verticalScrollBar()->setValue(newY);
+            return true;
+        }
+    }
 
+    return QMainWindow::eventFilter(obj, event);
+}
 
 
 void MainWindow::on_toggleRecordButton_clicked()

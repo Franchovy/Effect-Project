@@ -12,7 +12,7 @@ public:
     void deselect();
 
 protected:
-    bool selected = true;
+    bool selected;
 };
 
 #endif // GUI_ITEM_H

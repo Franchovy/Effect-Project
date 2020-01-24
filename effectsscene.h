@@ -36,6 +36,8 @@ public:
     QGraphicsView* getView();
     void setView(QGraphicsView *value);
 
+    int getDragState() {return dragState;}
+
     // QGraphicsScene interface
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -45,7 +47,6 @@ protected:
 private:
     EffectMap* effectMap;
 
-    QList<QGraphicsItem*>* selectedItems;
 
     QSet<Effect*>* m_effects;
     QMap<Effect*, QList<GUI_port*>>* m_effectPorts;
@@ -54,45 +55,39 @@ private:
     QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>, GUI_line*>* m_connections; // QPair<Effect*,int> should be defined as a macro, or replaced with ID./
 
     QPointF newEffectPos(Effect*);
-    QList<GUI_port*> getPorts(Effect*);
-    Effect* getEffectAt(QPointF);
-    QPointF getPortCenter(QPointF);
-    GUI_port* getPortAt(QPointF);
-    int getPortNumber(QPointF);
     GUI_line* getConnection(Effect*, int);
-    void connectLine();
+    void connectLine(GUI_port*, QPointF);
 
-    void drag(QPointF p);
+    void dragItem(GUI_item*, QPointF);
     double dragDistance = 0;
 
-    enum mouseStates {neutral, dragging, linedrag, splitlines, selecting, deselecting};
+    enum mouseStates {neutral, drag, line, view};
     mouseStates dragState;
+    bool shiftState = false;
 
-    /* //TODO move to MainWindow
-    QComboBox* effectsSelect;
-    QPushButton* newEffectButton;
-    */
+    QList<GUI_item*> selectedItems;
+    void clearSelectedItems();
+    GUI_item* clicked_item;
+    GUI_item* hover_item;
+    QList<GUI_item*> getItemsAt(QPointF);
+    int scrollRef = 0;
+
+
     bool portLineDrag = false;
     GUI_line* portLine = nullptr;
-    QPair<GUI_line*,GUI_line*> portLines;
+//    QPair<GUI_line*,GUI_line*> portLines;
     QPointF portDragPoint;
     GUI_port* port_ptr;
 
-    QGraphicsView* view;
-
-    void splitLineStart(QPointF p);
-    void splitLineDrag(QPointF p);
-    void connectSplitLines();
-    void splitLineErase();
+    QGraphicsView* graphicsView;
 
     void select(GUI_item*);
-    void deselect(GUI_item*);
+    void deselect(GUI_item*, bool clear = false);
 
     QTransform transform;
-    //bool dragging = false;
-    //QGraphicsItem* draggedItem = nullptr;
-    //bool dragView = false;
 
+    void dragLine(GUI_port *port, QPointF pos);
+    GUI_item *getScrollSelected(QList<GUI_item *> list);
 Q_SIGNALS:
 //  Signals relay to audio
     void newEffectSignal(int effectType);
@@ -114,6 +109,7 @@ public Q_SLOTS:
     // QGraphicsScene interface
 protected:
     void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 };
 
 #endif // EFFECTUI_H
