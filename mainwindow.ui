@@ -54,9 +54,9 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>19</x>
-      <y>39</y>
-      <width>761</width>
+      <x>20</x>
+      <y>40</y>
+      <width>731</width>
       <height>471</height>
      </rect>
     </property>
@@ -75,89 +75,93 @@
      </property>
     </layout>
    </widget>
-   <widget class="QPushButton" name="runButton">
+   <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>80</width>
-      <height>23</height>
+      <width>731</width>
+      <height>31</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Run Audio</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="newEffectButton">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>10</y>
-      <width>80</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>New Effect</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="effectsSelect">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>10</y>
-      <width>79</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="statusTip">
-     <string>Select Effect</string>
-    </property>
-    <property name="currentText">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="settings">
-    <property name="geometry">
-     <rect>
-      <x>290</x>
-      <y>10</y>
-      <width>80</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="accessibleName">
-     <string/>
-    </property>
-    <property name="text">
-     <string>Settings</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="toggleRecordButton">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>10</y>
-      <width>80</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Record</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>10</y>
-      <width>80</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save Effect</string>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="settings">
+       <property name="accessibleName">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Settings</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="runButton">
+       <property name="text">
+        <string>Run Audio</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="toggleRecordButton">
+       <property name="text">
+        <string>Record</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="saveEffectButton">
+       <property name="text">
+        <string>Save Effect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>200</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="newEffectButton">
+       <property name="text">
+        <string>New Effect</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="effectsSelect">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>110</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="statusTip">
+        <string>Select Effect</string>
+       </property>
+       <property name="currentText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

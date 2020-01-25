@@ -31,8 +31,10 @@ private:
     SettingsDialog *m_settingsDialog;
     EffectsScene* m_effectsUI;
 
-    void readEffectFiles();
+    void loadEffectFiles();
+    bool checkEffectFileFormat(QString filename);
     QString effectsFolderName = "Effects";
+    QString getEffectFolderPath();
     QString getApplicationPath();
     QString applicationPath;
 
@@ -41,9 +43,9 @@ private:
 
     void runAudioUIConnections();
 
-
 private Q_SLOTS:
     void showSettingsDialog();
     void on_toggleRecordButton_clicked();
+    void printSaveEffect();
 };
 #endif // MAINWINDOW_H

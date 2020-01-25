@@ -38,6 +38,8 @@ public:
 
     int getDragState() {return dragState;}
 
+    QString compileSaveEffect();
+
     // QGraphicsScene interface
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

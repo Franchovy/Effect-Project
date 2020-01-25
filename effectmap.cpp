@@ -73,9 +73,6 @@ void EffectMap::deleteEffect(Effect *e)
 
 void EffectMap::connectPorts(Port *p1, Port *p2)
 {
-    qDebug() << "Connecting: ";
-    qDebug() << p1->getName();
-    qDebug() << p2->getName();
 /*
     if (m_connectionsMap->contains(p1)){
         p1 = m_connectionsMap->take(p1);

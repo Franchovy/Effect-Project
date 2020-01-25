@@ -187,7 +187,6 @@ void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
             dragState = drag;
         } else if (clicked_item->data(0) == "port"){
             dragState = line;
-            qDebug() << "Portline visible? " << portLine->isVisible();
         }
     } else if (event->button() == Qt::RightButton){
 
@@ -398,4 +397,48 @@ void EffectsScene::deselect(GUI_item *item, bool clearOp)
 void EffectsScene::setView(QGraphicsView *value)
 {
     graphicsView = value;
+}
+
+QString EffectsScene::compileSaveEffect()
+{
+    //Uses selectedItems list
+    QString output = "";
+    QList<Effect*> effectsList = QList<Effect*>();
+
+    //Add effects to output
+    output.append("EFFECTS:\n");
+    for (GUI_item* item : selectedItems){
+        if (item->data(0) == "effect"){
+            Effect* e = m_GUIeffects->value(static_cast<GUI_effect*>(item));
+
+            output.append(QString::number(effectsList.length()));
+            output.append(" : ");
+            output.append(QString::number(e->type));
+            output.append("\n");
+
+            effectsList.append(e);
+        }
+    }
+
+    //Add connections between selected effects
+    output.append("CONNECTIONS:\n");
+    for (GUI_line* l : m_connections->values()){
+        // Line must be connected to two of selected effects.
+        if (effectsList.contains(m_connections->key(l).first.first) &&
+                effectsList.contains(m_connections->key(l).second.first)){
+            int port1 = m_connections->key(l).first.second;
+            int port2 = m_connections->key(l).second.second;
+
+            output.append(QString::number(effectsList.indexOf(m_connections->key(l).first.first)));
+            output.append(" ");
+            output.append(QString::number(port1));
+            output.append(" : ");
+            output.append(QString::number(effectsList.indexOf(m_connections->key(l).second.first)));
+            output.append(" ");
+            output.append(QString::number(port2));
+            output.append("\n");
+        }
+    }
+    //output
+    return output;
 }

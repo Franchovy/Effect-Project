@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QAbstractItemView>
 #include <QAudioBuffer>
 #include <QAudioProbe>
 #include <QAudioRecorder>
@@ -14,6 +15,7 @@
 #include <QFile>
 #include <QDir>
 #include <QAudioRecorder>
+#include <QInputDialog>
 
 #include <experimental/filesystem>
 
@@ -73,10 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_effectsUI->setView(m_graphicsView);
     m_graphicsView->show();
 
-    // Load effect files (to be updated.. to "effect container" files
-
-    applicationPath = getApplicationPath();
-    //readEffectFiles();
+    //ui->effectsSelect->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    //ui->effectsSelect->setMaxVisibleItems(10); //CHANGEME doesn't work with style or smth
 
     // Load base effects
 
@@ -87,6 +87,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->effectsSelect->addItem("Wave Effect");
     ui->effectsSelect->addItem("Joiner Effect");
     ui->effectsSelect->addItem("Splitter Effect");
+
+    // Load effect files (to be updated.. to "effect container" files
+
+    applicationPath = getApplicationPath();
+    loadEffectFiles();
 
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
 
@@ -102,21 +107,32 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::readEffectFiles()
+void MainWindow::loadEffectFiles()
 {
-    QString dirPath = QString(applicationPath + "/" + effectsFolderName);
+    QString dirPath = getEffectFolderPath();
     QDir folder(dirPath);
     if (!folder.exists()){
         QDir().mkdir(dirPath);
     }
 
     //assume the directory exists and contains some files and you want all jpg and JPG files
-    QStringList images = folder.entryList(QStringList(), QDir::Files);
-    for(QString filename : images) {
+    QStringList fileList = folder.entryList(QStringList(), QDir::Files);
+    for(QString filename : fileList) {
         qDebug() << filename;
+        checkEffectFileFormat(filename);
     }
 }
 
+bool MainWindow::checkEffectFileFormat(QString filename)
+{
+
+}
+
+
+QString MainWindow::getEffectFolderPath()
+{
+    return getApplicationPath() + "/" + effectsFolderName;
+}
 
 QString MainWindow::getApplicationPath()
 {
@@ -168,6 +184,9 @@ void MainWindow::runAudioUIConnections()
     });
     connect(ui->settings, &QPushButton::clicked, this, &MainWindow::showSettingsDialog);
 
+    // Connect save effect button to EffectsScene compiler mechanism
+    connect(ui->saveEffectButton, &QPushButton::clicked, this, &MainWindow::printSaveEffect);
+
 }
 
 void MainWindow::showSettingsDialog()
@@ -202,4 +221,33 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 void MainWindow::on_toggleRecordButton_clicked()
 {
     m_audio->record();
+}
+
+void MainWindow::printSaveEffect()
+{
+    QString folder = getEffectFolderPath();
+    // QDialog for name
+    bool ok;
+    QString name = QInputDialog::getText(this, tr("Effect Name Dialog"),
+                                             tr("Enter Effect Name:"), QLineEdit::Normal,
+                                             QDir::home().dirName(), &ok);
+    name.append(".txt");
+    if (ok && !name.isEmpty()){
+        QString outputString = m_effectsUI->compileSaveEffect();
+
+        // Create effect file
+        QFile* file = new QFile(folder + "/" + name);
+        if (!file->exists()){
+            if (file->open(QIODevice::ReadWrite) )
+            {
+                QTextStream stream(file);
+                stream << outputString;
+                stream.flush();
+                file->close();
+                qDebug() << "Saving effect: " << endl << outputString;
+            }
+        } else qDebug() << "Effect already exists.";
+    } else {
+        qDebug() << "Effect unsaved.";
+    }
 }
