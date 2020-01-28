@@ -24,12 +24,13 @@ class QAudioProbe;
 class QAudioRecorder;
 QT_END_NAMESPACE
 
+enum AudioSystem {QT, JACK};
 
 class Audio : public QObject
 {
     Q_OBJECT
 public:
-    Audio(QObject* parent = nullptr);
+    Audio(AudioSystem audioSystem, QObject* parent = nullptr);
 
     EffectMap* getEffectMap() {return m_effectMap;}
     EffectBuffer* getEffectBuffer() {return m_buffer;}
@@ -39,17 +40,20 @@ public:
     void setInputDevice(QAudioDeviceInfo device);
     void setOutputDevice(QAudioDeviceInfo device);
 
-    QAudioFormat getAudioFormat(){return format;};
+    QAudioFormat getAudioFormat(){return format;}
 
     void record();
-
     bool isRunning() {return running;}
+    int baseEffectsCount(){return 7;}
+
+    int setAudioSystem(AudioSystem audioSystem);
 
 private:
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
 
     QAudioFormat format;
+    AudioSystem currentAudioSystem;
 
     // Temp
     QAudioInput* inputAudio;
@@ -60,17 +64,9 @@ private:
     QAudioRecorder* m_audioRecorder;
     QAudioProbe* m_audioProbe;
 
-    enum AudioSystem {Qt, JACK};
-    AudioSystem audioSystem = Qt;
-
-    QVector<qreal> getBufferLevels(const QAudioBuffer& buffer);
-
-    template <class T>
-    QVector<qreal> getBufferLevels(const T *buffer, int frames, int channels);
-
     bool running = false;
 
-    void setupFormat();
+    void setupFormat(AudioSystem audioSystem);
 
 Q_SIGNALS:
     void newEffectSignal(Effect* e);

@@ -13,9 +13,9 @@ JoinerEffect::JoinerEffect(Audio *parent) : Effect(parent)
     in2 = new InPort("Joiner In 2", this);
     out = new OutPort("Joiner Out", this);
 
-    addPort(in1,QPointF(150,125));
-    addPort(in2, QPointF(150, 75));
-    addPort(out, QPointF(50, 100));
+    addPort(in1);
+    addPort(in2);
+    addPort(out);
 
 }
 
@@ -26,6 +26,14 @@ void JoinerEffect::applyEffect(char *in1, char *in2, char *out, int readLength)
             int16_t x1;
             memcpy(&x1, &in1[i], step);
             int16_t x2;
+            memcpy(&x2, &in2[i], step);
+            x1 += x2;
+            memcpy(&out[i], &x1, step);
+        }
+        if (format.sampleType() == QAudioFormat::Float){
+            float x1;
+            memcpy(&x1, &in1[i], step);
+            float x2;
             memcpy(&x2, &in2[i], step);
             x1 += x2;
             memcpy(&out[i], &x1, step);

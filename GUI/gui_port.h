@@ -19,6 +19,8 @@ public:
     void setHoverBoxVisible(bool vis = true);
     void setBasePoint(QPointF basePoint);
 
+    void setPos(QPointF);
+
     QPointF pos;
     int portNumber;
     int portType;

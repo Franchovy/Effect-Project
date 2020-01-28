@@ -8,9 +8,9 @@ SplitterEffect::SplitterEffect(Audio* parent) : Effect(parent)
     in = new InPort("Splitter In", this);
     out1 = new OutPort("Splitter Out 1", this);
     out2 = new OutPort("Splitter Out 2", this);
-    addPort(in, QPointF(150,100));
-    addPort(out1, QPointF(50, 125));
-    addPort(out2, QPointF(50, 75));
+    addPort(in);
+    addPort(out1);
+    addPort(out2);
 }
 
 void SplitterEffect::applyEffect(char *in, char *out, int readLength)

@@ -30,10 +30,11 @@ SOURCES += \
     effect.cpp \
     effectbuffer.cpp \
     effectmap.cpp \
+    effectsLib/delayeffect.cpp \
     effectsLib/echoeffect1.cpp \
-    effectsLib/fuzzeffect.cpp \
     effectsLib/inputeffect.cpp \
     effectsLib/joinereffect.cpp \
+    effectsLib/multiplyeffect.cpp \
     effectsLib/outputeffect.cpp \
     effectsLib/paneffect.cpp \
     effectsLib/splittereffect.cpp \
@@ -57,10 +58,11 @@ HEADERS += \
     effect.h \
     effectbuffer.h \
     effectmap.h \
+    effectsLib/delayeffect.h \
     effectsLib/echoeffect1.h \
-    effectsLib/fuzzeffect.h \
     effectsLib/inputeffect.h \
     effectsLib/joinereffect.h \
+    effectsLib/multiplyeffect.h \
     effectsLib/outputeffect.h \
     effectsLib/paneffect.h \
     effectsLib/splittereffect.h \

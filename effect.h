@@ -51,13 +51,16 @@ public:
     QList<QPointF> getPortLocs();
     QList<Port*> getPorts();
 
+    QList<InPort*> getInPorts(){return inPorts;}
+    QList<OutPort*> getOutPorts(){return outPorts;}
+
     //"Non-static protected memers can not be accessed via a pointer to the base class." wot>?
     QList<Parameter*>* getParamList() {return &m_parameters;}
 
     virtual char* getData(OutPort*, int readLength);
 
 protected:
-    void addPort(Port*, QPointF);
+    void addPort(Port*);
     void addParam(Parameter*);
 
     QList<InPort*> inPorts;
@@ -72,7 +75,7 @@ protected:
 
     char* getOutPortData(Port *port, int readLength);
 private:
-    QMap<Port*, QPointF>* m_ports;
+    QVector<Port*> m_ports;
     QList<Parameter*> m_parameters;
 
 };

@@ -38,11 +38,12 @@ void GUI_effect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     //Set up title properly with boundingrect and font
     QFont font = painter->font();
-    font.setPixelSize(20);
+    font.setPixelSize(15);
+    font.setBold(true);
     painter->setFont(font);
     
     if (hover){
-        painter->setPen(*pen_highlight);
+        painter->setPen(*pen_highlight);        
         painter->drawRect(QRectF(baseRect.topLeft()-QPoint(5,5), baseRect.bottomRight()+QPoint(5,5)));
     }
 
@@ -51,8 +52,10 @@ void GUI_effect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     } else {
         painter->setPen(*pen_normal);
     }
+    painter->fillRect(baseRect, QColor(240,240,240));
     painter->drawRect(baseRect);
-    painter->drawText(QPointF(baseRect.topLeft().x()+10, baseRect.topLeft().y()+10), title);
+
+    painter->drawText(QPointF(baseRect.topLeft().x(), baseRect.topLeft().y()+20), title);
 }
 
 void GUI_effect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

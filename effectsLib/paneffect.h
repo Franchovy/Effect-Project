@@ -19,8 +19,6 @@ private:
     InPort *inPort;
     OutPort *outPort;
 
-    int step;
-
     int speed = 0;
     SliderParam* speedParam = nullptr;
     int stereocount = 0;
@@ -29,8 +27,7 @@ private:
     int panspeedtest = 200000;
 
     //working variable
-    int16_t x;
-    int16_t x2;
+
 };
 
 #endif // PANEFFECT_H

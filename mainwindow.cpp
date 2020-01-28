@@ -20,7 +20,7 @@
 #include <experimental/filesystem>
 
 #include "effectsLib/echoeffect1.h"
-#include "effectsLib/fuzzeffect.h"
+#include "effectsLib/multiplyeffect.h"
 #include "effectsLib/paneffect.h"
 
 #include "effect.h"
@@ -34,7 +34,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_audio(new Audio())
+    , m_audio(new Audio(defaultAudioSystem))
     , m_settingsDialog(new SettingsDialog(
                            *m_audio,
                            this))
@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_graphicsView->scale(qreal(0.8), qreal(0.8));
     m_graphicsView->setMinimumSize(400, 400);
     m_graphicsView->setWindowTitle(tr("Effect Workspace"));
+    m_graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
+    m_graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 
     m_effectsUI->installEventFilter(this);
 
@@ -77,6 +79,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     //ui->effectsSelect->view()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     //ui->effectsSelect->setMaxVisibleItems(10); //CHANGEME doesn't work with style or smth
+
+    // Connect Audio and UI
+
+    runAudioUIConnections();
 
     // Load base effects
 
@@ -94,11 +100,6 @@ MainWindow::MainWindow(QWidget *parent)
     loadEffectFiles();
 
     ui->effectGrid->addLayout(m_effectsUI->mainLayout,0,0);
-
-    // Connect Audio and UI
-
-    runAudioUIConnections();
-
 }
 
 
@@ -119,15 +120,76 @@ void MainWindow::loadEffectFiles()
     QStringList fileList = folder.entryList(QStringList(), QDir::Files);
     for(QString filename : fileList) {
         qDebug() << filename;
-        checkEffectFileFormat(filename);
+        if(readEffectFile(filename)){
+            ui->effectsSelect->addItem(filename);
+        }
     }
 }
 
-bool MainWindow::checkEffectFileFormat(QString filename)
+bool MainWindow::readEffectFile(QString filename)
 {
+    QFile* file = new QFile(getEffectFolderPath() + "/" + filename);
 
+    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+
+    QTextStream in(file);
+
+    QString line = in.readLine();
+
+    QList<QPair<int, int>> effects;
+    QList<QPair<QPair<int, int>,QPair<int,int>>> connections;
+
+    if(line.indexOf("EFFECTS:") == 0){
+        line = in.readLine().trimmed();
+        do {
+            //Effect to add
+            if (int index = line.indexOf(":")){
+                QPair<int,int> pair;
+                QString i = line.left(index);
+                QString j = line.right(line.length()-index-2);
+                if (i != "" && j != ""){
+                    pair.first = i.toInt();
+                    pair.second = j.toInt();
+
+                    if (pair.first > m_audio->baseEffectsCount()
+                            || pair.second > m_audio->baseEffectsCount()){
+                        //simple check
+                        return false;
+                    }
+                    effects.append(pair);
+                }
+            } else return false;
+            line = in.readLine().trimmed();
+        } while (line != "CONNECTIONS:");
+        qDebug() << effects.length();
+        line = in.readLine();
+        while (line != ""){
+            if (int index = line.indexOf(":")){
+                QString left = line.left(index);
+                QString right = line.mid(index+2);
+                // Connections to add
+                QPair<int,int> connection1;
+                QPair<int,int> connection2;
+                connection1.first = left.left(line.indexOf(" ")).toInt();
+                connection1.second = left.mid(line.indexOf(" ")+1).toInt();
+
+                connection2.first = right.left(line.indexOf(" ")).toInt();
+                connection2.second = right.mid(line.indexOf(" ")+1).toInt();
+                // basic check
+                if (connection1.first > effects.length())
+                    return false;
+                if (connection2.first > effects.length())
+                    return false;
+                connections.append(QPair<QPair<int,int>,QPair<int,int>>(connection1,connection2));
+                line = in.readLine();
+            }
+        }
+    }
+
+    loadedEffects.append(QPair<QList<QPair<int,int>>,QList<QPair<QPair<int,int>,QPair<int,int>>>>(effects, connections));
+    return true;
 }
-
 
 QString MainWindow::getEffectFolderPath()
 {
@@ -144,7 +206,15 @@ void MainWindow::runAudioUIConnections()
 {
     // Connect new effect button to
     connect(ui->newEffectButton, &QPushButton::clicked, [=](){
-        m_effectsUI->newEffectSignal(ui->effectsSelect->currentIndex());
+        if (ui->effectsSelect->currentIndex() <  m_audio->baseEffectsCount()) {
+            // Signal base effect
+            qDebug() << "Base effect: " << ui->effectsSelect->currentIndex();
+            m_effectsUI->newEffectSignal(ui->effectsSelect->currentIndex());
+        } else {
+            // Create effect from loaded effects
+            qDebug() << "Loaded effect: " << ui->effectsSelect->currentIndex();
+            m_effectsUI->loadEffect(loadedEffects.at(ui->effectsSelect->currentIndex() - m_audio->baseEffectsCount()));
+        }
     });
 
     // Connect all Audio slots to EffectsScene signals
@@ -231,7 +301,7 @@ void MainWindow::printSaveEffect()
     QString name = QInputDialog::getText(this, tr("Effect Name Dialog"),
                                              tr("Enter Effect Name:"), QLineEdit::Normal,
                                              QDir::home().dirName(), &ok);
-    name.append(".txt");
+    name.append(".effect");
     if (ok && !name.isEmpty()){
         QString outputString = m_effectsUI->compileSaveEffect();
 

@@ -39,6 +39,7 @@ public:
     int getDragState() {return dragState;}
 
     QString compileSaveEffect();
+    bool loadEffect(QPair<QList<QPair<int,int>>,QList<QPair<QPair<int,int>,QPair<int,int>>>>);
 
     // QGraphicsScene interface
 protected:
@@ -49,16 +50,18 @@ protected:
 private:
     EffectMap* effectMap;
 
-
     QSet<Effect*>* m_effects;
     QMap<Effect*, QList<GUI_port*>>* m_effectPorts;
     QMap<GUI_effect*, Effect*>* m_GUIeffects;
     QMap<GUI_port*, Effect*>* m_GUIports;
     QMap<QPair<QPair<Effect*,int>,QPair<Effect*,int>>, GUI_line*>* m_connections; // QPair<Effect*,int> should be defined as a macro, or replaced with ID./
 
-    QPointF newEffectPos(Effect*);
+    Effect* newEffect;
+    int posCount = 0;
     GUI_line* getConnection(Effect*, int);
     void connectLine(GUI_port*, QPointF);
+
+    QList<GUI_port*> getPortsOfType(Effect*, int);
 
     void dragItem(GUI_item*, QPointF);
     double dragDistance = 0;
@@ -67,13 +70,14 @@ private:
     mouseStates dragState;
     bool shiftState = false;
 
+    bool ctrlState = false;
+
     QList<GUI_item*> selectedItems;
     void clearSelectedItems();
     GUI_item* clicked_item;
     GUI_item* hover_item;
     QList<GUI_item*> getItemsAt(QPointF);
     int scrollRef = 0;
-
 
     bool portLineDrag = false;
     GUI_line* portLine = nullptr;
@@ -112,6 +116,7 @@ public Q_SLOTS:
 protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
 };
 
 #endif // EFFECTUI_H

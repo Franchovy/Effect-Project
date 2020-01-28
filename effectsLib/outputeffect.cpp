@@ -7,7 +7,7 @@ OutputEffect::OutputEffect(Audio* parent) : Effect(parent),
 {
     effectName = "Output Device Name";
     type = 1;
-    addPort(outputDevicePort, QPointF(150,100));
+    addPort(outputDevicePort);
 }
 
 void OutputEffect::applyEffect(char *in, char *out, int readLength)

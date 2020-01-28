@@ -19,13 +19,8 @@ public:
     void giveData(char* data, int readLength);
     char *getData(OutPort*, int) override;
 
-    void giveData(float* data, int readLength);
-
-
-
 private:
     OutPort* inputDevicePort;
-
     void applyEffect(char *in, char *out, int readLength) override;
 
     bool hasData = false;

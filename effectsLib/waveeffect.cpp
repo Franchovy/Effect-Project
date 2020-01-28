@@ -10,8 +10,8 @@ WaveEffect::WaveEffect(Audio* parent) : Effect(parent)
     InPort* inPort = new InPort("Wave In", this);
     OutPort* outPort = new OutPort("Wave Out", this);
 
-    addPort(inPort, QPointF(150,100));
-    addPort(outPort, QPointF(50, 100));
+    addPort(inPort);
+    addPort(outPort);
 
     vol = 0;
 }

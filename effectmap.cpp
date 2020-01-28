@@ -14,7 +14,7 @@
 #include "ports/inport.h"
 
 #include <effectsLib/echoeffect1.h>
-#include <effectsLib/fuzzeffect.h>
+#include <effectsLib/multiplyeffect.h>
 #include <effectsLib/paneffect.h>
 
 EffectMap::EffectMap(Audio *parent) : QObject(parent),
@@ -40,6 +40,8 @@ char *EffectMap::getData(Effect *e, Port* p)
             if (data){
                 return data;
             } else {
+                qDebug() <<  "No data returned!!";
+                qDebug() << e->effectName << " port " << p->getName() << " to " << connectedEffect->effectName << " port " << connectedPort->getName();
                 return nullptr;
             }
         }

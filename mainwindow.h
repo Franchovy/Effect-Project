@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "audio.h"
 
 QT_BEGIN_NAMESPACE
 class Effect;
@@ -26,13 +27,18 @@ public:
     ~MainWindow();
 
 private:
+    AudioSystem defaultAudioSystem = QT;
+
     Ui::MainWindow *ui;
     Audio* m_audio;
     SettingsDialog *m_settingsDialog;
     EffectsScene* m_effectsUI;
 
+    // lol, need to learn how to use a struct
+    QList<QPair<QList<QPair<int,int>>,QList<QPair<QPair<int,int>,QPair<int,int>>>>> loadedEffects;
+
     void loadEffectFiles();
-    bool checkEffectFileFormat(QString filename);
+    bool readEffectFile(QString filename);
     QString effectsFolderName = "Effects";
     QString getEffectFolderPath();
     QString getApplicationPath();

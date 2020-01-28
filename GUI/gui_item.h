@@ -13,6 +13,9 @@ public:
 
 protected:
     bool selected;
+
+private:
+    QGraphicsItem *parentGraphicsItem;
 };
 
 #endif // GUI_ITEM_H

@@ -28,6 +28,13 @@ void GUI_port::setHoverBoxVisible(bool vis)
     update();
 }
 
+void GUI_port::setPos(QPointF p)
+{
+    pos = p;
+    portBox->moveCenter(pos);
+    hoverBox->moveCenter(pos);
+}
+
 QRectF GUI_port::boundingRect() const
 {
     return *hoverBox;
@@ -46,6 +53,8 @@ void GUI_port::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     pen.setColor(color_black);
     painter->setPen(pen);
     painter->drawRect(*portBox);
+
+    painter->drawText(pos, QString::number(portNumber));
 }
 
 bool GUI_port::contains(const QPointF &point) const

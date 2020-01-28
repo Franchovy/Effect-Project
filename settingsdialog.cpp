@@ -8,9 +8,11 @@
 #include <QVBoxLayout>
 #include "audio.h"
 
+
 SettingsDialog::SettingsDialog(
         Audio &audio,
         QWidget *parent) : QDialog(parent)
+      , m_audioSelect(new QComboBox(this))
       , m_inputDeviceComboBox(new QComboBox(this))
       , m_outputDeviceComboBox(new QComboBox(this))
 {
@@ -22,6 +24,9 @@ SettingsDialog::SettingsDialog(
     dialogLayout->setSpacing(2);
 
     //Populate combo boxes
+
+    m_audioSelect->addItem("Qt",static_cast<AudioSystem>(0));
+    m_audioSelect->addItem("JACK",static_cast<AudioSystem>(1));
 
     QAudioDeviceInfo device;
     for (QAudioDeviceInfo device : availableInputDevices){
@@ -38,6 +43,12 @@ SettingsDialog::SettingsDialog(
         m_outputDevice = availableOutputDevices.front();
 
     //Add widgets to layout
+    QHBoxLayout* audioSelectLayout(new QHBoxLayout);
+    QLabel* audioSelectLabel = new QLabel(tr("Audio System"), this);
+    audioSelectLayout->addWidget(audioSelectLabel);
+    audioSelectLayout->addWidget(m_audioSelect);
+    //dialogLayout->addLayout(audioSelectLayout);
+
     QHBoxLayout* inputDeviceLayout(new QHBoxLayout);
     QLabel *inputDeviceLabel = new QLabel(tr("Input Device"), this);
     inputDeviceLayout->addWidget(inputDeviceLabel);
@@ -77,6 +88,13 @@ SettingsDialog::~SettingsDialog()
 {
 }
 
+void SettingsDialog::audioSystemChanged(int index)
+{
+    AudioSystem audioSystem = static_cast<AudioSystem>(index);
+    audio->setAudioSystem(audioSystem);
+
+}
+
 void SettingsDialog::inputDeviceChanged(int index)
 {
     m_inputDevice = m_inputDeviceComboBox->itemData(index).value<QAudioDeviceInfo>();
@@ -85,7 +103,6 @@ void SettingsDialog::inputDeviceChanged(int index)
 
 void SettingsDialog::outputDeviceChanged(int index)
 {
-    qDebug() << "Set output device - settings dialog";
     m_outputDevice = m_outputDeviceComboBox->itemData(index).value<QAudioDeviceInfo>();
     audio->setOutputDevice(m_outputDevice);
 }

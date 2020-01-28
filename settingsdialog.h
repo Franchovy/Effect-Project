@@ -22,18 +22,22 @@ public:
     const QAudioDeviceInfo &inputDevice() const { return m_inputDevice; }
     const QAudioDeviceInfo &outputDevice() const { return m_outputDevice; }
 
-private Q_SLOTS:
-    void inputDeviceChanged(int index);
-    void outputDeviceChanged(int index);
-
 private:
     Audio *audio;
+    QComboBox *m_audioSelect;
 
     QAudioDeviceInfo m_inputDevice;
     QAudioDeviceInfo m_outputDevice;
 
     QComboBox *m_inputDeviceComboBox;
     QComboBox *m_outputDeviceComboBox;
+
+
+private Q_SLOTS:
+    void audioSystemChanged(int index);
+    void inputDeviceChanged(int index);
+    void outputDeviceChanged(int index);
+
 };
 
 #endif // SETTINGSDIALOG_H

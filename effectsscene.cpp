@@ -26,7 +26,7 @@
 #define ESCAPE_KEY 16777216
 #define SPACE_KEY 32
 #define SHIFT_KEY 16777248
-
+#define CTRL_KEY 16777249
 
 EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
   , mainLayout(new QGridLayout())
@@ -50,6 +50,7 @@ EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
     selectedItems = QList<GUI_item*>();
 
     portLine = new GUI_line(QPointF(0,0),QPointF(0,0));
+    portLine->setZValue(2);
     addItem(portLine);
 
     connect(this, &EffectsScene::connectPortsSignal, this, &EffectsScene::connectPorts);
@@ -63,12 +64,15 @@ EffectsScene::EffectsScene(QWidget *parent) : QGraphicsScene(parent)
 
 void EffectsScene::addEffect(Effect* e)
 {
-    QPointF pos = newEffectPos(e);
+    QPointF pos = QPointF(10*posCount,10*posCount);
+    posCount++;
     GUI_effect* e_gui = new GUI_effect(e->effectName, pos);
     m_GUIeffects->insert(e_gui,e);
     m_effects->insert(e);
 
+    qDebug() << "Creating: " << e->effectName;
     addItem(e_gui);
+    newEffect = e;
 
     // GUI_effect position actually set?
 
@@ -77,14 +81,30 @@ void EffectsScene::addEffect(Effect* e)
     //Add Ports to effect
     int i = 0;
 
+    //counter of type - used for positioning
+    QVector<int> portTypeCount = {0,0};
+
     for (i = 0; i < e->getPorts().size(); i++){
-        GUI_port* gp = new GUI_port(e_gui->pos - e->getPortLocs().at(i), e->getPorts().at(i)->portType, e_gui);
+        GUI_port* gp = new GUI_port(e_gui->pos, e->getPorts().at(i)->portType, e_gui);
+        portTypeCount.replace(gp->portType,
+                              portTypeCount.at(gp->portType)+1); //increment port count for type
         gp->portNumber = i;
         m_GUIports->insert(gp, e);
         QList<GUI_port*> portlist = m_effectPorts->take(e);
         portlist.append(gp);
         m_effectPorts->insert(e, portlist);
         addItem(gp);
+    }
+    // Position effects
+    QVector<int> vcounter = {0,0};
+    for (int i = 0; i < e->getPorts().size(); i++){
+        GUI_port* p = m_effectPorts->value(e).at(i);
+        int count = portTypeCount.at(p->portType);
+        int counter = vcounter.at(p->portType);
+        // 50 if out, 150 if in
+        QPointF dpos = QPointF(150 - 100*p->portType, 100 - 25*(count-1) + 50*counter);
+        vcounter.replace(p->portType, counter+1);
+        p->setPos(e_gui->pos - dpos);
     }
 
     // Select new
@@ -99,10 +119,11 @@ void EffectsScene::deleteEffect(Effect *e)
 {
     m_effects->remove(e);
     m_effectPorts->remove(e);
-    GUI_effect* g = m_GUIeffects->key(e);
-    m_GUIeffects->remove(g);
-    removeItem(g);
-    g->~GUI_effect();
+    GUI_effect* e_gui = m_GUIeffects->key(e);
+    m_GUIeffects->remove(e_gui);
+    removeItem(e_gui);
+    deselect(e_gui);
+    e_gui->~GUI_effect();
     for (GUI_port* p : m_GUIports->keys(e)){
         GUI_line* l = getConnection(e, p->portNumber);
         if (l) {
@@ -165,7 +186,10 @@ void EffectsScene::keyPressEvent(QKeyEvent *event)
         // ?
     } else if (event->key() == SHIFT_KEY){
         shiftState = true;
+    } else if (event->key() == CTRL_KEY){
+        ctrlState = true;
     }
+    //qDebug() << event->key();
     update();
 }
 
@@ -173,7 +197,39 @@ void EffectsScene::keyReleaseEvent(QKeyEvent *event)
 {
     if (event->key() == SHIFT_KEY){
         shiftState = false;
+    } else if (event->key() == CTRL_KEY){
+        ctrlState = false;
     }
+}
+
+void EffectsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    if (ctrlState){
+        qDebug() << event->delta();
+        getView()->scale(1+event->delta()*0.001, 1+event->delta()*0.001);
+    } else {
+        QList<GUI_item*> items = getItemsAt(event->scenePos());
+        if (items.length() > 1){
+            // Reorder
+            for (GUI_item* i : items)
+                i->setZValue(-1);
+            items.at(scrollRef)->setZValue(1);
+            // Change scrollref accordingly
+            if (event->delta() > 0){
+                scrollRef++;
+                if (scrollRef > items.length()){
+                    scrollRef = items.length();
+                }
+            }
+            else if (event->delta() < 0){
+                scrollRef--;
+                if (scrollRef < 0){
+                    scrollRef = 0;
+                }
+            }
+        }
+    }
+    event->accept();
 }
 
 void EffectsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -243,15 +299,6 @@ void EffectsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     update();
 }
 
-QPointF EffectsScene::newEffectPos(Effect *)
-{
-    QPointF pos;
-    while(itemAt(pos,transform) != nullptr){
-        pos = QPointF(pos.x()+10,pos.y());
-    }
-    return pos;
-}
-
 GUI_line *EffectsScene::getConnection(Effect *e, int n)
 {
     if (m_connections->isEmpty()) return nullptr;
@@ -302,6 +349,17 @@ void EffectsScene::connectLine(GUI_port* port1, QPointF pos)
                     QPair<Effect*, int>(m_GUIports->value(port2), port2->portNumber));
     }
     portLine->hide();
+}
+
+QList<GUI_port *> EffectsScene::getPortsOfType(Effect* e, int type)
+{
+    QList<GUI_port*> list;
+    for (GUI_port* p : m_effectPorts->value(e)){
+        if (p->portType == type){
+            list.append(p);
+        }
+    }
+    return list;
 }
 
 void EffectsScene::dragItem(GUI_item* item, QPointF d)
@@ -422,18 +480,19 @@ QString EffectsScene::compileSaveEffect()
 
     //Add connections between selected effects
     output.append("CONNECTIONS:\n");
-    for (GUI_line* l : m_connections->values()){
+    for (QPair<QPair<Effect*, int>, QPair<Effect*, int>> c : m_connections->keys()){
+    //for (GUI_line* l : m_connections->values()){
         // Line must be connected to two of selected effects.
-        if (effectsList.contains(m_connections->key(l).first.first) &&
-                effectsList.contains(m_connections->key(l).second.first)){
-            int port1 = m_connections->key(l).first.second;
-            int port2 = m_connections->key(l).second.second;
+        if (effectsList.contains(c.first.first) &&
+                effectsList.contains(c.second.first)){
+            int port1 = c.first.second;
+            int port2 = c.second.second;
 
-            output.append(QString::number(effectsList.indexOf(m_connections->key(l).first.first)));
+            output.append(QString::number(effectsList.indexOf(c.first.first)));
             output.append(" ");
             output.append(QString::number(port1));
             output.append(" : ");
-            output.append(QString::number(effectsList.indexOf(m_connections->key(l).second.first)));
+            output.append(QString::number(effectsList.indexOf(c.second.first)));
             output.append(" ");
             output.append(QString::number(port2));
             output.append("\n");
@@ -441,4 +500,26 @@ QString EffectsScene::compileSaveEffect()
     }
     //output
     return output;
+}
+
+bool EffectsScene::loadEffect(QPair<QList<QPair<int, int>>, QList<QPair<QPair<int, int>, QPair<int, int>>>> data)
+{
+    // data: effects list [id, effect] / connectionslist [id, port / id, port]
+    qDebug() << data;
+    QVector<Effect*> effects = QVector<Effect*>(data.first.length());
+    //Create effects
+    for (QPair<int,int> pair : data.first){
+        newEffectSignal(pair.second); //operation sets new effect.
+        effects[pair.first] = newEffect;
+    }
+    //QList<QPair<QPair<int, int>, QPair<int, int>>> connections;
+    for (QPair<QPair<int,int>,QPair<int,int>> pair : data.second){
+
+        if (m_effectPorts->value(effects[pair.first.first]).at(pair.first.second) != nullptr
+                && m_effectPorts->value(effects[pair.second.first]).at(pair.second.second) != nullptr)
+        {
+            connectPortsSignal(QPair<Effect*, int>(effects[pair.first.first], pair.first.second),
+                    QPair<Effect*, int>(effects[pair.second.first], pair.second.second));
+        }
+    }
 }

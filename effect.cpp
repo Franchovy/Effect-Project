@@ -18,7 +18,7 @@
 
 
 Effect::Effect(Audio* parent) : QObject(parent)
-  , m_ports(new QMap<Port*, QPointF>())
+  , m_ports(QVector<Port*>())
   , m_parameters(QList<Parameter*>())
 {
     effectMap = parent->getEffectMap();
@@ -44,14 +44,9 @@ void Effect::applyEffect(char *data, int readLength){
     applyEffect(data, data, readLength);
 }
 
-QList<QPointF> Effect::getPortLocs()
-{
-    return m_ports->values();
-}
-
 QList<Port *> Effect::getPorts()
 {
-    return m_ports->keys();
+    return m_ports.toList();
 }
 
 char *Effect::getData(OutPort*, int readLength)
@@ -59,9 +54,9 @@ char *Effect::getData(OutPort*, int readLength)
     return nullptr;
 }
 
-void Effect::addPort(Port *port, QPointF p)
+void Effect::addPort(Port *port)
 {
-    m_ports->insert(port, p);
+    m_ports.append(port);
     if (port->portType == 0){
         inPorts.append(static_cast<InPort*>(port));
     } else if (port->portType == 1){

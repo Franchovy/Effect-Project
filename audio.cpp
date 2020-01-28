@@ -27,12 +27,7 @@
 #include "ports/outport.h"
 
 
-static QVector<qreal> getBufferLevels(const QAudioBuffer &buffer);
-
-template <class T>
-static QVector<qreal> getBufferLevels(const T *buffer, int frames, int channels);
-
-Audio::Audio(QObject* parent) : QObject(parent)
+Audio::Audio(AudioSystem audioSystem, QObject* parent) : QObject(parent)
     , m_buffer(new EffectBuffer(this))
     , m_effectMap(new EffectMap(this))
     , m_audioRecorder(new QAudioRecorder(this))
@@ -56,7 +51,7 @@ Audio::Audio(QObject* parent) : QObject(parent)
 
     m_buffer->setEffectMap(m_effectMap);
 
-    setupFormat();
+    setupFormat(audioSystem);
 }
 
 //Upon receiving signal.
@@ -88,6 +83,7 @@ void Audio::createEffect(int effectType)
         e = new SplitterEffect(this);
         break;
     default:
+        e = new Effect(this);
         qDebug() << "Unknown Effect requested.";
     }
     newEffectSignal(e);
@@ -128,13 +124,13 @@ QList<QAudioDeviceInfo> Audio::availableAudioOutputDevices()
     return QAudioDeviceInfo::availableDevices(QAudio::Mode::AudioOutput);
 }
 
-void Audio::setupFormat()
+void Audio::setupFormat(AudioSystem audioSystem)
 {
     format.setSampleRate(96000);
     format.setChannelCount(2);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
-    if (audioSystem == Qt){
+    if (audioSystem == QT){
         qDebug() << "Audio system set to Qt";
         format.setSampleType(QAudioFormat::SignedInt);
     } else if (audioSystem == JACK){
@@ -147,18 +143,18 @@ void Audio::setupFormat()
 
     inputAudio = new QAudioInput(*inputDevice, format, this);
     outputAudio = new QAudioOutput(*outputDevice, format, this);
+
+    currentAudioSystem = audioSystem;
 }
 
 void Audio::setInputDevice(QAudioDeviceInfo device)
 {
     inputDevice = new QAudioDeviceInfo(device);
-    setupFormat();
 }
 
 void Audio::setOutputDevice(QAudioDeviceInfo device)
 {
     outputDevice = new QAudioDeviceInfo(device);
-    setupFormat();
 }
 
 void Audio::record(){
@@ -196,21 +192,30 @@ void Audio::record(){
     }
 }
 
-bool Audio::runAudio()
+int Audio::setAudioSystem(AudioSystem audioSystem)
 {
+    currentAudioSystem = audioSystem;
+}
+
+bool Audio::runAudio()
+{    
     if (!running) {
+        setupFormat(currentAudioSystem);
+
+
         qDebug() << "Input Device: " << inputDevice->deviceName();
         qDebug() << "Output Device: " << outputDevice->deviceName();
 
         qDebug() << "Audio Running!";
         running = true;
 
-        if (audioSystem == Qt){
+
+        if (currentAudioSystem == QT){
             m_buffer->open(QIODevice::ReadWrite);
 
             inputAudio->start(m_buffer);
             outputAudio->start(m_buffer);
-        } else if (audioSystem == JACK) {
+        } else if (currentAudioSystem == JACK) {
             m_buffer->runJackAudio();
         }
 
@@ -223,82 +228,13 @@ bool Audio::runAudio()
 
 void Audio::stopAudio()
 {
-    if (audioSystem == Qt){
+    if (currentAudioSystem == QT){
         m_buffer->close();
         inputAudio->stop();
         outputAudio->stop();
-    } else if (audioSystem == JACK){
+    } else if (currentAudioSystem == JACK){
         m_buffer->stopJackAudio();
     }
 
     running = false;
-}
-
-// returns the audio level for each channel
-QVector<qreal> getBufferLevels(const QAudioBuffer& buffer)
-{
-    QVector<qreal> values;
-    /*
-    if (!buffer.format().isValid() || buffer.format().byteOrder() != QAudioFormat::LittleEndian)
-        return values;
-
-    if (buffer.format().codec() != "audio/pcm")
-        return values;
-    */
-    int channelCount = buffer.format().channelCount();
-    values.fill(0, channelCount);
-
-    qreal peak_value = INT_MAX;
-    if (qFuzzyCompare(peak_value, qreal(0)))
-        return values;
-
-    switch (buffer.format().sampleType()) {
-    case QAudioFormat::Unknown:
-    case QAudioFormat::UnSignedInt:
-        if (buffer.format().sampleSize() == 32)
-            values = getBufferLevels(buffer.constData<quint32>(), buffer.frameCount(), channelCount);
-        if (buffer.format().sampleSize() == 16)
-            values = getBufferLevels(buffer.constData<quint16>(), buffer.frameCount(), channelCount);
-        if (buffer.format().sampleSize() == 8)
-            values = getBufferLevels(buffer.constData<quint8>(), buffer.frameCount(), channelCount);
-        for (int i = 0; i < values.size(); ++i)
-            values[i] = qAbs(values.at(i) - peak_value / 2) / (peak_value / 2);
-        break;
-    case QAudioFormat::Float:
-        if (buffer.format().sampleSize() == 32) {
-            values = getBufferLevels(buffer.constData<float>(), buffer.frameCount(), channelCount);
-            for (int i = 0; i < values.size(); ++i)
-                values[i] /= peak_value;
-        }
-        break;
-    case QAudioFormat::SignedInt:
-        if (buffer.format().sampleSize() == 32)
-            values = getBufferLevels(buffer.constData<qint32>(), buffer.frameCount(), channelCount);
-        if (buffer.format().sampleSize() == 16)
-            values = getBufferLevels(buffer.constData<qint16>(), buffer.frameCount(), channelCount);
-        if (buffer.format().sampleSize() == 8)
-            values = getBufferLevels(buffer.constData<qint8>(), buffer.frameCount(), channelCount);
-        for (int i = 0; i < values.size(); ++i)
-            values[i] /= peak_value;
-        break;
-    }
-
-    return values;
-}
-
-template <class T>
-QVector<qreal> getBufferLevels(const T *buffer, int frames, int channels)
-{
-    QVector<qreal> max_values;
-    max_values.fill(0, channels);
-
-    for (int i = 0; i < frames; ++i) {
-        for (int j = 0; j < channels; ++j) {
-            qreal value = qAbs(qreal(buffer[i * channels + j]));
-            if (value > max_values.at(j))
-                max_values.replace(j, value);
-        }
-    }
-
-    return max_values;
 }

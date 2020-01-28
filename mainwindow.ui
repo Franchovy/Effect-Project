@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>qdio - alpha</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../Documents/Untitled.png</normaloff>../Documents/Untitled.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="palette">
@@ -80,7 +84,7 @@
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>731</width>
+      <width>748</width>
       <height>31</height>
      </rect>
     </property>
