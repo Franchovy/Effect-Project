@@ -12,7 +12,7 @@ GUI_effect::GUI_effect(QString name, QPointF pos) : GUI_item()
 {
     setData(0,"effect");
     this->pos = pos;
-    baseRect = QRectF(pos.x()-200,pos.y()-200,pos.x()+200,pos.y()+200);
+    baseRect = QRectF(pos.x()-200,pos.y()-200,200,200);
     title = name;
 
     pen_normal = new QPen(QColor(0,0,0));
@@ -55,7 +55,7 @@ void GUI_effect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->fillRect(baseRect, QColor(240,240,240));
     painter->drawRect(baseRect);
 
-    painter->drawText(QPointF(baseRect.topLeft().x(), baseRect.topLeft().y()+20), title);
+    painter->drawText(QPointF(baseRect.topLeft().x()+5, baseRect.topLeft().y()+20), title);
 }
 
 void GUI_effect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

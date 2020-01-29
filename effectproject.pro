@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     GUI/gui_effect.cpp \
+    GUI/gui_interface.cpp \
     GUI/gui_item.cpp \
     GUI/gui_line.cpp \
     GUI/gui_port.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
 
 HEADERS += \
     GUI/gui_effect.h \
+    GUI/gui_interface.h \
     GUI/gui_item.h \
     GUI/gui_line.h \
     GUI/gui_port.h \

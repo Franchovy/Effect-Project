@@ -28,7 +28,6 @@ Effect::Effect(Audio* parent) : QObject(parent)
     format = parent->getAudioFormat();
 
     step = format.sampleSize()/8;
-    qDebug() << "Step: " << step;
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)

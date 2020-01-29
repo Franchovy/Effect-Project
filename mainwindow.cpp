@@ -86,6 +86,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Load base effects
 
+    ui->effectsSelect->installEventFilter(this);
+
     ui->effectsSelect->addItem("Input Effect");
     ui->effectsSelect->addItem("Output Effect");
     ui->effectsSelect->addItem("Echo Effect 1");
@@ -116,14 +118,25 @@ void MainWindow::loadEffectFiles()
         QDir().mkdir(dirPath);
     }
 
+    resetLoadedEffects();
+
     //assume the directory exists and contains some files and you want all jpg and JPG files
     QStringList fileList = folder.entryList(QStringList(), QDir::Files);
     for(QString filename : fileList) {
         qDebug() << filename;
-        if(readEffectFile(filename)){
+        if(readEffectFile(filename)){        
             ui->effectsSelect->addItem(filename);
         }
     }
+}
+
+void MainWindow::resetLoadedEffects()
+{
+    // Clears non base effects
+    while (ui->effectsSelect->count() > m_audio->baseEffectsCount()){
+        ui->effectsSelect->removeItem(m_audio->baseEffectsCount());
+    }
+    loadedEffects.clear();
 }
 
 bool MainWindow::readEffectFile(QString filename)
@@ -216,6 +229,8 @@ void MainWindow::runAudioUIConnections()
             m_effectsUI->loadEffect(loadedEffects.at(ui->effectsSelect->currentIndex() - m_audio->baseEffectsCount()));
         }
     });
+    // Set update for when effects menu is clicked
+    //connect(ui->effectsSelect, &QComboBox)
 
     // Connect all Audio slots to EffectsScene signals
     connect(m_effectsUI, &EffectsScene::newEffectSignal, m_audio, &Audio::createEffect);
@@ -270,6 +285,17 @@ void MainWindow::showSettingsDialog()
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
+    if(event->type() == QEvent::MouseButtonPress){
+        qDebug() << "mouse press";
+
+        if(obj == ui->effectsSelect){
+        qDebug() << "ui effectselect";
+                // Reset and refill the ComboBox
+                loadEffectFiles();
+            }
+            return false;
+        }
+
     if (obj == m_effectsUI && event->type() == QEvent::GraphicsSceneMouseMove)
     {
         if (m_effectsUI->getDragState() == 3) // if view drag state

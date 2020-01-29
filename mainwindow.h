@@ -38,6 +38,7 @@ private:
     QList<QPair<QList<QPair<int,int>>,QList<QPair<QPair<int,int>,QPair<int,int>>>>> loadedEffects;
 
     void loadEffectFiles();
+    void resetLoadedEffects();
     bool readEffectFile(QString filename);
     QString effectsFolderName = "Effects";
     QString getEffectFolderPath();

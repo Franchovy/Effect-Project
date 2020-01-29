@@ -26,6 +26,8 @@ private:
     Audio *audio;
     QComboBox *m_audioSelect;
 
+    QPushButton *m_chooseEffectsFolderButton;
+
     QAudioDeviceInfo m_inputDevice;
     QAudioDeviceInfo m_outputDevice;
 
