@@ -17,6 +17,10 @@
 #include "GUI/gui_effect.h"
 
 
+
+QAudioFormat Effect::format;
+int Effect::step;
+
 Effect::Effect(Audio* parent) : QObject(parent)
   , m_ports(QVector<Port*>())
   , m_parameters(QList<Parameter*>())
@@ -24,10 +28,6 @@ Effect::Effect(Audio* parent) : QObject(parent)
     effectMap = parent->getEffectMap();
     effectName = "Default Effect Name";
     type = -1;
-
-    format = parent->getAudioFormat();
-
-    step = format.sampleSize()/8;
 }
 
 void Effect::applyEffect(char *in, char *out, int readLength)
@@ -51,6 +51,12 @@ QList<Port *> Effect::getPorts()
 char *Effect::getData(OutPort*, int readLength)
 {
     return nullptr;
+}
+
+void Effect::setAudioFormat(QAudioFormat audioformat)
+{
+    format = audioformat;
+    step = format.sampleSize()/8;
 }
 
 void Effect::addPort(Port *port)

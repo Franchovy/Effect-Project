@@ -16,7 +16,8 @@ public:
     InputEffect(Audio* parent = nullptr);
 
 
-    void giveData(char* data, int readLength);
+    void giveData(char* indata, int readLength);
+    char* giveData(float *indata, int readLength);
     char *getData(OutPort*, int) override;
 
 private:
@@ -28,7 +29,8 @@ private:
     int dataLength = 0;
 
     //temp test stuff
-    int freq = 800;
+    int freqLimit = 400;
+    int freq = freqLimit;
 };
 
 #endif // INPUTEFFECT_H

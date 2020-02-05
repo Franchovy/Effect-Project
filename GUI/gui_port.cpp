@@ -54,7 +54,7 @@ void GUI_port::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->setPen(pen);
     painter->drawRect(*portBox);
 
-    painter->drawText(pos, QString::number(portNumber));
+    //painter->drawText(pos, QString::number(portNumber));
 }
 
 bool GUI_port::contains(const QPointF &point) const

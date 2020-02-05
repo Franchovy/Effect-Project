@@ -26,8 +26,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void setEffectFolderPath(QString path);
+
 private:
     AudioSystem defaultAudioSystem = QT;
+    AudioSystem audioSystem;
 
     Ui::MainWindow *ui;
     Audio* m_audio;
@@ -40,6 +43,7 @@ private:
     void loadEffectFiles();
     void resetLoadedEffects();
     bool readEffectFile(QString filename);
+    QString effectsFolderPath = "";
     QString effectsFolderName = "Effects";
     QString getEffectFolderPath();
     QString getApplicationPath();

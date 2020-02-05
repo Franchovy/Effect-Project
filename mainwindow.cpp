@@ -17,8 +17,6 @@
 #include <QAudioRecorder>
 #include <QInputDialog>
 
-#include <experimental/filesystem>
-
 #include "effectsLib/echoeffect1.h"
 #include "effectsLib/multiplyeffect.h"
 #include "effectsLib/paneffect.h"
@@ -34,9 +32,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_audio(new Audio(defaultAudioSystem))
+    , m_audio(new Audio(this))
     , m_settingsDialog(new SettingsDialog(
-                           *m_audio,
+                           m_audio,
                            this))
     , m_effectsUI(new EffectsScene(this))
     , m_graphicsView(new QGraphicsView(this))
@@ -95,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->effectsSelect->addItem("Wave Effect");
     ui->effectsSelect->addItem("Joiner Effect");
     ui->effectsSelect->addItem("Splitter Effect");
+    ui->effectsSelect->addItem("Delay Effect");
 
     // Load effect files (to be updated.. to "effect container" files
 
@@ -175,7 +174,6 @@ bool MainWindow::readEffectFile(QString filename)
             } else return false;
             line = in.readLine().trimmed();
         } while (line != "CONNECTIONS:");
-        qDebug() << effects.length();
         line = in.readLine();
         while (line != ""){
             if (int index = line.indexOf(":")){
@@ -204,14 +202,24 @@ bool MainWindow::readEffectFile(QString filename)
     return true;
 }
 
+void MainWindow::setEffectFolderPath(QString path)
+{
+    effectsFolderPath = path;
+    qDebug() << "Setting path to: " << effectsFolderPath;
+    loadEffectFiles();
+}
+
 QString MainWindow::getEffectFolderPath()
 {
-    return getApplicationPath() + "/" + effectsFolderName;
+    if (effectsFolderPath == ""){
+        effectsFolderPath = getApplicationPath() + "/" + effectsFolderName;
+    }
+    return effectsFolderPath;
 }
 
 QString MainWindow::getApplicationPath()
 {
-    QString path = QString::fromStdString(std::experimental::filesystem::current_path());
+    QString path = QDir::currentPath();
     return path;
 }
 
@@ -240,13 +248,6 @@ void MainWindow::runAudioUIConnections()
 
     connect(m_audio, &Audio::newEffectSignal, m_effectsUI, &EffectsScene::addEffect);
 
-    connect(ui->runButton, &QPushButton::pressed, [=](){
-        if (m_audio->isRunning()){
-            m_audio->runAudio();
-        } else {
-            m_audio->stopAudio();
-        }
-    });
     connect(m_audio, &Audio::runAudioSignal, m_effectsUI, &EffectsScene::runAudioSignal);
     connect(m_effectsUI, &EffectsScene::runAudioSignal, m_audio, &Audio::runAudio);
     connect(m_audio, &Audio::runAudioSignal, [=](){
@@ -263,6 +264,9 @@ void MainWindow::runAudioUIConnections()
             ui->runButton->setText("Stop");
             m_audio->stopAudioSignal();
         } else {
+            if (!m_audio->isAudioSystemSet()){
+                m_audio->setAudioSystem(defaultAudioSystem);
+            }
             ui->runButton->setText("Run Audio");
             m_audio->runAudioSignal();
         }
@@ -278,18 +282,16 @@ void MainWindow::showSettingsDialog()
 {
     m_settingsDialog->exec();
     if (m_settingsDialog->result() == QDialog::Accepted) {
-        m_audio->setInputDevice(m_settingsDialog->inputDevice());
-        m_audio->setOutputDevice(m_settingsDialog->outputDevice());
+        effectsFolderPath = m_settingsDialog->effectsDirectory();
+        //m_audio->setInputDevice(m_settingsDialog->inputDevice());
+        //m_audio->setOutputDevice(m_settingsDialog->outputDevice());
     }
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
     if(event->type() == QEvent::MouseButtonPress){
-        qDebug() << "mouse press";
-
         if(obj == ui->effectsSelect){
-        qDebug() << "ui effectselect";
                 // Reset and refill the ComboBox
                 loadEffectFiles();
             }

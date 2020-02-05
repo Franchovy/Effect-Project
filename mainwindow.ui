@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../Documents/Untitled.png</normaloff>../Documents/Untitled.png</iconset>
+    <normaloff>../Documents/qdio logo.png</normaloff>../Documents/qdio logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="palette">
@@ -108,8 +108,23 @@
      </item>
      <item>
       <widget class="QPushButton" name="toggleRecordButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>that shit don't work yet</string>
+       </property>
+       <property name="statusTip">
+        <string/>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
        <property name="text">
         <string>Record</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>

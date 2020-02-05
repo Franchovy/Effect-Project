@@ -9,19 +9,20 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include "audio.h"
+#include "mainwindow.h"
 
 
 SettingsDialog::SettingsDialog(
-        Audio &audio,
+        Audio *audio,
         QWidget *parent) : QDialog(parent)
       , m_audioSelect(new QComboBox(this))
       , m_chooseEffectsFolderButton(new QPushButton("Select Directory", this))
       , m_inputDeviceComboBox(new QComboBox(this))
       , m_outputDeviceComboBox(new QComboBox(this))
 {
-    this->audio = &audio;
-    const QList<QAudioDeviceInfo> &availableInputDevices = audio.availableAudioInputDevices();
-    const QList<QAudioDeviceInfo> &availableOutputDevices = audio.availableAudioOutputDevices();
+    this->audio = audio;
+    const QList<QAudioDeviceInfo> &availableInputDevices = audio->availableAudioInputDevices();
+    const QList<QAudioDeviceInfo> &availableOutputDevices = audio->availableAudioOutputDevices();
 
     QVBoxLayout *dialogLayout = new QVBoxLayout(this);
     dialogLayout->setSpacing(2);
@@ -31,7 +32,20 @@ SettingsDialog::SettingsDialog(
     m_audioSelect->addItem("Qt",static_cast<AudioSystem>(0));
     m_audioSelect->addItem("JACK",static_cast<AudioSystem>(1));
 
+    m_inputDeviceComboBox->setDuplicatesEnabled(false);
+    m_outputDeviceComboBox->setDuplicatesEnabled(false);
+
+
     QAudioDeviceInfo device;
+
+    // Default in and out devices
+    device = audio->getDefaultInputDevice();
+    m_inputDeviceComboBox->addItem(device.deviceName(), QVariant::fromValue(device));
+    m_inputDevice = device;
+    device = audio->getDefaultOutputDevice();
+    m_outputDeviceComboBox->addItem(device.deviceName(), QVariant::fromValue(device));
+    m_outputDevice = device;
+
     for (QAudioDeviceInfo device : availableInputDevices){
         m_inputDeviceComboBox->addItem(device.deviceName(), QVariant::fromValue(device));
     }
@@ -77,14 +91,16 @@ SettingsDialog::SettingsDialog(
 
 
     // Connect
+    connect(m_audioSelect, QOverload<int>::of(&QComboBox::activated),
+            this, &SettingsDialog::audioSystemChanged);
     connect(m_inputDeviceComboBox, QOverload<int>::of(&QComboBox::activated),
            this, &SettingsDialog::inputDeviceChanged);
     connect(m_outputDeviceComboBox, QOverload<int>::of(&QComboBox::activated),
             this, &SettingsDialog::outputDeviceChanged);
     connect(m_chooseEffectsFolderButton, &QPushButton::pressed, [=](){
         QString Directory = QFileDialog::getExistingDirectory(this,
-                                tr("Choose Or Create Directory"),
-                                "/home");
+                                tr("Choose Or Create Directory"));
+        m_effectsDirectory = Directory;
     });
 
     // Add standard buttons
@@ -109,6 +125,7 @@ SettingsDialog::~SettingsDialog()
 void SettingsDialog::audioSystemChanged(int index)
 {
     AudioSystem audioSystem = static_cast<AudioSystem>(index);
+    qDebug() << "Setting audio system to " << audioSystem;
     audio->setAudioSystem(audioSystem);
 
 }

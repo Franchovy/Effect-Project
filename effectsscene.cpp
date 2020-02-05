@@ -177,7 +177,8 @@ void EffectsScene::keyPressEvent(QKeyEvent *event)
                 disconnectPortsSignal(pair.first, pair.second); //TODO something wrong here?
             } else {
                 qDebug() << "Default delete operation on " << item;
-                item->~GUI_item();
+                if (item)
+                    item->~GUI_item();
             }
         }
     } else if (event->key() == ESCAPE_KEY){
@@ -514,7 +515,6 @@ bool EffectsScene::loadEffect(QPair<QList<QPair<int, int>>, QList<QPair<QPair<in
     }
     //QList<QPair<QPair<int, int>, QPair<int, int>>> connections;
     for (QPair<QPair<int,int>,QPair<int,int>> pair : data.second){
-
         if (m_effectPorts->value(effects[pair.first.first]).at(pair.first.second) != nullptr
                 && m_effectPorts->value(effects[pair.second.first]).at(pair.second.second) != nullptr)
         {
@@ -522,4 +522,5 @@ bool EffectsScene::loadEffect(QPair<QList<QPair<int, int>>, QList<QPair<QPair<in
                     QPair<Effect*, int>(effects[pair.second.first], pair.second.second));
         }
     }
+    return true;
 }

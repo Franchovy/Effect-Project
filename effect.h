@@ -59,6 +59,8 @@ public:
 
     virtual char* getData(OutPort*, int readLength);
 
+    static void setAudioFormat(QAudioFormat audioformat);
+
 protected:
     void addPort(Port*);
     void addParam(Parameter*);
@@ -66,12 +68,13 @@ protected:
     QList<InPort*> inPorts;
     QList<OutPort*> outPorts;
 
-    QAudioFormat format;
+    static QAudioFormat format;
+    static int step;
+
 
     float getFloat(char* c);
     int16_t getInt(char *c);
 
-    int step;
 
     char* getOutPortData(Port *port, int readLength);
 private:

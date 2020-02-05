@@ -27,7 +27,7 @@ private:
     int delayVal;
     double delayOpVal;
 
-    int16_t* effectBuffer;
+    char* effectBuffer;
     int effectBufferpt;
 
     void resizeBuffer(int newSize);

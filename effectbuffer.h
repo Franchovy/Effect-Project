@@ -40,7 +40,7 @@ public:
 
     EffectMap *getEffectMap() const;
 
-    int runJackAudio();
+    bool runJackAudio();
     void stopJackAudio();
 
 private:
@@ -54,6 +54,7 @@ private:
     //New implementation
     QList<InputEffect*> inputEffects;
     QList<OutputEffect*> outputEffects;
+
 
     void applyEffect(char* in, char* out, int readLength);
 };

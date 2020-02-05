@@ -12,8 +12,10 @@ public:
 private:
     InPort* in;
     OutPort* out;
-    int delayAmount = 10000;
+    int delayAmount = 300000;
     int delayCounter;
+    bool start = true;
+
     char* buffer;
     int bufferLength = 0;
     int bufferpt = 0;

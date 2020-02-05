@@ -23,11 +23,12 @@
 #include "effectsLib/waveeffect.h"
 #include "effectsLib/joinereffect.h"
 #include "effectsLib/splittereffect.h"
+#include "effectsLib/delayeffect.h"
 #include "ports/inport.h"
 #include "ports/outport.h"
 
 
-Audio::Audio(AudioSystem audioSystem, QObject* parent) : QObject(parent)
+Audio::Audio(QObject* parent) : QObject(parent)
     , m_buffer(new EffectBuffer(this))
     , m_effectMap(new EffectMap(this))
     , m_audioRecorder(new QAudioRecorder(this))
@@ -51,7 +52,7 @@ Audio::Audio(AudioSystem audioSystem, QObject* parent) : QObject(parent)
 
     m_buffer->setEffectMap(m_effectMap);
 
-    setupFormat(audioSystem);
+    audioSystemSet = false;
 }
 
 //Upon receiving signal.
@@ -81,6 +82,9 @@ void Audio::createEffect(int effectType)
         break;
     case 6: // SplitterEffect
         e = new SplitterEffect(this);
+        break;
+    case 7: // DelayEffect
+        e = new DelayEffect(this);
         break;
     default:
         e = new Effect(this);
@@ -124,6 +128,20 @@ QList<QAudioDeviceInfo> Audio::availableAudioOutputDevices()
     return QAudioDeviceInfo::availableDevices(QAudio::Mode::AudioOutput);
 }
 
+QAudioDeviceInfo Audio::getDefaultInputDevice()
+{
+    if (!inputDevice){
+        return QAudioDeviceInfo::defaultInputDevice();
+    } else return *inputDevice;
+}
+
+QAudioDeviceInfo Audio::getDefaultOutputDevice()
+{
+    if (!outputDevice){
+        return QAudioDeviceInfo::defaultOutputDevice();
+    } else return *outputDevice;
+}
+
 void Audio::setupFormat(AudioSystem audioSystem)
 {
     format.setSampleRate(96000);
@@ -131,18 +149,19 @@ void Audio::setupFormat(AudioSystem audioSystem)
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
     if (audioSystem == QT){
-        qDebug() << "Audio system set to Qt";
         format.setSampleType(QAudioFormat::SignedInt);
     } else if (audioSystem == JACK){
-        qDebug() << "Audio system set to JACK";
         format.setSampleType(QAudioFormat::Float);
     }
+
+
 
     format = inputDevice->nearestFormat(format);
     format = outputDevice->nearestFormat(format);
 
     inputAudio = new QAudioInput(*inputDevice, format, this);
     outputAudio = new QAudioOutput(*outputDevice, format, this);
+    Effect::setAudioFormat(format);
 
     currentAudioSystem = audioSystem;
 }
@@ -192,23 +211,23 @@ void Audio::record(){
     }
 }
 
-int Audio::setAudioSystem(AudioSystem audioSystem)
+void Audio::setAudioSystem(AudioSystem audioSystem)
 {
-    currentAudioSystem = audioSystem;
+    qDebug() << "Set audio system: " << audioSystem;
+    if (running)
+        stopAudio();
+    setupFormat(audioSystem);
+    audioSystemSet = true;
 }
 
 bool Audio::runAudio()
 {    
     if (!running) {
-        setupFormat(currentAudioSystem);
-
 
         qDebug() << "Input Device: " << inputDevice->deviceName();
         qDebug() << "Output Device: " << outputDevice->deviceName();
-
         qDebug() << "Audio Running!";
         running = true;
-
 
         if (currentAudioSystem == QT){
             m_buffer->open(QIODevice::ReadWrite);
@@ -216,11 +235,10 @@ bool Audio::runAudio()
             inputAudio->start(m_buffer);
             outputAudio->start(m_buffer);
         } else if (currentAudioSystem == JACK) {
-            m_buffer->runJackAudio();
+            running = m_buffer->runJackAudio();
+        } else {
+            qDebug() << "Uhhhh, audio system not set.";
         }
-
-        qDebug() << inputAudio->state();
-        qDebug() << outputAudio->state();
     }
 
     return running;

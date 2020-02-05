@@ -46,7 +46,8 @@ SOURCES += \
     ports/inport.cpp \
     ports/outport.cpp \
     ports/port.cpp \
-    settingsdialog.cpp
+    settingsdialog.cpp \
+    stereojoinereffect.cpp
 
 HEADERS += \
     GUI/gui_effect.h \
@@ -75,10 +76,11 @@ HEADERS += \
     ports/inport.h \
     ports/outport.h \
     ports/port.h \
-    settingsdialog.h
+    settingsdialog.h \
+    stereojoinereffect.h
 
-INCLUDEPATH += \
-    fft-real/
+#INCLUDEPATH += \
+#    fft-real/
 
 
 FORMS += \
@@ -89,9 +91,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/release/ -ljack
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/debug/ -ljack
-else:unix: LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/ -ljack
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/release/ -ljack
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/debug/ -ljack
+#else:unix: LIBS += -L$$PWD/../../../usr/lib/x86_64-linux-gnu/ -ljack
 
-INCLUDEPATH += $$PWD/../../../usr/include/jack
-DEPENDPATH += $$PWD/../../../usr/include/jack
+#INCLUDEPATH += $$PWD/../../../usr/include/jack
+#DEPENDPATH += $$PWD/../../../usr/include/jack

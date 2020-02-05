@@ -11,67 +11,93 @@
 #include <QtMath>
 #include <QAudioBuffer>
 
-#include <jack/jack.h>
-#undef signals
-#include <jack/control.h>
+//#include <jack/jack.h>
+//#undef signals
+//#include <jack/control.h>
 
-
+/*
 EffectBuffer* effectbuffer; // for use by jack
-
+*/
 //TODO sort out conversions!!!
 //TODO sort out multiple instances. Including switching streams etc.
 EffectBuffer::EffectBuffer(Audio* parent) : QIODevice(parent)
 {
     buffer = QByteArray();
-    effectbuffer = this;
+    //effectbuffer = this;
 
     //effectChain = QList<Effect*>();
     //Use default input and output for now
 }
-
+/*
 int jack_process(jack_nframes_t nframes, void *arg);
 void jack_shutdown(void *arg);
 int jack_runaudio(int argc, char *argv[]);
 jack_client_t *client;
-jack_port_t *inputport;
-jack_port_t *outputport;
+jack_port_t *inputportleft;
+jack_port_t *inputportright;
+jack_port_t *outputportleft;
+jack_port_t *outputportright;
+int maxLength;
+char* b_in;
+char* b_out;
+bool start = true;
+bool jackclientstarted = false;
 
 int jack_process(jack_nframes_t nframes, void *arg)
 {
-    jack_default_audio_sample_t *in, *out;
-    int readLength = sizeof(jack_default_audio_sample_t)*nframes; //sizeof(jack_default_audio_sample_t) * nframes
+    if (start){
 
-    in = static_cast<float*>(jack_port_get_buffer(inputport, nframes));
-    out = static_cast<float*>(jack_port_get_buffer(outputport, nframes));
-
-    /*
-    for (InputEffect* in_e : effectbuffer->getInputEffects()){
-        in_e->giveData(in, readLength);
+        start = false;
     }
 
+    jack_default_audio_sample_t *inL, *inR, *outL, *outR;
+    int readLength = sizeof(jack_default_audio_sample_t)*nframes; //sizeof(jack_default_audio_sample_t) * nframes
+
+    inL = static_cast<float*>(jack_port_get_buffer(inputportleft, nframes));
+    inR = static_cast<float*>(jack_port_get_buffer(inputportright, nframes));
+    outL = static_cast<float*>(jack_port_get_buffer(outputportleft, nframes));
+    outR = static_cast<float*>(jack_port_get_buffer(outputportright, nframes));
+
+    for (InputEffect* in_e : effectbuffer->getInputEffects()){
+        for (int i = 0; i < readLength; i ++){
+            memcpy(&b_in[8*i], &inL[i], 4);
+            memcpy(&b_in[8*i+4], &inR[i], 4);
+        }
+        in_e->giveData(b_in, readLength*2);
+    }
+
+    //memcpy(out,in,readLength*2);
+
     for (OutputEffect* out_e : effectbuffer->getOutputEffects()){
-        effectbuffer->getEffectMap()->readLength = readLength;
+        effectbuffer->getEffectMap()->readLength = readLength*2;
+        b_out = effectbuffer->getEffectMap()->getData(out_e, out_e->getPorts().first());
+        //memcpy(out, writeData,readLength*2);
+        for (int i = 0; i < readLength; i ++){
+            memcpy(&outL[i], &b_out[8*i], 4);
+            memcpy(&outR[i], &b_out[8*i+4], 4);
+        }
+    }
 
-        char* writeData = effectbuffer->getEffectMap()->getData(out_e);
-        memcpy(out, writeData,readLength);
 
-    }*/
-
-    memcpy(out, in,
-           sizeof(jack_default_audio_sample_t) * nframes);
-
-    //jack_cycle_wait(client);
+    //memcpy(outR, in, readLength*2);
+    //memcpy(outL, in, readLength*2);
     return 0;
 }
 
 void jack_shutdown(void *arg){
-    exit(1);
+    qDebug() << "Jack shutdown";
+    jack_deactivate(client);
+    jack_client_close(client);
 }
 
 int jack_runaudio(int argc, char *argv[])
 {
+    qDebug() << "Calling this twice??";
+    const char* clientname;
+
+    clientname = static_cast<const char*>("simple");
+
     const char **ports;
-    const char* clientname = static_cast<const char*>("simple");
     const char* servername = NULL;
     jack_options_t options = JackNullOption;
     jack_status_t status;
@@ -82,7 +108,7 @@ int jack_runaudio(int argc, char *argv[])
 
     if (client == NULL){
         qDebug() << "Failed to start";
-        exit(1);
+        return 0;
     }
 
     if (status & JackServerStarted){
@@ -100,21 +126,36 @@ int jack_runaudio(int argc, char *argv[])
     printf("Engine sample rate: %", PRIu32 "\n",
            jack_get_sample_rate(client));
 
-    inputport = jack_port_register(client, "input",
+    inputportleft = jack_port_register(client, "input left",
                                    JACK_DEFAULT_AUDIO_TYPE,
                                    JackPortIsInput, 0);
-    outputport = jack_port_register(client, "output",
+    inputportright = jack_port_register(client, "input right",
+                                   JACK_DEFAULT_AUDIO_TYPE,
+                                   JackPortIsInput, 0);
+    outputportleft = jack_port_register(client, "output left",
+                                    JACK_DEFAULT_AUDIO_TYPE,
+                                    JackPortIsOutput, 0);
+    outputportright = jack_port_register(client, "output right",
                                     JACK_DEFAULT_AUDIO_TYPE,
                                     JackPortIsOutput, 0);
 
-    if ((inputport == NULL) || (outputport == NULL)){
+    if ((inputportleft == NULL) || (inputportright == NULL) ||
+            (outputportleft == NULL) || (outputportright == NULL)){
         fprintf(stderr, "no more JACK ports available\n");
-        exit(1);
+        return 0;
+    }
+
+    int bufferlength = 5000;
+    b_in = new char[bufferlength];
+    b_out = new char[bufferlength];
+    for (int i = 0; i < bufferlength; i++){
+        b_in[i] = 0;
+        b_out[i] = 0;
     }
 
     if (jack_activate(client)){
         fprintf(stderr, "cannot activate client");
-        exit(1);
+        return 0;
     }
 
     ports = jack_get_ports(client, NULL, NULL,
@@ -122,7 +163,7 @@ int jack_runaudio(int argc, char *argv[])
 
     if (ports == NULL){
         fprintf(stderr, "no physical capture ports\n");
-        exit(1);
+        return 0;
     } else {
         qDebug() << "Output ports:";
         for (int i = 0; i < sizeof(ports); i++){
@@ -130,7 +171,10 @@ int jack_runaudio(int argc, char *argv[])
         }
     }
 
-    if (jack_connect(client, ports[0], jack_port_name(inputport))){
+    if (jack_connect(client, ports[0], jack_port_name(inputportleft))){
+        fprintf(stderr, "cannot connect input ports\n");
+    }
+    if (jack_connect(client, ports[1], jack_port_name(inputportright))){
         fprintf(stderr, "cannot connect input ports\n");
     }
 
@@ -140,7 +184,7 @@ int jack_runaudio(int argc, char *argv[])
                            JackPortIsPhysical | JackPortIsInput);
     if (ports == NULL){
         fprintf(stderr, "no physical playback ports\n");
-        exit(1);
+        return 0;
     } else {
         qDebug() << "Input ports:";
         for (int i = 0; i < sizeof(ports); i++){
@@ -148,11 +192,16 @@ int jack_runaudio(int argc, char *argv[])
         }
     }
 
-    if (jack_connect(client, jack_port_name(outputport), ports[0])){
+    if (jack_connect(client, jack_port_name(outputportleft), ports[0])){
         fprintf(stderr, "cannot connect output ports\n");
     }
-}
+    if (jack_connect(client, jack_port_name(outputportright), ports[1])){
+        fprintf(stderr, "cannot connect output ports\n");
+    }
 
+    return 1;
+}
+*/
 
 //EffectBuffer (QIODevice) is being asked to read data from whatever. Aka - write to "data" (param)
 qint64 EffectBuffer::readData(char* data, qint64 maxlen){
@@ -163,6 +212,7 @@ qint64 EffectBuffer::readData(char* data, qint64 maxlen){
     for (InputEffect* in_e : inputEffects){
         in_e->giveData(buffer.data(), readLength);
     }
+
     //Output data from outputEffects
     for (OutputEffect* out_e : outputEffects){
         // Set readLength for effectMap (temp // ?)
@@ -251,7 +301,11 @@ void EffectBuffer::stopJackAudio()
     //jack_shutdown(NULL);
 }
 
-int EffectBuffer::runJackAudio()
+bool EffectBuffer::runJackAudio()
 {
-    jack_runaudio(NULL, NULL);
+    /*
+    if (jack_runaudio(NULL, NULL) == 0)
+        return false;
+    else*/
+        return true;
 }

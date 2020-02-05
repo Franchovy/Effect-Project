@@ -30,13 +30,15 @@ class Audio : public QObject
 {
     Q_OBJECT
 public:
-    Audio(AudioSystem audioSystem, QObject* parent = nullptr);
+    Audio(QObject* parent = nullptr);
 
     EffectMap* getEffectMap() {return m_effectMap;}
     EffectBuffer* getEffectBuffer() {return m_buffer;}
 
     QList<QAudioDeviceInfo> availableAudioInputDevices();
     QList<QAudioDeviceInfo> availableAudioOutputDevices();
+    QAudioDeviceInfo getDefaultInputDevice();
+    QAudioDeviceInfo getDefaultOutputDevice();
     void setInputDevice(QAudioDeviceInfo device);
     void setOutputDevice(QAudioDeviceInfo device);
 
@@ -44,15 +46,17 @@ public:
 
     void record();
     bool isRunning() {return running;}
-    int baseEffectsCount(){return 7;}
+    int baseEffectsCount(){return 8;}
 
-    int setAudioSystem(AudioSystem audioSystem);
+    void setAudioSystem(AudioSystem audioSystem);
+    bool isAudioSystemSet(){return audioSystemSet;}
 
 private:
     EffectBuffer* m_buffer;
     EffectMap* m_effectMap;
 
     QAudioFormat format;
+    bool audioSystemSet;
     AudioSystem currentAudioSystem;
 
     // Temp
