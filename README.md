@@ -9,6 +9,9 @@ The "effect-chain" audio streaming system had to be put together from scratch, a
 I ended up migrating development to JUCE because of the much more complex audio system. I was unable to merge the two projects so I started from scratch. 
 I have been developing the JUCE project full-time since.
 
+![Demo](/demo.gif)
+Format: ![Alt Text](url)
+
 ![Screenshot](/screenshot.png)
 Format: ![Alt Text](url)
 
