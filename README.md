@@ -1,6 +1,6 @@
 # effectproject
 
-Previous version of a current project - based in Qt.
+Earlier version of a current project - based in Qt.
 
 Create effects, connect them together, and stream audio. All this with a simple user-friendly interface.
 
