@@ -28,6 +28,7 @@
 #include "settingsdialog.h"
 #include "effectsscene.h"
 
+#include <JuceLibraryCode/JuceHeader.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -40,6 +41,13 @@ MainWindow::MainWindow(QWidget *parent)
     , m_graphicsView(new QGraphicsView(this))
 {
     // Set up Audio
+
+    //====================================================================================
+    // JUCE AUDIO
+    //juce::JUCEApplicationBase* juce_CreateApplication();
+
+
+    //====================================================================================
 
     //default in/out effects
     //Effect* e_in = m_audio->createEffect(0);

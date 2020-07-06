@@ -39,6 +39,7 @@ SOURCES += \
     effectsLib/outputeffect.cpp \
     effectsLib/paneffect.cpp \
     effectsLib/splittereffect.cpp \
+    effectsLib/stereojoinereffect.cpp \
     effectsLib/waveeffect.cpp \
     effectsscene.cpp \
     main.cpp \
@@ -46,8 +47,7 @@ SOURCES += \
     ports/inport.cpp \
     ports/outport.cpp \
     ports/port.cpp \
-    settingsdialog.cpp \
-    stereojoinereffect.cpp
+    settingsdialog.cpp
 
 HEADERS += \
     GUI/gui_effect.h \
@@ -69,6 +69,7 @@ HEADERS += \
     effectsLib/outputeffect.h \
     effectsLib/paneffect.h \
     effectsLib/splittereffect.h \
+    effectsLib/stereojoinereffect.h \
     effectsLib/waveeffect.h \
     effectsscene.h \
     effectsui.h \
@@ -76,12 +77,29 @@ HEADERS += \
     ports/inport.h \
     ports/outport.h \
     ports/port.h \
-    settingsdialog.h \
-    stereojoinereffect.h
+    settingsdialog.h
 
 #INCLUDEPATH += \
 #    fft-real/
 
+# Path to JUCE modules
+INCLUDEPATH += /home/Maxime/JUCE/modules \
+            /home/Maxime/JUCELibProject
+
+# Juce defines
+DEFINES += JUCE_APP_VERSION=1.0.0 \
+            JUCE_APP_VERSION_HEX=0x10000 \
+            JucePlugin_Build_VST=0 \
+            JucePlugin_Build_VST3=0 \
+            JucePlugin_Build_AU=0 \
+            JucePlugin_Build_AUv3=0 \
+            JucePlugin_Build_RTAS=0 \
+            JucePlugin_Build_AAX=0 \
+            JucePlugin_Build_Standalone=0 \
+            JucePlugin_Build_Unity=0 \
+            JUCE_USE_MP3AUDIOFORMAT=1 \
+
+# Add framework for JUCE Linux? https://github.com/nikeocom/qt_with_juce_example/tree/master
 
 FORMS += \
     mainwindow.ui
